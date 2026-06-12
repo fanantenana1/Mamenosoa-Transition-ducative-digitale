@@ -139,6 +139,9 @@
       width:min(680px,96vw);box-shadow:0 20px 60px rgba(0,0,0,.2);margin:auto}
     .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem}
     .modal-head h3{font-size:1.2rem;font-weight:800;color:var(--text)}
+    .modal-head-actions{display:flex;align-items:center;gap:.6rem}
+    .modal-action{background:rgba(37,99,235,.1);border:none;color:var(--blue);padding:.45rem .7rem;border-radius:10px;cursor:pointer;font-size:.85rem}
+    .modal-action:hover{background:rgba(37,99,235,.18)}
     .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted)}
     .form-label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin-bottom:.3rem}
     .form-input,.form-select,.form-textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;
@@ -361,7 +364,13 @@
           <input id="cm-video-url" class="form-input" placeholder="https://youtube.com/embed/…"/>
         </div>
       </div>
-      <div id="cm-video-current" style="display:none;margin-top:.5rem;font-size:.8rem;color:var(--muted)"></div>
+      <div id="cm-video-current" style="display:none;margin-top:.5rem;font-size:.8rem;color:var(--muted);gap:.55rem;align-items:center;">
+        <span id="cm-video-current-name"></span>
+        <button id="cm-video-current-remove" type="button" onclick="markRemoveCurrentFile('video')"
+                style="border:none;background:none;color:#dc2626;cursor:pointer;font-size:.85rem;padding:0;display:none;">
+          Supprimer
+        </button>
+      </div>
     </div>
 
     <!-- Document Cours -->
@@ -369,12 +378,18 @@
       <label class="form-label" style="color:var(--green)">📄 DOCUMENT-COURS</label>
       <div class="tab-row">
         <button class="tab-btn active" data-tab="cours-fichier" onclick="switchTab(this,'cours')">Fichier</button>
-        <button class="tab-btn"        data-tab="cours-texte"   onclick="switchTab(this,'cours')">Texte / Note</button>
-        <button class="tab-btn"        data-tab="cours-qcm"     onclick="switchTab(this,'cours')">QCM</button>
+        <button class="tab-btn" data-tab="cours-texte" onclick="switchTab(this,'cours')">Texte / Note</button>
+        <button class="tab-btn" data-tab="cours-qcm" onclick="switchTab(this,'cours')">QCM</button>
       </div>
       <div id="cours-fichier" class="tab-content active">
         <input id="cm-cours-file" type="file" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.png,.jpg"/>
-        <div id="cm-cours-current" style="display:none;margin-top:.4rem;font-size:.8rem;color:var(--muted)"></div>
+        <div id="cm-cours-current" style="display:none;margin-top:.4rem;font-size:.8rem;color:var(--muted);gap:.55rem;align-items:center;">
+          <span id="cm-cours-current-name"></span>
+          <button id="cm-cours-current-remove" type="button" onclick="markRemoveCurrentFile('cours')"
+                  style="border:none;background:none;color:#dc2626;cursor:pointer;font-size:.85rem;padding:0;display:none;">
+            Supprimer
+          </button>
+        </div>
       </div>
       <div id="cours-texte" class="tab-content">
         <textarea id="cm-cours-texte" class="form-textarea" placeholder="Écrivez le cours ici…"></textarea>
@@ -395,7 +410,13 @@
       </div>
       <div id="exo-fichier" class="tab-content active">
         <input id="cm-exo-file" type="file" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.png,.jpg"/>
-        <div id="cm-exo-current" style="display:none;margin-top:.4rem;font-size:.8rem;color:var(--muted)"></div>
+        <div id="cm-exo-current" style="display:none;margin-top:.4rem;font-size:.8rem;color:var(--muted);gap:.55rem;">
+          <span id="cm-exo-current-name"></span>
+          <button id="cm-exo-current-remove" type="button" onclick="markRemoveCurrentFile('exo')"
+                  style="border:none;background:none;color:#dc2626;cursor:pointer;font-size:.85rem;padding:0;">
+            Supprimer
+          </button>
+        </div>
       </div>
       <div id="exo-texte" class="tab-content">
         <textarea id="cm-exo-texte" class="form-textarea" placeholder="Écrivez l'exercice ici…"></textarea>
@@ -421,7 +442,11 @@
   <div class="modal-box">
     <div class="modal-head">
       <h3 id="dm-title">Document</h3>
-      <button class="modal-close" onclick="closeDocModal()">✕</button>
+      <div class="modal-head-actions">
+        <button class="modal-action" type="button" onclick="zoomDoc(1.2)">A+</button>
+        <button class="modal-action" type="button" onclick="zoomDoc(0.8)">A-</button>
+        <button class="modal-close" onclick="closeDocModal()">✕</button>
+      </div>
     </div>
     <div id="dm-content" class="doc-viewer-content">Chargement…</div>
     <div class="modal-actions">
@@ -453,8 +478,69 @@ let allCours    = [];
 let currentCours = null;
 let editingId   = null;
 let deletingId  = null;
+let removedVideoFile = false;
+let removedCoursFile = false;
+let removedExoFile = false;
 let coursTabs   = { cours: 'fichier', exo: 'fichier' };
 let qcmData     = { cours: [], exo: [] };
+let docZoom = 1;
+
+function hasJsonItems(value) {
+  if (!value) return false;
+  try {
+    const arr = JSON.parse(value);
+    return Array.isArray(arr) && arr.length > 0;
+  } catch (e) {
+    return false;
+  }
+}
+
+function hasContent(c, type) {
+  const t = type === 'cours' ? c.cours_type : c.exercice_type;
+  const file = type === 'cours' ? c.cours_fichier : c.exercice_fichier;
+  const text = type === 'cours' ? c.cours_texte : c.exercice_texte;
+  const qcm = type === 'cours' ? c.cours_qcm : c.exercice_qcm;
+  if (file) return true;
+  if (t === 'texte') return !!(text || '').trim();
+  if (t === 'qcm') return hasJsonItems(qcm);
+  return false;
+}
+
+function markRemoveCurrentFile(type) {
+  if (type === 'video') {
+    removedVideoFile = true;
+    document.getElementById('cm-video-current-name').textContent = 'Vidéo actuelle supprimée. Enregistrez pour valider.';
+    document.getElementById('cm-video-current-remove').style.display = 'none';
+  } else if (type === 'cours') {
+    removedCoursFile = true;
+    document.getElementById('cm-cours-current-name').textContent = 'Cours actuel supprimé. Enregistrez pour valider.';
+    document.getElementById('cm-cours-current-remove').style.display = 'none';
+  } else {
+    removedExoFile = true;
+    document.getElementById('cm-exo-current-name').textContent = 'Exercice actuel supprimé. Enregistrez pour valider.';
+    document.getElementById('cm-exo-current-remove').style.display = 'none';
+  }
+}
+
+function setCurrentFileInfo(type, filename) {
+  const wrapper = document.getElementById(
+    type === 'cours' ? 'cm-cours-current' : type === 'exo' ? 'cm-exo-current' : 'cm-video-current'
+  );
+  const nameEl = document.getElementById(
+    type === 'cours' ? 'cm-cours-current-name' : type === 'exo' ? 'cm-exo-current-name' : 'cm-video-current-name'
+  );
+  const removeBtn = document.getElementById(
+    type === 'cours' ? 'cm-cours-current-remove' : type === 'exo' ? 'cm-exo-current-remove' : 'cm-video-current-remove'
+  );
+  if (!filename) {
+    wrapper.style.display = 'none';
+    return;
+  }
+  wrapper.style.display = 'flex';
+  wrapper.style.alignItems = 'center';
+  nameEl.textContent = (type === 'cours' ? 'Cours actuel : ' : 'Exercice actuel : ') + filename;
+  removeBtn.style.display = 'inline';
+}
 
 /* ═══════════════════════════════════════════════
    LOAD
@@ -483,8 +569,8 @@ function renderTable() {
     return;
   }
   tbody.innerHTML = allCours.map((c, i) => {
-    const hasCours = c.has_cours == 1;
-    const hasExo   = c.has_exercice == 1;
+    const hasCours = hasContent(c, 'cours');
+    const hasExo   = hasContent(c, 'exercice');
     const hasVideo = !!(c.video_filename || c.video_url);
 
     const docCoursHtml = hasCours
@@ -588,6 +674,11 @@ async function openDoc(id, type) {
   const content = document.getElementById('dm-content');
   content.innerHTML = '<span class="spinner"></span>';
   document.getElementById('doc-modal').classList.add('open');
+  const docBox = document.querySelector('#doc-modal .modal-box');
+  if (docBox) {
+    docZoom = 1;
+    docBox.style.transform = 'scale(1)';
+  }
 
   const docType    = isExo ? c.exercice_type    : c.cours_type;
   const docFichier = isExo ? c.exercice_fichier : c.cours_fichier;
@@ -629,6 +720,20 @@ async function openDoc(id, type) {
 
 function closeDocModal() {
   document.getElementById('doc-modal').classList.remove('open');
+  const box = document.querySelector('#doc-modal .modal-box');
+  if (box) {
+    box.style.transform = 'scale(1)';
+    docZoom = 1;
+  }
+}
+
+function zoomDoc(factor) {
+  docZoom = Math.max(0.8, Math.min(1.8, docZoom * factor));
+  const box = document.querySelector('#doc-modal .modal-box');
+  if (box) {
+    box.style.transform = `scale(${docZoom})`;
+    box.style.transformOrigin = 'top center';
+  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -652,30 +757,12 @@ function openEdit(c) {
   document.getElementById('cm-desc').value    = c.description || '';
   document.getElementById('cm-video-url').value = c.video_url || '';
 
-  if (c.video_filename) {
-    const el = document.getElementById('cm-video-current');
-    el.style.display = 'block';
-    el.textContent = `Vidéo actuelle : ${c.video_filename}`;
-  }
-  if (c.cours_fichier) {
-    const el = document.getElementById('cm-cours-current');
-    el.style.display = 'block';
-    el.textContent = `Cours actuel : ${c.cours_fichier}`;
-  }
-  if (c.exercice_fichier) {
-    const el = document.getElementById('cm-exo-current');
-    el.style.display = 'block';
-    el.textContent = `Exercice actuel : ${c.exercice_fichier}`;
-  }
-
-  // restore tabs
-  const ct = c.cours_type || 'fichier';
-  const et = c.exercice_type || 'fichier';
-  activateTabById('cours', ct);
-  activateTabById('exo', et);
-
-  document.getElementById('cm-cours-texte').value = c.cours_texte || '';
-  document.getElementById('cm-exo-texte').value   = c.exercice_texte || '';
+    removedVideoFile = false;
+    removedCoursFile = false;
+    removedExoFile = false;
+    setCurrentFileInfo('video', c.video_filename);
+    setCurrentFileInfo('cours', c.cours_fichier);
+    setCurrentFileInfo('exo', c.exercice_fichier);
 
   // QCM
   try { qcmData.cours = JSON.parse(c.cours_qcm || '[]'); }    catch(e){ qcmData.cours=[]; }
@@ -698,8 +785,15 @@ function clearCourseForm() {
     document.getElementById(id).value = '';
   });
   ['cm-video-current','cm-cours-current','cm-exo-current'].forEach(id => {
-    document.getElementById(id).style.display = 'none';
+    const el = document.getElementById(id);
+    el.style.display = 'none';
   });
+  removedVideoFile = false;
+  removedCoursFile = false;
+  removedExoFile = false;
+  document.getElementById('cm-video-current-name').textContent = '';
+  document.getElementById('cm-cours-current-name').textContent = '';
+  document.getElementById('cm-exo-current-name').textContent = '';
   qcmData = { cours: [], exo: [] };
   renderQcm('cours');
   renderQcm('exo');
@@ -819,6 +913,11 @@ async function saveCours() {
     fd.append('exercice_qcm', JSON.stringify(qcmData.exo));
   }
 
+  if (editingId) {
+    if (removedVideoFile) fd.append('remove_video_file', '1');
+    if (removedCoursFile) fd.append('remove_cours_file', '1');
+    if (removedExoFile) fd.append('remove_exercice_file', '1');
+  }
   try {
     const method = editingId ? 'PUT' : 'POST';
     const url    = editingId ? `/api/cours/${editingId}` : '/api/cours';

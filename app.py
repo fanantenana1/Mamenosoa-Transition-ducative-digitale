@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 from functools import wraps
 import os
 import sqlite3
+import time
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, static_folder='static', template_folder='templates')
@@ -19,6 +20,8 @@ app.config['MAX_CONTENT_LENGTH'] = 150 * 1024 * 1024
 DB_PATH = os.path.join(BASE_DIR, 'instance', 'digiscool.db')
 UPLOAD_VIDEOS = os.path.join(BASE_DIR, 'uploads', 'videos')
 UPLOAD_DOCS = os.path.join(BASE_DIR, 'uploads', 'documents')
+UPLOAD_COURS = os.path.join(BASE_DIR, 'uploads', 'cours')
+UPLOAD_EXOS = os.path.join(BASE_DIR, 'uploads', 'exercices')
 
 ALLOWED_VIDEO = {'mp4', 'webm', 'ogg', 'mov', 'avi'}
 ALLOWED_DOC = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'zip', 'png', 'jpg', 'jpeg'}
@@ -26,6 +29,8 @@ ALLOWED_DOC = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'zip', 'png', 'jpg', 
 os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 os.makedirs(UPLOAD_VIDEOS, exist_ok=True)
 os.makedirs(UPLOAD_DOCS, exist_ok=True)
+os.makedirs(UPLOAD_COURS, exist_ok=True)
+os.makedirs(UPLOAD_EXOS, exist_ok=True)
 
 
 def get_db():
@@ -50,12 +55,36 @@ def init_db():
             CREATE TABLE IF NOT EXISTS cours (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 titre TEXT NOT NULL,
+                matiere TEXT DEFAULT '',
                 description TEXT DEFAULT '',
                 video_filename TEXT DEFAULT '',
-                document_filename TEXT DEFAULT '',
+                video_url TEXT DEFAULT '',
+                cours_type TEXT DEFAULT 'fichier',
+                cours_fichier TEXT DEFAULT '',
+                cours_texte TEXT DEFAULT '',
+                cours_qcm TEXT DEFAULT '[]',
+                exercice_type TEXT DEFAULT 'fichier',
+                exercice_fichier TEXT DEFAULT '',
+                exercice_texte TEXT DEFAULT '',
+                exercice_qcm TEXT DEFAULT '[]',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+        columns = [row[1] for row in db.execute("PRAGMA table_info(cours)").fetchall()]
+        for col, col_def in [
+            ('matiere', "TEXT DEFAULT ''"),
+            ('video_url', "TEXT DEFAULT ''"),
+            ('cours_type', "TEXT DEFAULT 'fichier'"),
+            ('cours_fichier', "TEXT DEFAULT ''"),
+            ('cours_texte', "TEXT DEFAULT ''"),
+            ('cours_qcm', "TEXT DEFAULT '[]'"),
+            ('exercice_type', "TEXT DEFAULT 'fichier'"),
+            ('exercice_fichier', "TEXT DEFAULT ''"),
+            ('exercice_texte', "TEXT DEFAULT ''"),
+            ('exercice_qcm', "TEXT DEFAULT '[]'"),
+        ]:
+            if col not in columns:
+                db.execute(f'ALTER TABLE cours ADD COLUMN {col} {col_def}')
         db.execute('''
             CREATE TABLE IF NOT EXISTS notifications (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -99,6 +128,230 @@ def allowed_file(filename, allowed_set):
 def get_user_by_email(email):
     with get_db() as db:
         return db.execute('SELECT * FROM users WHERE email=?', (email,)).fetchone()
+
+
+def serialize_cours(row):
+    return {
+        'id': row['id'],
+        'titre': row['titre'],
+        'matiere': row['matiere'],
+        'description': row['description'],
+        'video_filename': row['video_filename'],
+        'video_url': row['video_url'],
+        'cours_type': row['cours_type'],
+        'cours_fichier': row['cours_fichier'],
+        'cours_texte': row['cours_texte'],
+        'cours_qcm': row['cours_qcm'],
+        'exercice_type': row['exercice_type'],
+        'exercice_fichier': row['exercice_fichier'],
+        'exercice_texte': row['exercice_texte'],
+        'exercice_qcm': row['exercice_qcm'],
+        'created_at': row['created_at'],
+    }
+
+
+def save_uploaded_file(uploaded_file, upload_dir, allowed_set=None):
+    if not uploaded_file or not uploaded_file.filename:
+        return ''
+    filename = secure_filename(uploaded_file.filename)
+    if not filename:
+        return ''
+    if allowed_set and not allowed_file(filename, allowed_set):
+        raise ValueError('Type de fichier non autorisé.')
+    name, ext = os.path.splitext(filename)
+    filename = f"{name}_{int(time.time())}{ext}"
+    destination = os.path.join(upload_dir, filename)
+    uploaded_file.save(destination)
+    return filename
+
+
+def remove_file(path):
+    try:
+        if path and os.path.exists(path):
+            os.remove(path)
+    except OSError:
+        pass
+
+
+@app.route('/api/cours', methods=['GET'])
+@login_required
+def api_get_cours():
+    q = request.args.get('q', '').strip()
+    sort = request.args.get('sort', 'id')
+    if sort not in ('id', 'titre', 'matiere', 'created_at'):
+        sort = 'id'
+    query = 'SELECT * FROM cours'
+    params = []
+    if q:
+        query += ' WHERE titre LIKE ? OR matiere LIKE ? OR description LIKE ?'
+        pattern = f'%{q}%'
+        params = [pattern, pattern, pattern]
+    order = 'DESC' if sort in ('id', 'created_at') else 'ASC'
+    query += f' ORDER BY {sort} {order}'
+    with get_db() as db:
+        rows = db.execute(query, params).fetchall()
+    return jsonify([serialize_cours(row) for row in rows])
+
+
+@app.route('/api/cours', methods=['POST'])
+@login_required
+def api_create_cours():
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'Accès refusé.'}), 403
+
+    titre = request.form.get('titre', '').strip()
+    matiere = request.form.get('matiere', '').strip()
+    description = request.form.get('description', '').strip()
+    video_url = request.form.get('video_url', '').strip()
+    cours_type = request.form.get('cours_type', 'fichier')
+    cours_texte = request.form.get('cours_texte', '').strip()
+    cours_qcm = request.form.get('cours_qcm', '[]') if cours_type == 'qcm' else '[]'
+    exercice_type = request.form.get('exercice_type', 'fichier')
+    exercice_texte = request.form.get('exercice_texte', '').strip()
+    exercice_qcm = request.form.get('exercice_qcm', '[]') if exercice_type == 'qcm' else '[]'
+
+    if not titre:
+        return jsonify({'error': 'Le titre est requis.'}), 400
+
+    try:
+        video_filename = ''
+        if 'video_file' in request.files and request.files['video_file'].filename:
+            video_filename = save_uploaded_file(request.files['video_file'], UPLOAD_VIDEOS, ALLOWED_VIDEO)
+
+        cours_fichier = ''
+        if cours_type == 'fichier' and 'cours_fichier' in request.files and request.files['cours_fichier'].filename:
+            cours_fichier = save_uploaded_file(request.files['cours_fichier'], UPLOAD_COURS, ALLOWED_DOC)
+
+        exercice_fichier = ''
+        if exercice_type == 'fichier' and 'exercice_fichier' in request.files and request.files['exercice_fichier'].filename:
+            exercice_fichier = save_uploaded_file(request.files['exercice_fichier'], UPLOAD_EXOS, ALLOWED_DOC)
+    except ValueError as exc:
+        return jsonify({'error': str(exc)}), 400
+
+    with get_db() as db:
+        cur = db.execute(
+            '''INSERT INTO cours (titre, matiere, description, video_filename, video_url,
+                cours_type, cours_fichier, cours_texte, cours_qcm,
+                exercice_type, exercice_fichier, exercice_texte, exercice_qcm)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            (titre, matiere, description, video_filename, video_url,
+             cours_type, cours_fichier, cours_texte, cours_qcm,
+             exercice_type, exercice_fichier, exercice_texte, exercice_qcm)
+        )
+        db.commit()
+        cours = db.execute('SELECT * FROM cours WHERE id = ?', (cur.lastrowid,)).fetchone()
+    return jsonify(serialize_cours(cours))
+
+
+@app.route('/api/cours/<int:cours_id>', methods=['PUT'])
+@login_required
+def api_update_cours(cours_id):
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'Accès refusé.'}), 403
+
+    with get_db() as db:
+        existing = db.execute('SELECT * FROM cours WHERE id = ?', (cours_id,)).fetchone()
+        if not existing:
+            return jsonify({'error': 'Cours introuvable.'}), 404
+
+        titre = request.form.get('titre', existing['titre']).strip()
+        matiere = request.form.get('matiere', existing['matiere']).strip()
+        description = request.form.get('description', existing['description']).strip()
+        video_url = request.form.get('video_url', existing['video_url']).strip()
+        cours_type = request.form.get('cours_type', existing['cours_type'] or 'fichier')
+        exercice_type = request.form.get('exercice_type', existing['exercice_type'] or 'fichier')
+
+        cours_texte = request.form.get('cours_texte', existing['cours_texte'] or '').strip() if cours_type == 'texte' else (existing['cours_texte'] or '')
+        cours_qcm = request.form.get('cours_qcm', existing['cours_qcm'] or '[]') if cours_type == 'qcm' else (existing['cours_qcm'] or '[]')
+        exercice_texte = request.form.get('exercice_texte', existing['exercice_texte'] or '').strip() if exercice_type == 'texte' else (existing['exercice_texte'] or '')
+        exercice_qcm = request.form.get('exercice_qcm', existing['exercice_qcm'] or '[]') if exercice_type == 'qcm' else (existing['exercice_qcm'] or '[]')
+        remove_video_file = request.form.get('remove_video_file') == '1'
+        remove_cours_file = request.form.get('remove_cours_file') == '1'
+        remove_exercice_file = request.form.get('remove_exercice_file') == '1'
+
+        video_filename = existing['video_filename']
+        try:
+            if remove_video_file and video_filename:
+                remove_file(os.path.join(UPLOAD_VIDEOS, video_filename))
+                video_filename = ''
+            if 'video_file' in request.files and request.files['video_file'].filename:
+                if video_filename:
+                    remove_file(os.path.join(UPLOAD_VIDEOS, video_filename))
+                video_filename = save_uploaded_file(request.files['video_file'], UPLOAD_VIDEOS, ALLOWED_VIDEO)
+
+            cours_fichier = existing['cours_fichier']
+            if remove_cours_file and cours_fichier:
+                remove_file(os.path.join(UPLOAD_COURS, cours_fichier))
+                cours_fichier = ''
+            if cours_type == 'fichier' and 'cours_fichier' in request.files and request.files['cours_fichier'].filename:
+                if cours_fichier:
+                    remove_file(os.path.join(UPLOAD_COURS, cours_fichier))
+                cours_fichier = save_uploaded_file(request.files['cours_fichier'], UPLOAD_COURS, ALLOWED_DOC)
+
+            exercice_fichier = existing['exercice_fichier']
+            if remove_exercice_file and exercice_fichier:
+                remove_file(os.path.join(UPLOAD_EXOS, exercice_fichier))
+                exercice_fichier = ''
+            if exercice_type == 'fichier' and 'exercice_fichier' in request.files and request.files['exercice_fichier'].filename:
+                if exercice_fichier:
+                    remove_file(os.path.join(UPLOAD_EXOS, exercice_fichier))
+                exercice_fichier = save_uploaded_file(request.files['exercice_fichier'], UPLOAD_EXOS, ALLOWED_DOC)
+        except ValueError as exc:
+            return jsonify({'error': str(exc)}), 400
+
+        db.execute(
+            '''UPDATE cours SET titre=?, matiere=?, description=?, video_filename=?, video_url=?,
+                cours_type=?, cours_fichier=?, cours_texte=?, cours_qcm=?,
+                exercice_type=?, exercice_fichier=?, exercice_texte=?, exercice_qcm=?
+               WHERE id = ?''',
+            (titre, matiere, description, video_filename, video_url,
+             cours_type, cours_fichier, cours_texte, cours_qcm,
+             exercice_type, exercice_fichier, exercice_texte, exercice_qcm, cours_id)
+        )
+        db.commit()
+        cours = db.execute('SELECT * FROM cours WHERE id = ?', (cours_id,)).fetchone()
+    return jsonify(serialize_cours(cours))
+
+
+@app.route('/api/cours/<int:cours_id>', methods=['DELETE'])
+@login_required
+def api_delete_cours(cours_id):
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'Accès refusé.'}), 403
+
+    with get_db() as db:
+        existing = db.execute('SELECT * FROM cours WHERE id = ?', (cours_id,)).fetchone()
+        if not existing:
+            return jsonify({'error': 'Cours introuvable.'}), 404
+
+        if existing['video_filename']:
+            remove_file(os.path.join(UPLOAD_VIDEOS, existing['video_filename']))
+        if existing['cours_fichier']:
+            remove_file(os.path.join(UPLOAD_COURS, existing['cours_fichier']))
+        if existing['exercice_fichier']:
+            remove_file(os.path.join(UPLOAD_EXOS, existing['exercice_fichier']))
+
+        db.execute('DELETE FROM cours WHERE id = ?', (cours_id,))
+        db.commit()
+    return jsonify({'ok': True})
+
+
+@app.route('/uploads/videos/<path:filename>')
+@login_required
+def uploaded_video(filename):
+    return send_from_directory(UPLOAD_VIDEOS, filename)
+
+
+@app.route('/uploads/cours/<path:filename>')
+@login_required
+def uploaded_cours(filename):
+    return send_from_directory(UPLOAD_COURS, filename)
+
+
+@app.route('/uploads/exercices/<path:filename>')
+@login_required
+def uploaded_exercice(filename):
+    return send_from_directory(UPLOAD_EXOS, filename)
 
 
 @app.route('/')
