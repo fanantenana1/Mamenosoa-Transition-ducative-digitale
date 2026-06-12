@@ -245,6 +245,7 @@ body{font-family:'Inter',sans-serif;background:#080b4a;min-height:100%;display:f
     </a>
   </div>
   <div class="nav-right">
+    <a href="/education" class="lnk-connect">Education</a>
     <a href="#" class="lnk-connect" onclick="openModal('modal-login');return false;">Se connecter</a>
     <a href="#" class="btn-nav-creer" onclick="openModal('modal-register');return false;">Créer compte</a>
   </div>
@@ -284,7 +285,7 @@ body{font-family:'Inter',sans-serif;background:#080b4a;min-height:100%;display:f
       <h1 class="hero-title">Transition éducative digitale</h1>
       <p class="hero-sub">Transformer l'éducation vers un modèle<br>numérique innovant</p>
       <div class="hero-btns">
-        <a href="#" class="btn-hero-tableau" onclick="openModal('modal-login');return false;">Accéder au tableau de bord</a>
+        <a href="/education" class="btn-hero-tableau">Accéder au tableau de bord</a>
         <a href="#"  class="btn-hero-creer" onclick="openModal('modal-register');return false;">Créer compte</a>
       </div>
     </div>
@@ -545,23 +546,46 @@ function checkPwStrength(val){
 
 /* ── Form handlers (hooks vers votre backend Flask) ── */
 function handleLogin(){
-  const nom=document.getElementById('login-nom').value.trim();
+  const identifier=document.getElementById('login-nom').value.trim();
   const pw=document.getElementById('login-pw').value;
-  if(!nom||!pw){alert('Veuillez remplir tous les champs.');return;}
-  // TODO: fetch('/api/login', {method:'POST', body:JSON.stringify({username:nom,password:pw}),…})
-  window.location.href='/dashboard.html';
+  if(!identifier||!pw){alert('Veuillez remplir tous les champs.');return;}
+  fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:identifier,password:pw})
+  }).then(async res=>{
+      const data=await res.json();
+      if(!res.ok){alert(data.error||'Erreur de connexion.');return;}
+      window.location.href='/dashboard';
+  }).catch(()=>alert('Erreur réseau. Veuillez réessayer.'));
 }
 function handleRegister(){
   const nom=document.getElementById('reg-nom').value.trim();
   const prenom=document.getElementById('reg-prenom').value.trim();
   const contact=document.getElementById('reg-contact').value.trim();
+  const sexe=document.getElementById('reg-sexe').value;
+  const adresse=document.getElementById('reg-adresse').value.trim();
+  const classe=document.getElementById('reg-niveau').value || '';
   const pw=document.getElementById('reg-pw').value;
   const pw2=document.getElementById('reg-pw2').value;
   if(!nom||!prenom||!contact||!pw){alert('Veuillez remplir les champs obligatoires (*).');return;}
   if(pw!==pw2){alert('Les mots de passe ne correspondent pas.');return;}
-  // TODO: fetch('/api/register', {method:'POST', body:JSON.stringify({…}),…})
-  alert('Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
-  switchModal('modal-register','modal-login');
+  if(pw.length<6){alert('Le mot de passe doit contenir au moins 6 caractères.');return;}
+  // build a full name and send `name` + `email` to match backend expectations
+  const fullName = (prenom + ' ' + nom).trim();
+  fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        name: fullName,
+        email: contact,
+        password:pw,
+        sexe:sexe,
+        adresse:adresse,
+        classe:classe
+      })
+  }).then(async res=>{
+      const data=await res.json();
+      if(!res.ok){alert(data.error||'Erreur lors de la création du compte.');return;}
+      alert(data.message || 'Compte créé avec succès !');
+      switchModal('modal-register','modal-login');
+  }).catch(()=>alert('Erreur réseau. Veuillez réessayer.'));
 }
 
 /* ── Animations JS supplémentaires : parallax léger au mouvement souris ── */

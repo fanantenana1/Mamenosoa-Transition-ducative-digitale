@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Education – Digiscool Admin</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Exo+2:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#b8c8e8; --navy:rgb(4,6,60); --blue:#2563eb; --green:#16a34a;
+      --red:#dc2626; --card:#fff; --text:#1a1a2e; --muted:#64748b;
+      --ds-cyan:#00c8ff; --ds-pink:#d63af9; --ds-muted:#7a9be0; --ds-text:#c8d8ff;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);font-family:'Exo 2',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+
+    /* ── NAV ── */
+    .ds-nav{position:relative;z-index:10;display:flex;align-items:center;
+      justify-content:space-between;padding:.85rem 2.5rem;
+      border-bottom:1px solid rgba(255,255,255,.326);background:var(--navy);backdrop-filter:blur(12px)}
+    .ds-logo{display:flex;align-items:center;gap:.6rem;font-family:'Orbitron',sans-serif;
+      font-size:1rem;color:#fff;text-decoration:none}
+    .ds-logo-box{width:75px;height:56px;border-radius:10px;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 0 18px #d63af955;padding-right:12px}
+    .ds-logo-box img{width:100%;height:100%;object-fit:contain}
+    .ds-nav-links{display:flex;align-items:center;gap:.5rem}
+    .nav-btn{background:#1f2937;color:#fff;border:none;border-radius:8px;
+      padding:.55rem 1.4rem;font-size:1rem;font-weight:500;cursor:pointer;
+      transition:background .2s;text-decoration:none;white-space:nowrap}
+    .nav-btn:hover{background:#374151;color:#fff}
+    .nav-btn.active{background:#2563eb}
+    .nav-btn-primary{background:var(--blue);color:#fff;border:none;border-radius:8px;
+      padding:.55rem 1.4rem;font-size:1rem;font-weight:600;cursor:pointer;
+      transition:background .2s;text-decoration:none;white-space:nowrap}
+    .nav-btn-primary:hover{background:#1d4ed8;color:#fff}
+
+    /* ── MAIN ── */
+    main{flex:1;padding:2rem 3rem}
+
+    /* breadcrumb retour */
+    .back-bar{display:none;align-items:center;gap:.5rem;margin-bottom:1rem;cursor:pointer;color:var(--text);font-weight:600}
+    .back-bar:hover{color:var(--blue)}
+    .back-bar.show{display:flex}
+
+    /* ── TOOLBAR ── */
+    .toolbar{display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:1.4rem;flex-wrap:wrap;gap:.8rem}
+    .toolbar h2{font-size:1.6rem;font-weight:800;color:var(--text)}
+    .toolbar-right{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
+    .sort-select{border:1.5px solid #cbd5e1;border-radius:8px;padding:.4rem .8rem;
+      font-size:.88rem;outline:none;background:#fff;cursor:pointer}
+    .search-box{border:1.5px solid #cbd5e1;border-radius:8px;padding:.4rem .9rem;
+      font-size:.88rem;outline:none;width:200px;transition:border-color .2s}
+    .search-box:focus{border-color:var(--blue)}
+
+    /* ── TABLE ── */
+    .table-wrap{background:var(--card);border-radius:16px;
+      box-shadow:0 4px 24px rgba(0,0,0,.08);overflow:hidden}
+    table{width:100%;border-collapse:collapse}
+    thead tr{background:#e8eef8}
+    thead th{padding:1rem 1.2rem;font-size:.82rem;font-weight:700;
+      text-transform:uppercase;letter-spacing:.08em;color:var(--blue);text-align:left}
+    tbody tr{border-top:1px solid #f1f5f9;transition:background .15s}
+    tbody tr:hover{background:#f0f6ff}
+    tbody td{padding:.9rem 1.2rem;vertical-align:middle}
+
+    /* N° */
+    .num-cell{font-size:1.6rem;font-weight:800;color:var(--text);width:60px}
+
+    /* play button */
+    .play-btn{width:60px;height:44px;border:3px solid var(--navy);border-radius:8px;
+      background:#fff;display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:all .2s;flex-shrink:0}
+    .play-btn:hover{background:var(--navy)}
+    .play-btn:hover .play-arrow{border-left-color:#fff}
+    .play-btn.no-video{border-color:#cbd5e1;cursor:default;opacity:.4}
+    .play-arrow{width:0;height:0;border-top:10px solid transparent;
+      border-bottom:10px solid transparent;border-left:16px solid var(--navy);
+      margin-left:4px}
+
+    /* titre */
+    .title-cell .main-title{font-weight:700;font-size:.95rem;color:var(--text)}
+    .title-cell .sub-title{font-size:.82rem;color:var(--muted);margin-top:.1rem}
+    .bullet{display:inline-block;margin-right:.3rem;color:var(--text)}
+
+    /* doc badge */
+    .doc-badge{display:flex;align-items:center;gap:.4rem;font-weight:600;
+      font-size:.88rem;cursor:pointer;transition:opacity .2s}
+    .doc-badge:hover{opacity:.75}
+    .doc-badge.has{color:var(--green)}
+    .doc-badge.missing{color:var(--muted);cursor:default}
+    .check-icon{width:22px;height:22px;border-radius:4px;border:2px solid currentColor;
+      display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0}
+    .check-icon.ok{background:rgba(22,163,74,.12)}
+    .check-icon.no{background:rgba(220,38,38,.08);color:var(--red)}
+
+    /* action btns */
+    .action-icon{background:none;border:none;cursor:pointer;padding:.3rem;
+      font-size:1.1rem;border-radius:6px;transition:background .15s}
+    .action-icon:hover{background:#f1f5f9}
+    .action-icon.edit{color:var(--blue)}
+    .action-icon.del{color:var(--red)}
+
+    /* FAB */
+    .fab{position:fixed;bottom:2.5rem;right:2.5rem;width:58px;height:58px;
+      background:var(--blue);color:#fff;border:none;border-radius:14px;
+      font-size:1.8rem;cursor:pointer;box-shadow:0 6px 24px rgba(37,99,235,.4);
+      display:flex;align-items:center;justify-content:center;
+      transition:transform .2s,box-shadow .2s;z-index:50}
+    .fab:hover{transform:scale(1.08);box-shadow:0 10px 32px rgba(37,99,235,.5)}
+
+    /* ── VIDEO VIEWER ── */
+    #video-view{display:none}
+    #video-view.show{display:block}
+    #list-view.hide{display:none}
+
+    .video-header{display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:1rem;flex-wrap:wrap;gap:.6rem}
+    .video-meta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+    .video-meta .vtype{font-weight:800;font-size:1rem;color:var(--text)}
+    .video-meta .vtitle{font-weight:700;font-size:1rem;color:var(--text)}
+    .video-meta .vcat{color:var(--muted);font-size:.9rem}
+    .video-header-actions{display:flex;gap:.6rem}
+
+    .video-container{background:#fff;border-radius:14px;
+      box-shadow:0 4px 24px rgba(0,0,0,.1);overflow:hidden;position:relative}
+    .video-container video{width:100%;max-height:75vh;display:block;background:#000}
+    .video-container iframe{width:100%;height:70vh;border:none}
+    .no-video-msg{padding:4rem;text-align:center;color:var(--muted);font-size:1rem}
+
+    /* ── MODAL overlay ── */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+      z-index:500;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem}
+    .modal-bg.open{display:flex}
+    .modal-box{background:#fff;border-radius:18px;padding:2rem;
+      width:min(680px,96vw);box-shadow:0 20px 60px rgba(0,0,0,.2);margin:auto}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem}
+    .modal-head h3{font-size:1.2rem;font-weight:800;color:var(--text)}
+    .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted)}
+    .form-label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin-bottom:.3rem}
+    .form-input,.form-select,.form-textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;
+      padding:.5rem .85rem;font-size:.9rem;outline:none;font-family:inherit;
+      transition:border-color .2s;background:#fff}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--blue)}
+    .form-textarea{min-height:120px;resize:vertical;line-height:1.5}
+    .form-group{margin-bottom:1rem}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .modal-actions{display:flex;justify-content:flex-end;gap:.7rem;margin-top:1.4rem}
+    .btn-cancel{background:#f1f5f9;border:none;border-radius:8px;padding:.55rem 1.2rem;
+      font-size:.9rem;cursor:pointer;color:var(--muted);font-family:inherit}
+    .btn-save{background:var(--blue);color:#fff;border:none;border-radius:8px;
+      padding:.55rem 1.5rem;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit}
+    .btn-save:hover{background:#1d4ed8}
+
+    /* tabs inside modal */
+    .tab-row{display:flex;gap:0;border:1.5px solid #e2e8f0;border-radius:10px;
+      overflow:hidden;margin-bottom:1rem}
+    .tab-btn{flex:1;padding:.5rem;font-size:.82rem;font-weight:600;border:none;
+      background:#f8fafc;color:var(--muted);cursor:pointer;font-family:inherit;
+      transition:all .2s;border-right:1px solid #e2e8f0}
+    .tab-btn:last-child{border-right:none}
+    .tab-btn.active{background:var(--blue);color:#fff}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    /* QCM builder */
+    .qcm-question{background:#f8fafc;border-radius:10px;padding:.9rem;margin-bottom:.8rem;
+      border:1px solid #e2e8f0}
+    .qcm-question-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+    .qcm-q-input{font-weight:600;font-size:.9rem;border:none;background:transparent;
+      outline:none;width:calc(100% - 30px);font-family:inherit}
+    .qcm-options{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.5rem}
+    .qcm-option-row{display:flex;align-items:center;gap:.5rem}
+    .qcm-option-row input[type=radio]{flex-shrink:0}
+    .qcm-opt-input{flex:1;border:1px solid #e2e8f0;border-radius:6px;padding:.3rem .6rem;
+      font-size:.85rem;font-family:inherit;outline:none}
+    .btn-add-qcm{font-size:.8rem;color:var(--blue);background:none;border:1px solid var(--blue);
+      border-radius:6px;padding:.25rem .7rem;cursor:pointer;font-family:inherit}
+    .btn-del-q{background:none;border:none;color:var(--red);cursor:pointer;font-size:.95rem}
+
+    /* doc viewer modal */
+    #doc-modal .modal-box{width:min(860px,96vw)}
+    .doc-viewer-content{min-height:300px;max-height:60vh;overflow-y:auto;
+      border:1.5px solid #e2e8f0;border-radius:10px;padding:1.2rem;
+      background:#fafbff;font-size:.93rem;line-height:1.7;white-space:pre-wrap}
+    .doc-viewer-content iframe{width:100%;height:55vh;border:none}
+    .qcm-viewer-item{background:#f8fafc;border-radius:10px;padding:.9rem;margin-bottom:.8rem}
+    .qcm-viewer-item h4{font-size:.9rem;font-weight:700;margin-bottom:.6rem;color:var(--text)}
+    .qcm-viewer-item label{display:flex;align-items:center;gap:.5rem;
+      font-size:.88rem;margin-bottom:.35rem;cursor:pointer}
+
+    /* delete confirm mini modal */
+    #del-confirm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);
+      z-index:600;align-items:center;justify-content:center}
+    #del-confirm.open{display:flex}
+    #del-confirm .box{background:#fff;border-radius:14px;padding:2rem;
+      width:min(380px,90vw);text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+    #del-confirm h3{font-size:1.1rem;font-weight:800;margin-bottom:.6rem;color:var(--text)}
+    #del-confirm p{font-size:.9rem;color:var(--muted);margin-bottom:1.2rem}
+    #del-confirm .actions{display:flex;gap:.7rem;justify-content:center}
+    #del-confirm .btn-del-confirm{background:var(--red);color:#fff;border:none;
+      border-radius:8px;padding:.55rem 1.3rem;font-weight:700;cursor:pointer;font-family:inherit}
+    #del-confirm .btn-cancel{background:#f1f5f9;border:none;border-radius:8px;
+      padding:.55rem 1.3rem;cursor:pointer;font-family:inherit;color:var(--muted)}
+
+    /* toast */
+    #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(10px);
+      z-index:9999;background:#1e293b;color:#fff;padding:.7rem 1.5rem;border-radius:10px;
+      font-size:.88rem;box-shadow:0 4px 20px rgba(0,0,0,.25);
+      opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    #toast.ok{border-left:4px solid var(--green)}
+    #toast.err{border-left:4px solid var(--red)}
+
+    /* loading spinner */
+    .spinner{display:inline-block;width:20px;height:20px;border:3px solid #e2e8f0;
+      border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    @media(max-width:768px){
+      main{padding:1rem}
+      .form-row{grid-template-columns:1fr}
+      .num-cell{display:none}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="ds-nav">
+  <a href="/dashboard_admin" class="ds-logo">
+    <div class="ds-logo-box">
+      <img src="{{ url_for('static', filename='image/Logo.png') }}" alt="Digiscool Logo"/>
+    </div>
+  </a>
+  <div class="ds-nav-links">
+    <a href="/dashboard_admin" class="nav-btn">Accueil</a>
+    <a href="/dashboard_admin" class="nav-btn">Utilisateurs</a>
+    <a href="/admin/education" class="nav-btn active">Education</a>
+    <a href="/admin/test" class="nav-btn">Test</a>
+    <a href="/admin/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}" title="Notifications">
+      <span class="notif-icon">🔔</span>
+      <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
+    </a>    <a href="/api/logout"      class="nav-btn-primary">Déconnexion</a>
+  </div>
+</nav>
+
+<main>
+  <!-- BACK BAR (visible en mode vidéo) -->
+  <div class="back-bar" id="back-bar" onclick="showList()">
+    ← Retour
+  </div>
+
+  <!-- ══ LIST VIEW ══ -->
+  <div id="list-view">
+    <div class="toolbar">
+      <h2>Types</h2>
+      <div class="toolbar-right">
+        <select class="sort-select" id="sort-select" onchange="loadCours()">
+          <option value="id">Trier par N°</option>
+          <option value="titre">Trier par Titre</option>
+          <option value="matiere">Trier par Matière</option>
+          <option value="created_at">Trier par Date</option>
+        </select>
+        <span style="color:var(--muted);font-size:.9rem">🔍</span>
+        <input class="search-box" id="search-box" type="text"
+               placeholder="Recherche …." oninput="loadCours()"/>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="num-cell">N°</th>
+            <th>Vidéos</th>
+            <th>Titre et description</th>
+            <th>Document-Cours</th>
+            <th>Document-Exercice</th>
+            <th style="text-align:right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="cours-tbody">
+          <tr><td colspan="6" style="text-align:center;padding:2rem">
+            <span class="spinner"></span>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ VIDEO VIEW ══ -->
+  <div id="video-view">
+    <div class="video-header">
+      <div class="video-meta">
+        <span class="vtype" id="vv-type">VIDEO</span>
+        <span>:</span>
+        <span class="vtitle" id="vv-title">—</span>
+        <span>•</span>
+        <span class="vcat" id="vv-cat">—</span>
+      </div>
+      <div class="video-header-actions">
+        <button class="action-icon edit" title="Modifier" onclick="openEdit(currentCours)">
+          <i class="fa-regular fa-pen-to-square fa-lg"></i>
+        </button>
+        <button class="action-icon del" title="Supprimer" onclick="confirmDelete(currentCours.id)">
+          <i class="fa-solid fa-trash fa-lg"></i>
+        </button>
+      </div>
+    </div>
+    <div class="video-container" id="video-container">
+      <div class="no-video-msg">Aucune vidéo disponible pour ce cours.</div>
+    </div>
+  </div>
+</main>
+
+<!-- FAB -->
+<button class="fab" title="Ajouter un cours" onclick="openAdd()">＋</button>
+
+<!-- ── FOOTER ── -->
+{% include "footer.html" %}
+
+<!-- ══ MODAL : AJOUTER / MODIFIER COURS ══ -->
+<div id="cours-modal" class="modal-bg" onclick="if(event.target===this)closeCourseModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="cm-title">Nouveau cours</h3>
+      <button class="modal-close" onclick="closeCourseModal()">✕</button>
+    </div>
+
+    <!-- Infos générales -->
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Titre *</label>
+        <input id="cm-titre" class="form-input" placeholder="ex: MOLECULE"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Matière / Catégorie *</label>
+        <input id="cm-matiere" class="form-input" placeholder="ex: Reaction physique"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea id="cm-desc" class="form-textarea" rows="2" placeholder="Courte description…"></textarea>
+    </div>
+
+    <!-- Vidéo -->
+    <div class="form-group" style="background:#f8fafc;border-radius:10px;padding:1rem">
+      <label class="form-label" style="font-size:.85rem;color:var(--blue)">📹 VIDÉO</label>
+      <div class="form-row">
+        <div>
+          <label class="form-label">Fichier vidéo (upload)</label>
+          <input id="cm-video-file" type="file" class="form-input" accept="video/*"/>
+          <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">mp4, webm, ogg, mov, avi — max 500 MB</div>
+        </div>
+        <div>
+          <label class="form-label">— ou URL externe (YouTube/Vimeo…)</label>
+          <input id="cm-video-url" class="form-input" placeholder="https://youtube.com/embed/…"/>
+        </div>
+      </div>
+      <div id="cm-video-current" style="display:none;margin-top:.5rem;font-size:.8rem;color:var(--muted)"></div>
+    </div>
+
+    <!-- Document Cours -->
+    <div style="background:#f0fdf4;border-radius:10px;padding:1rem;margin-bottom:.8rem">
+      <label class="form-label" style="color:var(--green)">📄 DOCUMENT-COURS</label>
+      <div class="tab-row">
+        <button class="tab-btn active" data-tab="cours-fichier" onclick="switchTab(this,'cours')">Fichier</button>
+        <button class="tab-btn"        data-tab="cours-texte"   onclick="switchTab(this,'cours')">Texte / Note</button>
+        <button class="tab-btn"        data-tab="cours-qcm"     onclick="switchTab(this,'cours')">QCM</button>
+      </div>
+      <div id="cours-fichier" class="tab-content active">
+        <input id="cm-cours-file" type="file" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.png,.jpg"/>
+        <div id="cm-cours-current" style="display:none;margin-top:.4rem;font-size:.8rem;color:var(--muted)"></div>
+      </div>
+      <div id="cours-texte" class="tab-content">
+        <textarea id="cm-cours-texte" class="form-textarea" placeholder="Écrivez le cours ici…"></textarea>
+      </div>
+      <div id="cours-qcm" class="tab-content">
+        <div id="qcm-cours-list"></div>
+        <button class="btn-add-qcm" onclick="addQcmQuestion('cours')">+ Ajouter une question</button>
+      </div>
+    </div>
+
+    <!-- Document Exercice -->
+    <div style="background:#fef3f2;border-radius:10px;padding:1rem;margin-bottom:.8rem">
+      <label class="form-label" style="color:var(--red)">📝 DOCUMENT-EXERCICE</label>
+      <div class="tab-row">
+        <button class="tab-btn active" data-tab="exo-fichier" onclick="switchTab(this,'exo')">Fichier</button>
+        <button class="tab-btn"        data-tab="exo-texte"   onclick="switchTab(this,'exo')">Texte / Note</button>
+        <button class="tab-btn"        data-tab="exo-qcm"     onclick="switchTab(this,'exo')">QCM</button>
+      </div>
+      <div id="exo-fichier" class="tab-content active">
+        <input id="cm-exo-file" type="file" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.png,.jpg"/>
+        <div id="cm-exo-current" style="display:none;margin-top:.4rem;font-size:.8rem;color:var(--muted)"></div>
+      </div>
+      <div id="exo-texte" class="tab-content">
+        <textarea id="cm-exo-texte" class="form-textarea" placeholder="Écrivez l'exercice ici…"></textarea>
+      </div>
+      <div id="exo-qcm" class="tab-content">
+        <div id="qcm-exo-list"></div>
+        <button class="btn-add-qcm" onclick="addQcmQuestion('exo')">+ Ajouter une question</button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCourseModal()">Annuler</button>
+      <button class="btn-save" onclick="saveCours()">
+        <span id="save-spinner" style="display:none" class="spinner"></span>
+        <span id="save-label">Enregistrer</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL : DOCUMENT VIEWER ══ -->
+<div id="doc-modal" class="modal-bg" onclick="if(event.target===this)closeDocModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="dm-title">Document</h3>
+      <button class="modal-close" onclick="closeDocModal()">✕</button>
+    </div>
+    <div id="dm-content" class="doc-viewer-content">Chargement…</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDocModal()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DELETE CONFIRM ══ -->
+<div id="del-confirm">
+  <div class="box">
+    <h3>Supprimer ce cours ?</h3>
+    <p>Cette action est irréversible. La vidéo et les documents associés seront supprimés.</p>
+    <div class="actions">
+      <button class="btn-cancel" onclick="closeDelConfirm()">Annuler</button>
+      <button class="btn-del-confirm" onclick="doDelete()">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+let allCours    = [];
+let currentCours = null;
+let editingId   = null;
+let deletingId  = null;
+let coursTabs   = { cours: 'fichier', exo: 'fichier' };
+let qcmData     = { cours: [], exo: [] };
+
+/* ═══════════════════════════════════════════════
+   LOAD
+═══════════════════════════════════════════════ */
+async function loadCours() {
+  const q    = document.getElementById('search-box').value.trim();
+  const sort = document.getElementById('sort-select').value;
+  try {
+    const params = new URLSearchParams({ sort });
+    if (q) params.set('q', q);
+    const r = await fetch('/api/cours?' + params);
+    if (!r.ok) throw new Error('Erreur serveur');
+    allCours = await r.json();
+    renderTable();
+  } catch(e) { toast(e.message,'err'); }
+}
+
+/* ═══════════════════════════════════════════════
+   RENDER TABLE
+═══════════════════════════════════════════════ */
+function renderTable() {
+  const tbody = document.getElementById('cours-tbody');
+  if (!allCours.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2.5rem;color:var(--muted)">
+      Aucun cours. Cliquez sur ＋ pour ajouter.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allCours.map((c, i) => {
+    const hasCours = c.has_cours == 1;
+    const hasExo   = c.has_exercice == 1;
+    const hasVideo = !!(c.video_filename || c.video_url);
+
+    const docCoursHtml = hasCours
+      ? `<div class="doc-badge has" onclick="openDoc(${c.id},'cours')">
+           <div class="check-icon ok">✓</div> Voir
+         </div>`
+      : `<div class="doc-badge missing">
+           <div class="check-icon no">✕</div> Vide
+         </div>`;
+
+    const docExoHtml = hasExo
+      ? `<div class="doc-badge has" onclick="openDoc(${c.id},'exercice')">
+           <div class="check-icon ok">✓</div> Voir
+         </div>`
+      : `<div class="doc-badge missing">
+           <div class="check-icon no">✕</div> Vide
+         </div>`;
+
+    return `<tr>
+      <td class="num-cell">${i+1}</td>
+      <td>
+        <div class="play-btn ${hasVideo ? '' : 'no-video'}"
+             onclick="${hasVideo ? `playVideo(${c.id})` : ''}">
+          <div class="play-arrow"></div>
+        </div>
+      </td>
+      <td class="title-cell">
+        <div class="main-title"><span class="bullet">•</span>${escHtml(c.titre)}</div>
+        <div class="sub-title"><span class="bullet">•</span>${escHtml(c.matiere)}</div>
+      </td>
+      <td>${docCoursHtml}</td>
+      <td>${docExoHtml}</td>
+      <td style="text-align:right">
+        <button class="action-icon edit" title="Modifier" onclick="openEdit(allCours.find(x=>x.id===${c.id}))">
+          <i class="fa-regular fa-pen-to-square fa-lg"></i>
+        </button>
+        <button class="action-icon del" title="Supprimer" onclick="confirmDelete(${c.id})">
+          <i class="fa-solid fa-trash fa-lg"></i>
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════
+   PLAY VIDEO
+═══════════════════════════════════════════════ */
+function playVideo(id) {
+  const c = allCours.find(x => x.id === id);
+  if (!c) return;
+  currentCours = c;
+
+  document.getElementById('vv-type').textContent  = 'VIDEO';
+  document.getElementById('vv-title').textContent = c.titre;
+  document.getElementById('vv-cat').textContent   = c.matiere;
+
+  const container = document.getElementById('video-container');
+  if (c.video_url) {
+    // URL externe → iframe
+    let src = c.video_url;
+    // convertir lien YouTube normal en embed
+    src = src.replace('watch?v=','embed/').replace('youtu.be/','youtube.com/embed/');
+    container.innerHTML = `<iframe src="${escHtml(src)}" allowfullscreen></iframe>`;
+  } else if (c.video_filename) {
+    container.innerHTML = `<video controls autoplay>
+      <source src="/uploads/videos/${escHtml(c.video_filename)}"/>
+      Votre navigateur ne supporte pas la lecture vidéo.
+    </video>`;
+  } else {
+    container.innerHTML = `<div class="no-video-msg">Aucune vidéo disponible.</div>`;
+  }
+
+  document.getElementById('list-view').classList.add('hide');
+  document.getElementById('video-view').classList.add('show');
+  document.getElementById('back-bar').classList.add('show');
+  document.querySelector('.fab').style.display = 'none';
+}
+
+function showList() {
+  document.getElementById('list-view').classList.remove('hide');
+  document.getElementById('video-view').classList.remove('show');
+  document.getElementById('back-bar').classList.remove('show');
+  document.querySelector('.fab').style.display = 'flex';
+  // stopper la video/iframe
+  const container = document.getElementById('video-container');
+  container.innerHTML = '';
+  currentCours = null;
+}
+
+/* ═══════════════════════════════════════════════
+   DOC VIEWER MODAL
+═══════════════════════════════════════════════ */
+async function openDoc(id, type) {
+  const c = allCours.find(x => x.id === id);
+  if (!c) return;
+  const isExo  = type === 'exercice';
+  const prefix = isExo ? 'exercice' : 'cours';
+  const label  = isExo ? 'Document-Exercice' : 'Document-Cours';
+
+  document.getElementById('dm-title').textContent = `${c.titre} — ${label}`;
+  const content = document.getElementById('dm-content');
+  content.innerHTML = '<span class="spinner"></span>';
+  document.getElementById('doc-modal').classList.add('open');
+
+  const docType    = isExo ? c.exercice_type    : c.cours_type;
+  const docFichier = isExo ? c.exercice_fichier : c.cours_fichier;
+  const docTexte   = isExo ? c.exercice_texte   : c.cours_texte;
+  const docQcm     = isExo ? c.exercice_qcm     : c.cours_qcm;
+
+  if (docType === 'fichier' && docFichier) {
+    const url = `/uploads/${prefix === 'cours' ? 'cours' : 'exercices'}/${encodeURIComponent(docFichier)}`;
+    const ext = docFichier.split('.').pop().toLowerCase();
+    if (ext === 'pdf') {
+      content.innerHTML = `<iframe src="${url}" style="width:100%;height:58vh;border:none;border-radius:6px"></iframe>`;
+    } else if (['png','jpg','jpeg'].includes(ext)) {
+      content.innerHTML = `<img src="${url}" style="max-width:100%;border-radius:8px"/>`;
+    } else {
+      content.innerHTML = `<p>Fichier : <a href="${url}" target="_blank" style="color:var(--blue)">${escHtml(docFichier)}</a></p>`;
+    }
+  } else if (docType === 'texte' && docTexte) {
+    content.innerHTML = `<pre style="white-space:pre-wrap;font-family:inherit">${escHtml(docTexte)}</pre>`;
+  } else if (docType === 'qcm' && docQcm) {
+    let qs = [];
+    try { qs = JSON.parse(docQcm); } catch(e) { qs = []; }
+    if (qs.length) {
+      content.innerHTML = qs.map((q,i) => `
+        <div class="qcm-viewer-item">
+          <h4>${i+1}. ${escHtml(q.question||'')}</h4>
+          ${(q.options||[]).map((o,j) => `
+            <label>
+              <input type="radio" name="q${id}_${i}" value="${j}"/>
+              ${escHtml(o)}
+            </label>`).join('')}
+        </div>`).join('');
+    } else {
+      content.textContent = 'QCM vide.';
+    }
+  } else {
+    content.textContent = 'Aucun contenu disponible.';
+  }
+}
+
+function closeDocModal() {
+  document.getElementById('doc-modal').classList.remove('open');
+}
+
+/* ═══════════════════════════════════════════════
+   MODAL COURS : OPEN / CLOSE
+═══════════════════════════════════════════════ */
+function openAdd() {
+  editingId = null;
+  document.getElementById('cm-title').textContent = 'Nouveau cours';
+  clearCourseForm();
+  document.getElementById('cours-modal').classList.add('open');
+}
+
+function openEdit(c) {
+  if (!c) return;
+  editingId = c.id;
+  document.getElementById('cm-title').textContent = 'Modifier le cours';
+  clearCourseForm();
+
+  document.getElementById('cm-titre').value   = c.titre   || '';
+  document.getElementById('cm-matiere').value = c.matiere || '';
+  document.getElementById('cm-desc').value    = c.description || '';
+  document.getElementById('cm-video-url').value = c.video_url || '';
+
+  if (c.video_filename) {
+    const el = document.getElementById('cm-video-current');
+    el.style.display = 'block';
+    el.textContent = `Vidéo actuelle : ${c.video_filename}`;
+  }
+  if (c.cours_fichier) {
+    const el = document.getElementById('cm-cours-current');
+    el.style.display = 'block';
+    el.textContent = `Cours actuel : ${c.cours_fichier}`;
+  }
+  if (c.exercice_fichier) {
+    const el = document.getElementById('cm-exo-current');
+    el.style.display = 'block';
+    el.textContent = `Exercice actuel : ${c.exercice_fichier}`;
+  }
+
+  // restore tabs
+  const ct = c.cours_type || 'fichier';
+  const et = c.exercice_type || 'fichier';
+  activateTabById('cours', ct);
+  activateTabById('exo', et);
+
+  document.getElementById('cm-cours-texte').value = c.cours_texte || '';
+  document.getElementById('cm-exo-texte').value   = c.exercice_texte || '';
+
+  // QCM
+  try { qcmData.cours = JSON.parse(c.cours_qcm || '[]'); }    catch(e){ qcmData.cours=[]; }
+  try { qcmData.exo   = JSON.parse(c.exercice_qcm || '[]'); } catch(e){ qcmData.exo=[]; }
+  renderQcm('cours');
+  renderQcm('exo');
+
+  document.getElementById('cours-modal').classList.add('open');
+}
+
+function closeCourseModal() {
+  document.getElementById('cours-modal').classList.remove('open');
+}
+
+function clearCourseForm() {
+  ['cm-titre','cm-matiere','cm-desc','cm-video-url','cm-cours-texte','cm-exo-texte'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  ['cm-video-file','cm-cours-file','cm-exo-file'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  ['cm-video-current','cm-cours-current','cm-exo-current'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  qcmData = { cours: [], exo: [] };
+  renderQcm('cours');
+  renderQcm('exo');
+  activateTabById('cours','fichier');
+  activateTabById('exo','fichier');
+}
+
+/* ═══════════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════════ */
+function switchTab(btn, group) {
+  const tabId = btn.dataset.tab;
+  // find sibling tabs
+  const tabRow = btn.closest('.tab-row');
+  tabRow.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // hide all content siblings
+  const parent = tabRow.parentElement;
+  parent.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  parent.querySelector('#' + tabId).classList.add('active');
+
+  coursTabs[group] = tabId.includes('fichier') ? 'fichier' : tabId.includes('texte') ? 'texte' : 'qcm';
+}
+
+function activateTabById(group, type) {
+  const tabId = (group === 'cours' ? 'cours-' : 'exo-') + type;
+  const btn   = document.querySelector(`[data-tab="${tabId}"]`);
+  if (btn) switchTab(btn, group);
+}
+
+/* ═══════════════════════════════════════════════
+   QCM BUILDER
+═══════════════════════════════════════════════ */
+function addQcmQuestion(group) {
+  qcmData[group].push({ question: '', options: ['','','',''], correct: 0 });
+  renderQcm(group);
+}
+
+function renderQcm(group) {
+  const listId = `qcm-${group}-list`;
+  const el = document.getElementById(listId);
+  if (!el) return;
+  el.innerHTML = qcmData[group].map((q, qi) => `
+    <div class="qcm-question">
+      <div class="qcm-question-head">
+        <input class="qcm-q-input" value="${escHtml(q.question)}"
+               placeholder="Question ${qi+1}…"
+               oninput="qcmData['${group}'][${qi}].question=this.value"/>
+        <button class="btn-del-q" onclick="delQcmQ('${group}',${qi})">✕</button>
+      </div>
+      <div class="qcm-options">
+        ${q.options.map((o,oi) => `
+          <div class="qcm-option-row">
+            <input type="radio" name="qcm-${group}-${qi}" ${q.correct===oi?'checked':''}
+                   onchange="qcmData['${group}'][${qi}].correct=${oi}"/>
+            <input class="qcm-opt-input" value="${escHtml(o)}" placeholder="Option ${oi+1}"
+                   oninput="qcmData['${group}'][${qi}].options[${oi}]=this.value"/>
+          </div>`).join('')}
+      </div>
+      <button class="btn-add-qcm" onclick="addOption('${group}',${qi})">+ Option</button>
+    </div>`).join('');
+}
+
+function delQcmQ(group, qi) {
+  qcmData[group].splice(qi, 1);
+  renderQcm(group);
+}
+
+function addOption(group, qi) {
+  qcmData[group][qi].options.push('');
+  renderQcm(group);
+}
+
+/* ═══════════════════════════════════════════════
+   SAVE COURS
+═══════════════════════════════════════════════ */
+async function saveCours() {
+  const titre   = document.getElementById('cm-titre').value.trim();
+  const matiere = document.getElementById('cm-matiere').value.trim();
+  if (!titre) { toast('Le titre est obligatoire.','err'); return; }
+
+  document.getElementById('save-spinner').style.display = 'inline-block';
+  document.getElementById('save-label').textContent = 'Enregistrement…';
+
+  const fd = new FormData();
+  fd.append('titre',       titre);
+  fd.append('matiere',     matiere);
+  fd.append('description', document.getElementById('cm-desc').value.trim());
+  fd.append('video_url',   document.getElementById('cm-video-url').value.trim());
+
+  // video file
+  const vf = document.getElementById('cm-video-file').files[0];
+  if (vf) fd.append('video_file', vf);
+
+  // cours
+  const ct = coursTabs.cours || 'fichier';
+  fd.append('cours_type',  ct);
+  if (ct === 'fichier') {
+    const cf = document.getElementById('cm-cours-file').files[0];
+    if (cf) fd.append('cours_fichier', cf);
+  } else if (ct === 'texte') {
+    fd.append('cours_texte', document.getElementById('cm-cours-texte').value);
+  } else if (ct === 'qcm') {
+    fd.append('cours_qcm', JSON.stringify(qcmData.cours));
+  }
+
+  // exercice
+  const et = coursTabs.exo || 'fichier';
+  fd.append('exercice_type', et);
+  if (et === 'fichier') {
+    const ef = document.getElementById('cm-exo-file').files[0];
+    if (ef) fd.append('exercice_fichier', ef);
+  } else if (et === 'texte') {
+    fd.append('exercice_texte', document.getElementById('cm-exo-texte').value);
+  } else if (et === 'qcm') {
+    fd.append('exercice_qcm', JSON.stringify(qcmData.exo));
+  }
+
+  try {
+    const method = editingId ? 'PUT' : 'POST';
+    const url    = editingId ? `/api/cours/${editingId}` : '/api/cours';
+    const res    = await fetch(url, { method, body: fd });
+    const data   = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur serveur');
+
+    if (editingId) {
+      const idx = allCours.findIndex(x => x.id === editingId);
+      if (idx !== -1) allCours[idx] = data;
+    } else {
+      allCours.push(data);
+    }
+    closeCourseModal();
+    renderTable();
+    toast(editingId ? '✏️ Cours mis à jour !' : '✅ Cours créé !','ok');
+    // si on était en vue vidéo, mettre à jour
+    if (currentCours && currentCours.id === editingId) currentCours = data;
+  } catch(e) {
+    toast(e.message,'err');
+  } finally {
+    document.getElementById('save-spinner').style.display = 'none';
+    document.getElementById('save-label').textContent = 'Enregistrer';
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   DELETE
+═══════════════════════════════════════════════ */
+function confirmDelete(id) {
+  deletingId = id;
+  document.getElementById('del-confirm').classList.add('open');
+}
+function closeDelConfirm() {
+  document.getElementById('del-confirm').classList.remove('open');
+  deletingId = null;
+}
+async function doDelete() {
+  if (!deletingId) return;
+  try {
+    const res = await fetch(`/api/cours/${deletingId}`, { method:'DELETE' });
+    if (!res.ok) { const d=await res.json(); throw new Error(d.error||'Erreur'); }
+    allCours = allCours.filter(x => x.id !== deletingId);
+    renderTable();
+    closeDelConfirm();
+    if (currentCours && currentCours.id === deletingId) showList();
+    toast('🗑️ Cours supprimé.','ok');
+  } catch(e) { toast(e.message,'err'); }
+}
+
+/* ═══════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════ */
+let _tt;
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(_tt);
+  _tt = setTimeout(() => el.className = '', 3200);
+}
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* INIT */
+document.addEventListener('DOMContentLoaded', loadCours);
+</script>
+</body>
+</html>
