@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Admin – Digiscool</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg-main:#b8c8e8; --card-bg:#fff; --text-dark:#1a1a2e; --text-muted:#4b5563;
+      --icon-blue:#2563eb; --dot-color:#93b4db;
+      --ds-cyan:#00c8ff; --ds-pink:#d63af9; --ds-muted:#7a9be0; --ds-text:#c8d8ff;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg-main);font-family:'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+
+    /* ── NAV ── */
+    .ds-nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;
+      padding:.85rem 2.5rem;border-bottom:1px solid rgba(255,255,255,.326);
+      background:rgb(4,6,60);backdrop-filter:blur(12px)}
+    .ds-logo{display:flex;align-items:center;gap:.6rem;font-family:'Orbitron',sans-serif;
+      font-size:1rem;color:#fff;text-decoration:none}
+    .ds-logo-box{width:75px;height:56px;border-radius:10px;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 0 18px #d63af955;padding-right:12px}
+    .ds-logo-box img{width:100%;height:100%;object-fit:contain}
+    .ds-nav-links{display:flex;align-items:center;gap:.5rem}
+    .nav-btn{background:#1f2937;color:#fff;border:none;border-radius:8px;
+      padding:.55rem 1.4rem;font-size:1rem;font-weight:500;cursor:pointer;
+      transition:background .2s;text-decoration:none;white-space:nowrap}
+    .nav-btn:hover{background:#374151;color:#fff}
+    .nav-btn.active{background:#2563eb;color:#fff}
+    .nav-btn-primary{background:#2563eb;color:#fff;border:none;border-radius:8px;
+      padding:.55rem 1.4rem;font-size:1rem;font-weight:600;cursor:pointer;
+      transition:background .2s;text-decoration:none;white-space:nowrap}
+    .nav-btn-primary:hover{background:#1d4ed8;color:#fff}
+
+    /* ── SECTION SWITCH ── */
+    .page-section{display:none}
+    .page-section.active{display:block}
+
+    /* ── HERO ── */
+    .hero-section{position:relative;padding:3.5rem 4rem 1.5rem;overflow:hidden}
+    .hero-section h1{font-size:2.5rem;font-weight:400;color:var(--text-dark);line-height:1.2;margin-bottom:.6rem}
+    .hero-section h1 strong{font-weight:800}
+    .hero-section p{color:var(--text-dark);font-size:1.05rem;max-width:520px;line-height:1.5;opacity:.85}
+    .dot-cluster{position:absolute;top:2.5rem;right:4rem;width:100px;height:80px}
+    .dot-cluster svg circle{fill:var(--dot-color)}
+
+    /* ── DASHBOARD CARDS ── */
+    .cards-section{padding:2rem 4rem 3rem}
+    .card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+    .dash-card{background:var(--card-bg);border-radius:18px;padding:2rem 1.5rem;
+      box-shadow:0 4px 18px rgba(0,0,0,.07);display:flex;flex-direction:column;
+      align-items:center;text-align:center;cursor:pointer;
+      transition:transform .2s,box-shadow .2s;border:2px solid transparent;
+      animation:fadeInUp .5s ease both}
+    .dash-card:hover{transform:translateY(-4px);box-shadow:0 10px 32px rgba(37,99,235,.12);border-color:#dbeafe}
+    .dash-card:nth-child(1){animation-delay:.05s}.dash-card:nth-child(2){animation-delay:.12s}
+    .dash-card:nth-child(3){animation-delay:.19s}.dash-card:nth-child(4){animation-delay:.26s}
+    .dash-card:nth-child(5){animation-delay:.33s}.dash-card:nth-child(6){animation-delay:.40s}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+    .card-icon{width:56px;height:56px;margin-bottom:1rem;color:var(--icon-blue)}
+    .dash-card h3{font-size:1.08rem;font-weight:700;color:var(--text-dark);margin-bottom:.4rem}
+    .dash-card p{font-size:.88rem;color:var(--text-muted);line-height:1.4}
+
+    /* ── USERS SECTION ── */
+    .users-section{padding:2rem 3rem 3rem;flex:1}
+    .users-header{display:flex;align-items:flex-start;justify-content:space-between;
+      margin-bottom:1.8rem;flex-wrap:wrap;gap:1rem}
+    .users-header h2{font-size:1.9rem;font-weight:800;color:var(--text-dark);margin-bottom:.2rem}
+    .users-header p{font-size:.92rem;color:var(--text-muted)}
+    .btn-add-user{background:#16a34a;color:#fff;border:none;border-radius:10px;
+      padding:.65rem 1.4rem;font-size:.95rem;font-weight:600;cursor:pointer;
+      display:flex;align-items:center;gap:.5rem;transition:background .2s;white-space:nowrap}
+    .btn-add-user:hover{background:#15803d}
+
+    /* stat cards */
+    .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+    .stat-card{background:#fff;border-radius:14px;padding:1.1rem 1.4rem;
+      display:flex;align-items:center;justify-content:space-between;
+      box-shadow:0 2px 10px rgba(0,0,0,.06)}
+    .stat-label{font-size:.8rem;color:var(--text-muted);margin-bottom:.2rem}
+    .stat-val{font-size:1.8rem;font-weight:800;color:var(--text-dark)}
+    .stat-icon{font-size:1.8rem;opacity:.55}
+    .stat-card.green{border-left:4px solid #16a34a}.stat-card.green .stat-val{color:#16a34a}
+    .stat-card.yellow{border-left:4px solid #d97706}.stat-card.yellow .stat-val{color:#d97706}
+    .stat-card.red{border-left:4px solid #dc2626}.stat-card.red .stat-val{color:#dc2626}
+
+    /* table wrapper */
+    .table-wrapper{background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.07);overflow:hidden}
+    .table-toolbar{padding:1rem 1.4rem;display:flex;align-items:center;
+      justify-content:space-between;border-bottom:1px solid #f1f5f9;flex-wrap:wrap;gap:.6rem}
+    .table-toolbar h3{font-size:1rem;font-weight:700;color:var(--text-dark)}
+    .search-input{border:1.5px solid #e2e8f0;border-radius:8px;padding:.4rem .9rem;
+      font-size:.88rem;outline:none;transition:border-color .2s;width:220px}
+    .search-input:focus{border-color:#2563eb}
+
+    /* filter tabs */
+    .filter-tabs{display:flex;gap:.4rem;flex-wrap:wrap;padding:.6rem 1.4rem;
+      border-bottom:1px solid #f1f5f9}
+    .ftab{background:#f1f5f9;color:#64748b;border:none;border-radius:20px;
+      padding:.3rem .9rem;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .ftab:hover{background:#e2e8f0}
+    .ftab.active{background:#2563eb;color:#fff}
+    .ftab.green.active{background:#16a34a}
+    .ftab.yellow.active{background:#d97706}
+    .ftab.red.active{background:#dc2626}
+
+    table{width:100%;border-collapse:collapse}
+    thead th{background:#f8fafc;padding:.8rem 1rem;font-size:.75rem;font-weight:700;
+      text-transform:uppercase;letter-spacing:.06em;color:#64748b;text-align:left;white-space:nowrap}
+    tbody tr{border-top:1px solid #f1f5f9;transition:background .15s}
+    tbody tr:hover{background:#f8faff}
+    tbody td{padding:.75rem 1rem;font-size:.88rem;color:var(--text-dark);vertical-align:middle}
+
+    .user-cell{display:flex;align-items:center;gap:.7rem}
+    .user-avatar{width:38px;height:38px;border-radius:50%;background:#e2e8f0;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:700;font-size:.9rem;color:#2563eb;flex-shrink:0;overflow:hidden}
+    .user-avatar img{width:100%;height:100%;object-fit:cover}
+    .user-name{font-weight:600;font-size:.9rem}
+    .user-id{font-size:.75rem;color:#94a3b8}
+
+    .badge{display:inline-block;padding:.25rem .7rem;border-radius:20px;font-size:.75rem;font-weight:600;white-space:nowrap}
+    .badge-admin{background:#ede9fe;color:#7c3aed}
+    .badge-user{background:#dbeafe;color:#1d4ed8}
+    .badge-approved{background:#dcfce7;color:#16a34a}
+    .badge-pending{background:#fef9c3;color:#92400e}
+    .badge-rejected{background:#fee2e2;color:#dc2626}
+
+    .actions-cell{display:flex;align-items:center;gap:.25rem;flex-wrap:nowrap}
+    .action-btn{background:none;border:none;cursor:pointer;font-size:1.05rem;
+      padding:.28rem .32rem;border-radius:6px;transition:background .15s;line-height:1}
+    .action-btn:hover{background:#f1f5f9}
+    .action-btn:disabled{opacity:.25;cursor:not-allowed}
+
+    /* toast */
+    #toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;
+      background:#1e293b;color:#fff;padding:.7rem 1.3rem;border-radius:10px;
+      font-size:.88rem;box-shadow:0 4px 20px rgba(0,0,0,.25);
+      opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
+    #toast.show{opacity:1;transform:translateY(0)}
+    #toast.ok{border-left:4px solid #16a34a}
+    #toast.err{border-left:4px solid #dc2626}
+
+    /* ── MODAL ── */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);
+      z-index:200;align-items:center;justify-content:center}
+    .modal-bg.open{display:flex}
+    .modal-box{background:#fff;border-radius:18px;padding:2rem;
+      width:min(540px,95vw);max-height:90vh;overflow-y:auto;
+      box-shadow:0 20px 60px rgba(0,0,0,.2)}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem}
+    .modal-head h3{font-size:1.2rem;font-weight:800;color:#1a1a2e}
+    .modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#64748b}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+    .form-grid .full{grid-column:1/-1}
+    .form-label{font-size:.8rem;font-weight:600;color:#64748b;display:block;margin-bottom:.3rem}
+    .form-input,.form-select{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;
+      padding:.5rem .8rem;font-size:.88rem;outline:none;transition:border-color .2s}
+    .form-input:focus,.form-select:focus{border-color:#2563eb}
+    .modal-actions{display:flex;justify-content:flex-end;gap:.7rem;margin-top:1.4rem}
+    .btn-cancel{background:#f1f5f9;border:none;border-radius:8px;padding:.55rem 1.2rem;
+      font-size:.9rem;cursor:pointer;color:#64748b}
+    .btn-save{background:#2563eb;color:#fff;border:none;border-radius:8px;
+      padding:.55rem 1.4rem;font-size:.9rem;font-weight:700;cursor:pointer}
+    .btn-save:hover{background:#1d4ed8}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px){
+      .card-grid{grid-template-columns:repeat(2,1fr)}
+      .stat-cards{grid-template-columns:repeat(2,1fr)}
+      .hero-section,.cards-section{padding-left:1.5rem;padding-right:1.5rem}
+      .users-section{padding:1.5rem}
+    }
+    @media(max-width:600px){
+      .card-grid{grid-template-columns:1fr}
+      .stat-cards{grid-template-columns:1fr 1fr}
+      .hero-section{padding:2rem 1rem 1rem}
+      .cards-section{padding:1rem}
+      .nav-btn,.nav-btn-primary{padding:.4rem .8rem;font-size:.82rem}
+      .hero-section h1{font-size:1.7rem}
+      .table-wrapper{overflow-x:auto}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="ds-nav">
+  <a href="/" class="ds-logo">
+    <div class="ds-logo-box">
+      <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="Digiscool Logo"/>
+    </div>
+  </a>
+  <div class="ds-nav-links">
+    <a href="#" class="nav-btn active" onclick="showSection('accueil',this);return false">Accueil</a>
+    <a href="#" class="nav-btn"        onclick="showSection('utilisateurs',this);return false">Utilisateurs</a>
+    <a href="#" class="nav-btn">Education</a>
+    <a href="{{ url_for('api_logout') }}" class="nav-btn-primary">Déconnexion</a>
+  </div>
+</nav>
+
+<!-- ══ SECTION ACCUEIL ══ -->
+<div id="section-accueil" class="page-section active">
+  <section class="hero-section">
+    <div class="dot-cluster">
+      <svg width="100" height="80" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="10" r="5"/>
+        <circle cx="35" cy="24" r="5"/><circle cx="50" cy="24" r="7"/><circle cx="65" cy="24" r="5"/>
+        <circle cx="20" cy="40" r="5"/><circle cx="35" cy="40" r="5"/><circle cx="50" cy="40" r="9"/>
+        <circle cx="65" cy="40" r="5"/><circle cx="80" cy="40" r="5"/>
+        <circle cx="35" cy="56" r="5"/><circle cx="50" cy="56" r="7"/><circle cx="65" cy="56" r="5"/>
+        <circle cx="50" cy="70" r="5"/>
+      </svg>
+    </div>
+    <h1>Dashboard <strong>Admin Digischool</strong></h1>
+    <p>Gérez les utilisateurs, visualisez les statistiques globales<br>et configurez la plateforme éducative.</p>
+  </section>
+
+  <section class="cards-section">
+    <div class="card-grid">
+      <div class="dash-card" onclick="showSection('utilisateurs',document.querySelectorAll('.nav-btn')[1])">
+        <svg class="card-icon" viewBox="0 0 64 48" fill="none"><circle cx="18" cy="14" r="7" fill="currentColor" opacity=".6"/><path d="M4 42c0-8.284 6.268-15 14-15" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity=".6"/><circle cx="46" cy="14" r="7" fill="currentColor" opacity=".6"/><path d="M60 42c0-8.284-6.268-15-14-15" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity=".6"/><circle cx="32" cy="12" r="9" fill="currentColor"/><path d="M14 44c0-9.941 8.059-18 18-18s18 8.059 18 18" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/></svg>
+        <h3>Gestion des utilisateurs</h3>
+        <p>Ajouter, modifier et supprimer des comptes</p>
+      </div>
+      <div class="dash-card">
+        <svg class="card-icon" viewBox="0 0 64 56" fill="none"><rect x="4" y="32" width="12" height="20" rx="3" fill="currentColor" opacity=".5"/><rect x="22" y="20" width="12" height="32" rx="3" fill="currentColor" opacity=".75"/><rect x="40" y="8" width="12" height="44" rx="3" fill="currentColor"/><path d="M2 54h60" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+        <h3>Statistiques globales</h3>
+        <p>Visualisez les données d'utilisation</p>
+      </div>
+      <div class="dash-card">
+        <svg class="card-icon" viewBox="0 0 64 64" fill="none"><path d="M32 20a12 12 0 1 1 0 24 12 12 0 0 1 0-24z" stroke="currentColor" stroke-width="4"/><path d="M27 4h10l1.5 7.5a16 16 0 0 1 5.5 3.2L51 12l7 7-4 6.5a16 16 0 0 1 1 6 16 16 0 0 1-1 6L58 44l-7 7-7-2.7A16 16 0 0 1 38.5 52L37 60H27l-1.5-8A16 16 0 0 1 20 48.7L13 51l-7-7 4-6.5A16 16 0 0 1 9 32a16 16 0 0 1 1-6L6 20l7-7 7 2.7a16 16 0 0 1 5.5-3.2L27 4z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>
+        <h3>Paramètres système</h3>
+        <p>Configurez les options définies de plateforme</p>
+      </div>
+      <div class="dash-card">
+        <svg class="card-icon" viewBox="0 0 64 56" fill="none"><path d="M32 48V12" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><path d="M32 12C26 6 8 6 4 8v36c4-2 22-2 28 4z" fill="currentColor" opacity=".45"/><path d="M32 12c6-6 24-6 28-4v36c-4-2-22-2-28 4z" fill="currentColor" opacity=".45"/><path d="M32 12C26 6 8 6 4 8v36c4-2 22-2 28 4z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M32 12c6-6 24-6 28-4v36c-4-2-22-2-28 4z" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg>
+        <h3>Gestion des cours</h3>
+        <p>Organisez et supervisez les contenus d'apprentissage</p>
+      </div>
+      <div class="dash-card">
+        <svg class="card-icon" viewBox="0 0 64 64" fill="none"><path d="M32 4L8 14v18c0 14 12 24 24 28 12-4 24-14 24-28V14L32 4z" fill="currentColor" opacity=".25" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/><line x1="32" y1="22" x2="32" y2="36" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/><circle cx="32" cy="43" r="2.5" fill="currentColor"/></svg>
+        <h3>Alertes</h3>
+        <p>Recevez des notifications importantes</p>
+      </div>
+      <div class="dash-card">
+        <svg class="card-icon" viewBox="0 0 64 64" fill="none"><path d="M32 4L8 14v18c0 14 12 24 24 28 12-4 24-14 24-28V14L32 4z" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/><rect x="20" y="30" width="24" height="18" rx="4" fill="currentColor"/><path d="M22 30v-6a10 10 0 0 1 20 0v6" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="32" cy="39" r="3" fill="white"/><rect x="30.5" y="40" width="3" height="5" rx="1" fill="white"/></svg>
+        <h3>Sécurité</h3>
+        <p>Gérez les paramètres de sécurité</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══ SECTION UTILISATEURS ══ -->
+<div id="section-utilisateurs" class="page-section users-section">
+
+  <div class="users-header">
+    <div>
+      <h2>Gestion des Utilisateurs</h2>
+      <p>Gérez les comptes utilisateurs et leurs permissions</p>
+    </div>
+    <button class="btn-add-user" onclick="openModal()">👤 Ajouter un utilisateur</button>
+  </div>
+
+  <!-- Compteurs -->
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div><div class="stat-label">Total</div><div class="stat-val" id="cnt-total">–</div></div>
+      <div class="stat-icon">👥</div>
+    </div>
+    <div class="stat-card green">
+      <div><div class="stat-label">Approuvés</div><div class="stat-val" id="cnt-approved">–</div></div>
+      <div class="stat-icon">✅</div>
+    </div>
+    <div class="stat-card yellow">
+      <div><div class="stat-label">En attente</div><div class="stat-val" id="cnt-pending">–</div></div>
+      <div class="stat-icon">⏳</div>
+    </div>
+    <div class="stat-card red">
+      <div><div class="stat-label">Rejetés</div><div class="stat-val" id="cnt-rejected">–</div></div>
+      <div class="stat-icon">❌</div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrapper">
+    <div class="table-toolbar">
+      <h3>Liste des utilisateurs</h3>
+      <input class="search-input" type="text" placeholder="🔍  Rechercher…" id="search-box" oninput="applyFilters()"/>
+    </div>
+    <!-- Filter tabs -->
+    <div class="filter-tabs">
+      <button class="ftab active"          data-filter="all"      onclick="setFilter('all',this)">Tous</button>
+      <button class="ftab green"           data-filter="approved" onclick="setFilter('approved',this)">✅ Approuvés</button>
+      <button class="ftab yellow"          data-filter="pending"  onclick="setFilter('pending',this)">⏳ En attente</button>
+      <button class="ftab red"             data-filter="rejected" onclick="setFilter('rejected',this)">❌ Rejetés</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table id="users-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Nom &amp; Prénom</th>
+            <th>Fonction</th>
+            <th>Adresse</th>
+            <th>Sexe</th>
+            <th>Classe</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr><td colspan="9" style="text-align:center;padding:2rem;color:#94a3b8">Chargement…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+{% include "footer.html" %}
+
+<!-- ══ MODAL AJOUTER / MODIFIER ══ -->
+<div id="user-modal" class="modal-bg" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modal-title">Ajouter un utilisateur</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="form-grid">
+      <input type="hidden" id="m-id"/>
+      <div class="full">
+        <label class="form-label">Photo (URL)</label>
+        <input id="m-photo" class="form-input" type="text" placeholder="https://…"/>
+      </div>
+      <div>
+        <label class="form-label">Prénom *</label>
+        <input id="m-prenom" class="form-input" type="text" placeholder="Prénom"/>
+      </div>
+      <div>
+        <label class="form-label">Nom *</label>
+        <input id="m-nom" class="form-input" type="text" placeholder="Nom"/>
+      </div>
+      <div class="full">
+        <label class="form-label">E-mail *</label>
+        <input id="m-email" class="form-input" type="email" placeholder="exemple@mail.com"/>
+      </div>
+      <div>
+        <label class="form-label">Mot de passe <span id="pwd-hint" style="font-weight:400;color:#94a3b8">(laisser vide = inchangé)</span></label>
+        <input id="m-password" class="form-input" type="password" placeholder="••••••"/>
+      </div>
+      <div>
+        <label class="form-label">Fonction</label>
+        <select id="m-role" class="form-select">
+          <option value="student">Utilisateur</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Sexe</label>
+        <select id="m-sexe" class="form-select">
+          <option>Masculin</option>
+          <option>Féminin</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Statut</label>
+        <select id="m-status" class="form-select">
+          <option value="approved">Approuvé</option>
+          <option value="pending">En attente</option>
+          <option value="rejected">Rejeté</option>
+        </select>
+      </div>
+      <div class="full">
+        <label class="form-label">Adresse</label>
+        <input id="m-adresse" class="form-input" type="text" placeholder="Ville, quartier…"/>
+      </div>
+      <div class="full">
+        <label class="form-label">Classe (si étudiant)</label>
+        <input id="m-classe" class="form-input" type="text" placeholder="ex: Terminale A, Licence 2…"/>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-save" onclick="saveUser()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- toast -->
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════ */
+let allUsers   = [];
+let curFilter  = 'all';
+let editingId  = null;
+
+/* ═══════════════════════════════════════════════════
+   SECTION SWITCH
+═══════════════════════════════════════════════════ */
+function showSection(name, el) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (name === 'utilisateurs') loadUsers();
+}
+
+/* ═══════════════════════════════════════════════════
+   FETCH helpers
+═══════════════════════════════════════════════════ */
+async function api(method, url, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Erreur serveur');
+  return data;
+}
+
+/* ═══════════════════════════════════════════════════
+   LOAD USERS
+═══════════════════════════════════════════════════ */
+async function loadUsers() {
+  try {
+    allUsers = await api('GET', '/api/users');
+    updateCounts();
+    applyFilters();
+  } catch(e) {
+    toast(e.message, 'err');
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   COUNTS
+═══════════════════════════════════════════════════ */
+function updateCounts() {
+  document.getElementById('cnt-total').textContent    = allUsers.length;
+  document.getElementById('cnt-approved').textContent = allUsers.filter(u=>u.status==='approved').length;
+  document.getElementById('cnt-pending').textContent  = allUsers.filter(u=>u.status==='pending').length;
+  document.getElementById('cnt-rejected').textContent = allUsers.filter(u=>u.status==='rejected').length;
+}
+
+/* ═══════════════════════════════════════════════════
+   FILTER & SEARCH
+═══════════════════════════════════════════════════ */
+function setFilter(f, el) {
+  curFilter = f;
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = (document.getElementById('search-box').value || '').toLowerCase();
+  let data = allUsers;
+  if (curFilter !== 'all') data = data.filter(u => u.status === curFilter);
+  if (q) data = data.filter(u =>
+    (u.name||'').toLowerCase().includes(q) ||
+    (u.email||'').toLowerCase().includes(q) ||
+    (u.adresse||'').toLowerCase().includes(q) ||
+    (u.classe||'').toLowerCase().includes(q)
+  );
+  renderTable(data);
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER TABLE
+═══════════════════════════════════════════════════ */
+function renderTable(data) {
+  const tbody = document.getElementById('users-tbody');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:2rem;color:#94a3b8">Aucun utilisateur trouvé.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.map(u => {
+    const initials = (u.name||'?')[0].toUpperCase();
+    const avatar = u.photo
+      ? `<div class="user-avatar"><img src="${escHtml(u.photo)}" alt="" onerror="this.parentNode.textContent='${initials}'"/></div>`
+      : `<div class="user-avatar">${initials}</div>`;
+
+    const roleBadge = u.role === 'admin'
+      ? `<span class="badge badge-admin">Admin</span>`
+      : `<span class="badge badge-user">Utilisateur</span>`;
+
+    const statusBadge = {
+      approved: `<span class="badge badge-approved">Approuvé</span>`,
+      pending:  `<span class="badge badge-pending">En attente</span>`,
+      rejected: `<span class="badge badge-rejected">Rejeté</span>`,
+    }[u.status] || '';
+
+    /* Approve / Reject : masqués si déjà dans cet état */
+    const canApprove = u.status !== 'approved';
+    const canReject  = u.status !== 'rejected' && u.role !== 'admin';
+
+    const btnApprove = canApprove
+      ? `<button class="action-btn" title="Approuver" onclick="setStatus(${u.id},'approve')">✅</button>`
+      : '';
+    const btnReject = canReject
+      ? `<button class="action-btn" title="Rejeter" onclick="setStatus(${u.id},'reject')">❌</button>`
+      : '';
+
+    return `<tr id="row-${u.id}">
+      <td style="color:#94a3b8;font-size:.78rem;font-weight:600">#${u.id}</td>
+      <td>${avatar}</td>
+      <td>
+        <div class="user-name">${escHtml(u.name)}</div>
+        <div class="user-id">${escHtml(u.email)}</div>
+      </td>
+      <td>${roleBadge}</td>
+      <td>${escHtml(u.adresse||'—')}</td>
+      <td>${escHtml(u.sexe||'—')}</td>
+      <td style="font-size:.82rem;color:#64748b">${escHtml(u.classe||'—')}</td>
+      <td>${statusBadge}</td>
+      <td>
+        <div class="actions-cell">
+          ${btnApprove}
+          ${btnReject}
+          <button class="action-btn" title="Voir"      onclick="viewUser(${u.id})">👁️</button>
+          <button class="action-btn" title="Modifier"  onclick="editUser(${u.id})">🖊️</button>
+          ${u.role !== 'admin' ? `<button class="action-btn" title="Supprimer" onclick="deleteUser(${u.id})">🗑️</button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   APPROVE / REJECT
+═══════════════════════════════════════════════════ */
+async function setStatus(id, action) {
+  try {
+    await api('POST', `/api/users/${id}/${action}`);
+    const newStatus = action === 'approve' ? 'approved' : 'rejected';
+    // Mettre à jour localement sans recharger
+    const u = allUsers.find(x => x.id === id);
+    if (u) u.status = newStatus;
+    updateCounts();
+    applyFilters();
+    toast(action === 'approve' ? '✅ Utilisateur approuvé !' : '❌ Utilisateur rejeté.', 'ok');
+  } catch(e) {
+    toast(e.message, 'err');
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   VIEW
+═══════════════════════════════════════════════════ */
+function viewUser(id) {
+  const u = allUsers.find(x => x.id === id);
+  if (!u) return;
+  alert(
+    `👤 ${u.name}\n` +
+    `ID      : #${u.id}\n` +
+    `E-mail  : ${u.email}\n` +
+    `Fonction: ${u.role === 'admin' ? 'Admin' : 'Utilisateur'}\n` +
+    `Adresse : ${u.adresse || '—'}\n` +
+    `Sexe    : ${u.sexe || '—'}\n` +
+    `Classe  : ${u.classe || '—'}\n` +
+    `Statut  : ${u.status}\n` +
+    `Inscrit : ${u.created_at||''}`
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   MODAL OPEN / CLOSE
+═══════════════════════════════════════════════════ */
+function openModal(u) {
+  editingId = u ? u.id : null;
+  document.getElementById('modal-title').textContent = u ? 'Modifier l\'utilisateur' : 'Ajouter un utilisateur';
+  document.getElementById('pwd-hint').style.display  = u ? 'inline' : 'none';
+  document.getElementById('m-id').value       = u ? u.id    : '';
+  document.getElementById('m-photo').value    = u ? (u.photo   || '') : '';
+  // split name into prenom/nom at first space
+  const parts = (u?.name || '').split(' ');
+  document.getElementById('m-prenom').value   = parts[0] || '';
+  document.getElementById('m-nom').value      = parts.slice(1).join(' ') || '';
+  document.getElementById('m-email').value    = u ? (u.email   || '') : '';
+  document.getElementById('m-password').value = '';
+  document.getElementById('m-role').value     = u ? (u.role    || 'student') : 'student';
+  document.getElementById('m-sexe').value     = u ? (u.sexe    || 'Masculin') : 'Masculin';
+  document.getElementById('m-status').value   = u ? (u.status  || 'approved') : 'approved';
+  document.getElementById('m-adresse').value  = u ? (u.adresse || '') : '';
+  document.getElementById('m-classe').value   = u ? (u.classe  || '') : '';
+  document.getElementById('user-modal').classList.add('open');
+}
+
+function editUser(id) {
+  const u = allUsers.find(x => x.id === id);
+  if (u) openModal(u);
+}
+
+function closeModal() {
+  document.getElementById('user-modal').classList.remove('open');
+  editingId = null;
+}
+
+/* ═══════════════════════════════════════════════════
+   SAVE (CREATE or UPDATE)
+═══════════════════════════════════════════════════ */
+async function saveUser() {
+  const prenom   = document.getElementById('m-prenom').value.trim();
+  const nom      = document.getElementById('m-nom').value.trim();
+  const email    = document.getElementById('m-email').value.trim();
+  const password = document.getElementById('m-password').value.trim();
+
+  if (!prenom || !email) { toast('Prénom et e-mail sont obligatoires.', 'err'); return; }
+
+  const body = {
+    name:     prenom + (nom ? ' ' + nom : ''),
+    email,
+    role:     document.getElementById('m-role').value,
+    sexe:     document.getElementById('m-sexe').value,
+    status:   document.getElementById('m-status').value,
+    adresse:  document.getElementById('m-adresse').value.trim(),
+    classe:   document.getElementById('m-classe').value.trim(),
+    photo:    document.getElementById('m-photo').value.trim(),
+  };
+  if (password) body.password = password;
+  if (!editingId) {
+    if (!password) { toast('Mot de passe obligatoire pour un nouvel utilisateur.', 'err'); return; }
+    body.password = password;
+  }
+
+  try {
+    if (editingId) {
+      const updated = await api('PUT', `/api/users/${editingId}`, body);
+      const idx = allUsers.findIndex(x => x.id === editingId);
+      if (idx !== -1) allUsers[idx] = updated;
+      toast('✏️ Utilisateur mis à jour !', 'ok');
+    } else {
+      const created = await api('POST', '/api/users', body);
+      allUsers.push(created);
+      toast('✅ Utilisateur créé !', 'ok');
+    }
+    closeModal();
+    updateCounts();
+    applyFilters();
+  } catch(e) {
+    toast(e.message, 'err');
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   DELETE
+═══════════════════════════════════════════════════ */
+async function deleteUser(id) {
+  const u = allUsers.find(x => x.id === id);
+  if (!confirm(`Supprimer ${u?.name} ?`)) return;
+  try {
+    await api('DELETE', `/api/users/${id}`);
+    allUsers = allUsers.filter(x => x.id !== id);
+    updateCounts();
+    applyFilters();
+    toast('🗑️ Utilisateur supprimé.', 'ok');
+  } catch(e) {
+    toast(e.message, 'err');
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════ */
+let _toastTimer;
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.className = '', 3000);
+}
+
+/* ═══════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════ */
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── INIT ── charger les utilisateurs au démarrage si on est directement
+   sur la section utilisateurs (ex: rechargement de page) ── */
+document.addEventListener('DOMContentLoaded', () => {
+  // pré-charger en arrière-plan pour les compteurs du hero aussi
+  loadUsers();
+});
+</script>
+</body>
+</html>

@@ -222,10 +222,10 @@ body{font-family:'Inter',sans-serif;background:#080b4a;min-height:100%;display:f
 .toggle-pw{
   position:absolute;right:12px;top:50%;transform:translateY(-50%);
   background:none;border:none;cursor:pointer;
-  color:rgba(255,255,255,0.4);font-size:16px;
+  color:rgb(8, 7, 7);font-size:16px;
   transition:color .2s;
 }
-.toggle-pw:hover{color:rgba(255,255,255,0.8);}
+.toggle-pw:hover{color:rgba(6, 1, 47, 0.8);}
 </style>
 </head>
 <body>
@@ -245,8 +245,7 @@ body{font-family:'Inter',sans-serif;background:#080b4a;min-height:100%;display:f
     </a>
   </div>
   <div class="nav-right">
-    <a href="/education" class="lnk-connect">Education</a>
-    <a href="#" class="lnk-connect" onclick="openModal('modal-login');return false;">Se connecter</a>
+    <a href="/dashboard" class="lnk-connect">Se connecter</a>
     <a href="#" class="btn-nav-creer" onclick="openModal('modal-register');return false;">Créer compte</a>
   </div>
 </nav>
@@ -285,7 +284,7 @@ body{font-family:'Inter',sans-serif;background:#080b4a;min-height:100%;display:f
       <h1 class="hero-title">Transition éducative digitale</h1>
       <p class="hero-sub">Transformer l'éducation vers un modèle<br>numérique innovant</p>
       <div class="hero-btns">
-        <a href="/education" class="btn-hero-tableau">Accéder au tableau de bord</a>
+        <a href="/dashboard" class="btn-hero-tableau">Accéder au tableau de bord</a>
         <a href="#"  class="btn-hero-creer" onclick="openModal('modal-register');return false;">Créer compte</a>
       </div>
     </div>
@@ -557,6 +556,16 @@ function handleLogin(){
       window.location.href='/dashboard';
   }).catch(()=>alert('Erreur réseau. Veuillez réessayer.'));
 }
+
+function openLoginFromQuery(){
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('login') === '1') {
+    openModal('modal-login');
+  }
+}
+
+window.addEventListener('load', openLoginFromQuery);
+
 function handleRegister(){
   const nom=document.getElementById('reg-nom').value.trim();
   const prenom=document.getElementById('reg-prenom').value.trim();
