@@ -423,6 +423,18 @@ def admin_test_resultat():
     #with get_db() as db:
         #notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
     return render_template('admin/resultat.html')
+@app.route('/admin/test/travaille_user')
+@login_required
+def admin_travaille_user():
+    #with get_db() as db:
+        #notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+    return render_template('admin/travaille_user.html')
+@app.route('/admin/utilisateur')
+@login_required
+def admin_utilisateur():
+    #with get_db() as db:
+        #notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+    return render_template('admin/utilisateur.html')
 
 @app.route('/user/education')
 @login_required

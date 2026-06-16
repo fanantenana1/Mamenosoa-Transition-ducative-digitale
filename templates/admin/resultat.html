@@ -370,7 +370,7 @@
   </a>
   <div class="ds-nav-links">
     <a href="/dashboard/admin" class="nav-btn">Accueil</a>
-    <a href="/dashboard/admin" class="nav-btn">Utilisateurs</a>
+    <a href="/admin/utilisateur" class="nav-btn">Utilisateurs</a>
     <a href="/admin/education" class="nav-btn">Education</a>
     <a href="/admin/test" class="nav-btn active">Test</a>
     <a href="/admin/notifications" class="notif-link" title="Notifications">
@@ -457,7 +457,7 @@
         <div class="avatar">${avatarSVG}</div>
         <div class="row-name">${r.nom}</div>
         <div class="row-date">${r.date ? 'Date: ' + r.date : ''}</div>
-        <a href="#" class="row-voir">Voire...</a>
+        <a href="/admin/test/travaille_user" class="row-voir">Voire...</a>
         <button class="btn-info" title="Informations">${infoSVG}</button>
       </div>
     `).join('');
