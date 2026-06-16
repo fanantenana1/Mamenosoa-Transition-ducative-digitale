@@ -417,7 +417,12 @@ def admin_test():
     with get_db() as db:
         notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
     return render_template('admin/test.html', notif_count=notif_count)
-
+@app.route('/admin/test/resultats')
+@login_required
+def admin_test_resultat():
+    #with get_db() as db:
+        #notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+    return render_template('admin/resultat.html')
 
 @app.route('/user/education')
 @login_required
