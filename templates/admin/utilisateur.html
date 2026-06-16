@@ -186,14 +186,22 @@
     .status-attente  { background: #fef9c3; color: #92400e; }
     .status-rejete   { background: #fee2e2; color: #991b1b; }
 
-    .trash-count { font-size: .88rem; color: #10b981; font-weight: 600; }
-    .trash-count.none { color: var(--muted); }
+    .profession-badge {
+      display: inline-block; padding: .26rem .75rem; border-radius: 20px;
+      font-size: .76rem; font-weight: 600;
+      background: #f0f4ff; color: #3b5bdb;
+    }
+    .lieu-cell {
+      font-size: .83rem; color: var(--muted);
+      max-width: 140px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
 
     .action-btns { display: flex; align-items: center; gap: .4rem; }
     .action-icon {
       background: none; border: none; cursor: pointer; padding: .35rem;
       font-size: 1.1rem; border-radius: 6px; transition: background .15s;
-      line-height: 1;
+      line-height: 1; display: inline-flex; align-items: center; justify-content: center;
     }
     .action-icon:hover { background: #f1f5f9; }
     .action-icon.view  { color: #0ea5e9; }
@@ -345,6 +353,48 @@
     #toast.ok  { border-left: 4px solid var(--green); }
     #toast.err { border-left: 4px solid var(--red); }
 
+    /* ══ QUICK APPROVE / REJECT BUTTONS ══ */
+    .action-icon.approve {
+      color: #16a34a;
+      background: none;
+      border: none;
+      border-radius: 6px;
+      padding: .35rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s;
+    }
+    .action-icon.approve:hover { background: #f0fdf4; }
+
+    .action-icon.reject {
+      color: #dc2626;
+      background: none;
+      border: none;
+      border-radius: 6px;
+      padding: .35rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s;
+    }
+    .action-icon.reject:hover { background: #fff5f5; }
+
+    /* ══ REJECT REASON MODAL ══ */
+    #reject-modal { max-width: 420px; }
+    .reject-modal .modal-box { max-width: 440px; }
+    .reject-textarea {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
+      padding: .6rem .9rem; font-size: .9rem; outline: none;
+      font-family: inherit; resize: vertical; min-height: 90px;
+      transition: border-color .2s; color: var(--text);
+    }
+    .reject-textarea:focus { border-color: var(--red); }
+
+    /* Highlight row "En attente" */
+    .row-pending { background: #fffbeb !important; }
+    .row-pending:hover { background: #fef3c7 !important; }
+
     @media (max-width: 768px) {
       .stats-row { grid-template-columns: 1fr 1fr; }
       .form-row, .form-row-3 { grid-template-columns: 1fr; }
@@ -354,6 +404,90 @@
       .stats-row { grid-template-columns: 1fr; }
       .ds-nav { padding: .7rem 1rem; }
     }
+    /* ══ MODAL CRÉER UN COMPTE (style sombre index.html) ══ */
+    .um-overlay {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(4,6,40,.82); backdrop-filter: blur(6px);
+      align-items: flex-start; justify-content: center;
+      padding: 16px; overflow-y: auto;
+    }
+    .um-overlay.open { display: flex; }
+    .um-box {
+      background: linear-gradient(160deg,#0d1160 0%,#0a0d55 60%,#0c0e4a 100%);
+      border: 1px solid rgba(100,130,255,.25);
+      border-radius: 16px; padding: 36px 32px 28px;
+      width: 100%; max-width: 580px;
+      position: relative; margin: auto;
+      box-shadow: 0 24px 64px rgba(0,0,30,.7);
+    }
+    .um-close {
+      position: absolute; top: 14px; right: 18px;
+      background: none; border: none; color: rgba(255,255,255,.45);
+      font-size: 22px; cursor: pointer; line-height: 1; transition: color .2s;
+    }
+    .um-close:hover { color: #fff; }
+    .um-title {
+      font-size: 22px; font-weight: 700; color: #fff;
+      margin-bottom: 5px; text-align: center;
+    }
+    .um-subtitle {
+      font-size: 13px; color: #5ab4d9; text-align: center; margin-bottom: 22px;
+    }
+    .um-section-label {
+      font-size: 11px; font-weight: 700; color: #7b9aff;
+      text-transform: uppercase; letter-spacing: .06em;
+      margin-bottom: 10px; margin-top: 4px;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .um-divider {
+      border: none; border-top: 1px solid rgba(100,130,255,.15); margin: 14px 0;
+    }
+    .um-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media(max-width:520px){ .um-form-row { grid-template-columns: 1fr; } }
+    .um-form-group { margin-bottom: 12px; }
+    .um-form-group label {
+      display: block; font-size: 12px; font-weight: 500;
+      color: rgba(255,255,255,.7); margin-bottom: 5px;
+    }
+    .um-req { color: #ff6b6b; }
+    .um-box input[type=text],
+    .um-box input[type=email],
+    .um-box input[type=password],
+    .um-box input[type=date],
+    .um-box input[type=url],
+    .um-box select {
+      width: 100%; background: rgba(255,255,255,.07);
+      border: 1px solid rgba(100,130,255,.3); border-radius: 8px;
+      padding: 10px 13px; color: #fff; font-size: 13px;
+      font-family: inherit; outline: none;
+      transition: border-color .2s, background .2s;
+      appearance: none; -webkit-appearance: none;
+    }
+    .um-box input::placeholder { color: rgba(255,255,255,.35); }
+    .um-box select option { background: #0d1160; color: #fff; }
+    .um-box input:focus, .um-box select:focus {
+      border-color: #4a70ff; background: rgba(74,112,255,.1);
+    }
+    .um-box select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238899cc' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 13px center;
+      padding-right: 34px;
+    }
+    .um-box input[type=date] { color-scheme: dark; }
+    .um-student-extra {
+      display: none; background: rgba(74,112,255,.07);
+      border: 1px solid rgba(74,112,255,.2);
+      border-radius: 10px; padding: 14px; margin-top: -4px; margin-bottom: 12px;
+    }
+    .um-student-extra.visible { display: block; }
+    .um-pw-wrap { position: relative; }
+    .um-pw-wrap input { padding-right: 40px; }
+    .um-toggle-pw {
+      position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,.45); transition: color .2s; padding: 0;
+    }
+    .um-toggle-pw:hover { color: #fff; }
   </style>
 </head>
 <body>
@@ -401,28 +535,36 @@
         <div class="stat-label">Total</div>
         <div class="stat-num" id="stat-total">0</div>
       </div>
-      <div class="stat-icon">👥</div>
+      <div class="stat-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
     </div>
     <div class="stat-card approuv">
       <div class="stat-info">
         <div class="stat-label">Approuvés</div>
         <div class="stat-num" id="stat-approuves">0</div>
       </div>
-      <div class="stat-icon" style="color:#16a34a">✅</div>
+      <div class="stat-icon" style="color:#16a34a">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/><path d="M20 8l-3 3-1.5-1.5" stroke-width="2"/></svg>
+      </div>
     </div>
     <div class="stat-card attente">
       <div class="stat-info">
         <div class="stat-label">En attente</div>
         <div class="stat-num" id="stat-attente">0</div>
       </div>
-      <div class="stat-icon" style="color:#d97706">⚙️</div>
+      <div class="stat-icon" style="color:#d97706">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
     </div>
     <div class="stat-card rejete">
       <div class="stat-info">
         <div class="stat-label">Rejetés</div>
         <div class="stat-num" id="stat-rejete">0</div>
       </div>
-      <div class="stat-icon" style="color:#dc2626">🚫</div>
+      <div class="stat-icon" style="color:#dc2626">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </div>
     </div>
   </div>
 
@@ -460,14 +602,15 @@
         <tr>
           <th>Utilisateur</th>
           <th>Contact</th>
+          <th>Profession</th>
           <th>Rôle</th>
           <th>Statut</th>
-          <th>Poubelles</th>
+          <th>Lieu</th>
           <th style="text-align:right">Actions</th>
         </tr>
       </thead>
       <tbody id="users-tbody">
-        <tr><td colspan="6" style="text-align:center;padding:2.5rem">
+        <tr><td colspan="7" style="text-align:center;padding:2.5rem">
           <span class="spinner"></span>
         </td></tr>
       </tbody>
@@ -476,57 +619,170 @@
 
 </div><!-- fin .page-body -->
 
-<!-- ══ MODAL : AJOUTER / MODIFIER UTILISATEUR ══ -->
-<div id="user-modal" class="modal-bg" onclick="if(event.target===this)closeUserModal()">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h3 id="modal-title">Nouvel utilisateur</h3>
-      <button class="modal-close" onclick="closeUserModal()">✕</button>
-    </div>
+<!-- ══ MODAL : AJOUTER / MODIFIER UTILISATEUR (style Créer un compte) ══ -->
+<div id="user-modal" class="um-overlay" onclick="if(event.target===this)closeUserModal()">
+  <div class="um-box">
+    <button class="um-close" onclick="closeUserModal()" aria-label="Fermer">&times;</button>
+    <div class="um-title" id="modal-title">Créer un compte</div>
+    <div class="um-subtitle">Rejoignez la communauté Digiscool</div>
 
-    <!-- Avatar preview -->
-    <div class="avatar-preview-wrap">
-      <div class="avatar-preview" id="avatar-preview-box">👤</div>
-      <div>
-        <div class="form-label" style="margin-bottom:.4rem">Photo de profil</div>
-        <input type="file" id="um-avatar" accept="image/*" onchange="previewAvatar(this)"
-          style="font-size:.82rem;color:var(--muted)"/>
-        <div style="font-size:.74rem;color:var(--muted);margin-top:.2rem">JPG, PNG, WebP – max 2 MB</div>
-      </div>
+    <!-- ── PHOTO DE PROFIL ── -->
+    <div class="um-section-label">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      Photo de profil
     </div>
-
-    <!-- Infos personnelles -->
-    <div class="section-label">👤 Informations personnelles</div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Nom complet *</label>
-        <input id="um-nom" class="form-input" placeholder="ex: Robert Carlo"/>
+    <!-- Aperçu avatar -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;">
+      <div id="avatar-preview-box" style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(100,130,255,0.35);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="rgba(150,170,255,0.6)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </div>
-      <div class="form-group">
-        <label class="form-label">Nom d'utilisateur *</label>
-        <input id="um-username" class="form-input" placeholder="ex: @user1"/>
-      </div>
-    </div>
-
-    <!-- Contact -->
-    <div class="section-label">📧 Contact</div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Email *</label>
-        <input id="um-email" class="form-input" type="email" placeholder="email@exemple.com"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Téléphone</label>
-        <input id="um-phone" class="form-input" placeholder="+261 XX XX XXX XX"/>
+      <div style="flex:1;">
+        <!-- Onglets Fichier / URL -->
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button id="tab-file" onclick="switchPhotoTab('file')" style="font-size:12px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid rgba(100,130,255,0.45);background:rgba(74,112,255,0.25);color:#a0b4ff;cursor:pointer;transition:all .2s;">📁 Parcourir</button>
+          <button id="tab-url"  onclick="switchPhotoTab('url')"  style="font-size:12px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid rgba(100,130,255,0.2);background:none;color:rgba(255,255,255,0.4);cursor:pointer;transition:all .2s;">🔗 Lien URL</button>
+        </div>
+        <!-- Panneau Fichier -->
+        <div id="photo-file-panel">
+          <input type="file" id="um-avatar" accept="image/*" onchange="previewAvatarFile(this)"
+            style="font-size:12px;color:rgba(255,255,255,0.55);width:100%;"/>
+          <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px;">JPG, PNG, WebP — max 2 Mo</div>
+        </div>
+        <!-- Panneau URL -->
+        <div id="photo-url-panel" style="display:none;">
+          <input type="url" id="um-avatar-url" placeholder="https://exemple.com/photo.jpg"
+            oninput="previewAvatarUrl(this.value)"
+            style="width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(100,130,255,0.3);border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;outline:none;font-family:inherit;"/>
+          <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px;">Collez un lien direct vers une image</div>
+        </div>
       </div>
     </div>
 
-    <!-- Rôle & Statut -->
-    <div class="section-label">🔐 Accès et permissions</div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Rôle *</label>
-        <select id="um-role" class="form-select">
+    <hr class="um-divider"/>
+
+    <!-- ── NOM & PRÉNOM ── -->
+    <div class="um-section-label">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Informations personnelles
+    </div>
+    <div class="um-form-row">
+      <div class="um-form-group">
+        <label>Nom <span class="um-req">*</span></label>
+        <input id="um-nom" type="text" placeholder="Dupont"/>
+      </div>
+      <div class="um-form-group">
+        <label>Prénom <span class="um-req">*</span></label>
+        <input id="um-prenom" type="text" placeholder="Jean"/>
+      </div>
+    </div>
+
+    <!-- Nom d'utilisateur -->
+    <div class="um-form-group">
+      <label>Nom d'utilisateur <span class="um-req">*</span></label>
+      <input id="um-username" type="text" placeholder="ex : @jean_dupont"/>
+    </div>
+
+    <!-- Date de naissance & Sexe -->
+    <div class="um-form-row">
+      <div class="um-form-group">
+        <label>Date de naissance <span class="um-req">*</span></label>
+        <input id="um-dob" type="date"/>
+      </div>
+      <div class="um-form-group">
+        <label>Sexe <span class="um-req">*</span></label>
+        <select id="um-sexe">
+          <option value="" disabled selected>Choisir…</option>
+          <option value="m">Masculin</option>
+          <option value="f">Féminin</option>
+          <option value="autre">Autre / Non précisé</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="um-divider"/>
+
+    <!-- ── CONTACT ── -->
+    <div class="um-section-label">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      Contact
+    </div>
+    <div class="um-form-group">
+      <label>E-mail ou numéro de téléphone <span class="um-req">*</span></label>
+      <input id="um-email" type="text" placeholder="ex : jean@email.com  ou  +261 34 00 000 00"/>
+    </div>
+    <div class="um-form-group">
+      <label>Téléphone (optionnel)</label>
+      <input id="um-phone" type="text" placeholder="+261 XX XX XXX XX"/>
+    </div>
+
+    <!-- Lieu d'habitation -->
+    <div class="um-form-group">
+      <label>Lieu d'habitation</label>
+      <input id="um-adresse" type="text" placeholder="Quartier, Ville, Pays"/>
+    </div>
+
+    <hr class="um-divider"/>
+
+    <!-- ── PROFESSION ── -->
+    <div class="um-section-label">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      Profession
+    </div>
+    <div class="um-form-group">
+      <label>Profession <span class="um-req">*</span></label>
+      <select id="um-profession" onchange="umHandleProfession(this.value)">
+        <option value="" disabled selected>Sélectionner…</option>
+        <option value="etudiant">Étudiant(e)</option>
+        <option value="enseignant">Enseignant(e)</option>
+        <option value="parent">Parent / Tuteur</option>
+        <option value="professionnel">Professionnel</option>
+        <option value="autre">Autre</option>
+      </select>
+    </div>
+
+    <!-- Sous-formulaire étudiant -->
+    <div id="um-student-extra" class="um-student-extra">
+      <div style="font-size:11px;font-weight:600;color:#5ab4d9;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        Informations scolaires
+      </div>
+      <div class="um-form-row">
+        <div class="um-form-group">
+          <label>Niveau de classe</label>
+          <select id="um-niveau">
+            <option value="" disabled selected>Niveau…</option>
+            <optgroup label="Primaire"><option>CP1</option><option>CP2</option><option>CE</option><option>CM1</option><option>CM2</option></optgroup>
+            <optgroup label="Collège"><option>6ème</option><option>5ème</option><option>4ème</option><option>3ème</option></optgroup>
+            <optgroup label="Lycée"><option>Seconde</option><option>Première</option><option>Terminale</option></optgroup>
+            <optgroup label="Supérieur"><option>Licence 1</option><option>Licence 2</option><option>Licence 3</option><option>Master 1</option><option>Master 2</option><option>Doctorat</option></optgroup>
+          </select>
+        </div>
+        <div class="um-form-group">
+          <label>Filière / Spécialité</label>
+          <input id="um-filiere" type="text" placeholder="ex : Scientifique, Droit…"/>
+        </div>
+      </div>
+      <div class="um-form-group">
+        <label>Nom de l'établissement</label>
+        <input id="um-etablissement" type="text" placeholder="ex : Lycée Andohalo"/>
+      </div>
+      <div class="um-form-group">
+        <label>Lien / Site de l'établissement</label>
+        <input id="um-lien-etab" type="url" placeholder="https://…"/>
+      </div>
+    </div>
+
+    <hr class="um-divider"/>
+
+    <!-- ── RÔLE & STATUT (admin uniquement) ── -->
+    <div class="um-section-label">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Accès et permissions
+    </div>
+    <div class="um-form-row">
+      <div class="um-form-group">
+        <label>Rôle <span class="um-req">*</span></label>
+        <select id="um-role">
           <option value="">-- Sélectionner --</option>
           <option value="Admin">Admin</option>
           <option value="Utilisateur">Utilisateur</option>
@@ -534,9 +790,9 @@
           <option value="Opérateur">Opérateur</option>
         </select>
       </div>
-      <div class="form-group">
-        <label class="form-label">Statut *</label>
-        <select id="um-statut" class="form-select">
+      <div class="um-form-group">
+        <label>Statut <span class="um-req">*</span></label>
+        <select id="um-statut">
           <option value="En attente">En attente</option>
           <option value="Approuvé">Approuvé</option>
           <option value="Rejeté">Rejeté</option>
@@ -544,28 +800,49 @@
       </div>
     </div>
 
-    <!-- Mot de passe (création uniquement) -->
+    <!-- ── MOT DE PASSE (création uniquement) ── -->
     <div id="password-section">
-      <div class="section-label">🔑 Mot de passe</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Mot de passe *</label>
-          <input id="um-password" class="form-input" type="password" placeholder="••••••••"/>
+      <hr class="um-divider"/>
+      <div class="um-section-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Mot de passe
+      </div>
+      <div class="um-form-group">
+        <label>Mot de passe <span class="um-req">*</span></label>
+        <div class="um-pw-wrap">
+          <input type="password" id="um-password" placeholder="Minimum 8 caractères" oninput="umCheckPwStrength(this.value)"/>
+          <button class="um-toggle-pw" onclick="umTogglePw('um-password',this)" type="button" tabindex="-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
         </div>
-        <div class="form-group">
-          <label class="form-label">Confirmer le mot de passe *</label>
-          <input id="um-password2" class="form-input" type="password" placeholder="••••••••"/>
+        <div style="display:flex;gap:4px;margin-top:6px;" id="um-pw-bars">
+          <div style="flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,0.1);transition:background .3s;"></div>
+          <div style="flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,0.1);transition:background .3s;"></div>
+          <div style="flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,0.1);transition:background .3s;"></div>
+          <div style="flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,0.1);transition:background .3s;"></div>
+        </div>
+        <div id="um-pw-label" style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:3px;"></div>
+      </div>
+      <div class="um-form-group">
+        <label>Confirmer le mot de passe <span class="um-req">*</span></label>
+        <div class="um-pw-wrap">
+          <input type="password" id="um-password2" placeholder="••••••••"/>
+          <button class="um-toggle-pw" onclick="umTogglePw('um-password2',this)" type="button" tabindex="-1">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
         </div>
       </div>
     </div>
 
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeUserModal()">Annuler</button>
-      <button class="btn-save" onclick="saveUser()">
-        <span id="save-spinner" class="spinner" style="display:none;width:16px;height:16px;border-width:2px"></span>
+    <!-- ── ACTIONS ── -->
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(100,130,255,0.15);">
+      <button onclick="closeUserModal()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;">Annuler</button>
+      <button onclick="saveUser()" style="background:#1a3ffa;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:8px;transition:background .2s;" onmouseover="this.style.background='#1230e0'" onmouseout="this.style.background='#1a3ffa'">
+        <span id="save-spinner" class="spinner" style="display:none;width:15px;height:15px;border-width:2px;border-top-color:#fff;border-color:rgba(255,255,255,0.3);border-top-color:#fff;"></span>
         <span id="save-label">Enregistrer</span>
       </button>
     </div>
+
   </div>
 </div>
 
@@ -576,13 +853,17 @@
       <h3>Détails de l'utilisateur</h3>
       <button class="modal-close" onclick="closeViewModal()">✕</button>
     </div>
-    <div class="view-avatar" id="view-avatar">👤</div>
+    <div class="view-avatar" id="view-avatar">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    </div>
     <div class="view-username" id="view-name">—</div>
     <div class="view-handle" id="view-handle">—</div>
     <div class="view-info-grid" id="view-grid"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeViewModal()">Fermer</button>
-      <button class="btn-save" style="background:#10b981" onclick="editFromView()">✏️ Modifier</button>
+      <button class="btn-save" style="background:#10b981" onclick="editFromView()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:.3rem"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Modifier</button>
     </div>
   </div>
 </div>
@@ -619,10 +900,41 @@
   </div>
 </div>
 
+<!-- ══ MODAL : MOTIF DE REJET ══ -->
+<div id="reject-modal" class="modal-bg reject-modal" onclick="if(event.target===this)closeRejectModal()">
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-head">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:.4rem"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        Rejeter le compte</h3>
+      <button class="modal-close" onclick="closeRejectModal()">✕</button>
+    </div>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:1rem">
+      Vous êtes sur le point de <strong style="color:var(--red)">rejeter</strong> ce compte.
+      Un motif est facultatif mais aide l'utilisateur à comprendre la décision.
+    </p>
+    <div class="form-group">
+      <label class="form-label">Motif du rejet (facultatif)</label>
+      <textarea id="reject-reason" class="reject-textarea"
+        placeholder="Ex : Informations incomplètes, compte déjà existant…"></textarea>
+    </div>
+    <div id="reject-user-info" style="background:#fff5f5;border:1.5px solid #fecaca;border-radius:10px;padding:.75rem 1rem;margin-bottom:.5rem;font-size:.88rem;color:var(--text)"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeRejectModal()">Annuler</button>
+      <button class="btn-save" style="background:var(--red)" onclick="confirmReject()">
+        <span id="reject-spinner" class="spinner" style="display:none;width:16px;height:16px;border-width:2px"></span>
+        <span>Confirmer le rejet</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ DELETE CONFIRM ══ -->
 <div id="del-confirm">
   <div class="box">
-    <div class="del-icon">🗑️</div>
+    <div class="del-icon">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    </div>
     <h3>Supprimer l'utilisateur ?</h3>
     <p>Cette action est irréversible. L'utilisateur et toutes ses données seront supprimés.</p>
     <div class="actions">
@@ -640,16 +952,16 @@
    DATA STORE (demo data — remplacer par API)
 ═══════════════════════════════════════════════ */
 let allUsers = [
-  { id:1, nom:'Administrateur System', username:'@admin',    email:'haaahiii012@gmail.com', phone:'N/A', role:'Admin',       statut:'Approuvé',  poubelles:0, avatar:'' },
-  { id:2, nom:'Robert Carlo',          username:'@user1',    email:'fafa000fafa0n3@gmail.com', phone:'N/A', role:'Utilisateur', statut:'Approuvé',  poubelles:0, avatar:'' },
-  { id:3, nom:'Donasia',               username:'@collector1',email:'fafa000fafa0n1@gmail.com',phone:'N/A', role:'Utilisateur', statut:'Approuvé',  poubelles:0, avatar:'' },
-  { id:4, nom:'Malou Collector',       username:'@collector2',email:'fafa000fafa0n2@gmail.com',phone:'N/A', role:'Collecteur',  statut:'Approuvé',  poubelles:1, avatar:'' },
-  { id:5, nom:'Jamala',                username:'@da',        email:'fafa000fafa0n6@gmail.com',phone:'N/A', role:'Opérateur',   statut:'Approuvé',  poubelles:1, avatar:'' },
-  { id:6, nom:'Marie Dupont',          username:'@marie',     email:'marie.d@example.com',     phone:'+261 34 12 345 67', role:'Utilisateur', statut:'En attente', poubelles:0, avatar:'' },
-  { id:7, nom:'Jean Paul',             username:'@jeanp',     email:'jeanp@example.com',       phone:'N/A', role:'Collecteur',  statut:'En attente', poubelles:0, avatar:'' },
-  { id:8, nom:'Alice Martin',          username:'@alice',     email:'alice.m@example.com',     phone:'N/A', role:'Utilisateur', statut:'Rejeté',    poubelles:0, avatar:'' },
-  { id:9, nom:'Collecteur Sud',        username:'@csud',      email:'csud@example.com',        phone:'N/A', role:'Collecteur',  statut:'Approuvé',  poubelles:3, avatar:'' },
-  { id:10,nom:'Opérateur Nord',        username:'@opnord',    email:'opnord@example.com',      phone:'N/A', role:'Opérateur',   statut:'Approuvé',  poubelles:2, avatar:'' },
+  { id:1,  nom:'System',    prenom:'Admin',    username:'@admin',     email:'haaahiii012@gmail.com',   phone:'N/A',              role:'Admin',       statut:'Approuvé',   profession:'professionnel', dob:'1985-03-10', sexe:'m', adresse:'Antananarivo, Madagascar', avatar:'' },
+  { id:2,  nom:'Carlo',     prenom:'Robert',   username:'@user1',     email:'fafa000fafa0n3@gmail.com', phone:'N/A',              role:'Utilisateur', statut:'Approuvé',   profession:'etudiant',      dob:'2000-07-22', sexe:'m', adresse:'Toamasina, Madagascar',    avatar:'' },
+  { id:3,  nom:'Donasia',   prenom:'',         username:'@collector1',email:'fafa000fafa0n1@gmail.com', phone:'N/A',              role:'Utilisateur', statut:'Approuvé',   profession:'enseignant',    dob:'1992-11-05', sexe:'f', adresse:'Fianarantsoa, Madagascar', avatar:'' },
+  { id:4,  nom:'Collector', prenom:'Malou',    username:'@collector2',email:'fafa000fafa0n2@gmail.com', phone:'N/A',              role:'Collecteur',  statut:'Approuvé',   profession:'professionnel', dob:'1988-04-18', sexe:'f', adresse:'Mahajanga, Madagascar',   avatar:'' },
+  { id:5,  nom:'Jamala',    prenom:'',         username:'@da',        email:'fafa000fafa0n6@gmail.com', phone:'N/A',              role:'Opérateur',   statut:'Approuvé',   profession:'autre',         dob:'1995-09-30', sexe:'m', adresse:'Antsiranana, Madagascar', avatar:'' },
+  { id:6,  nom:'Dupont',    prenom:'Marie',    username:'@marie',     email:'marie.d@example.com',      phone:'+261 34 12 345 67',role:'Utilisateur', statut:'En attente', profession:'etudiant',      dob:'2003-01-14', sexe:'f', adresse:'Toliara, Madagascar',     avatar:'' },
+  { id:7,  nom:'Paul',      prenom:'Jean',     username:'@jeanp',     email:'jeanp@example.com',        phone:'N/A',              role:'Collecteur',  statut:'En attente', profession:'parent',        dob:'1979-06-02', sexe:'m', adresse:'Antsirabe, Madagascar',   avatar:'' },
+  { id:8,  nom:'Martin',    prenom:'Alice',    username:'@alice',     email:'alice.m@example.com',      phone:'N/A',              role:'Utilisateur', statut:'Rejeté',     profession:'etudiant',      dob:'2001-12-20', sexe:'f', adresse:'—',                       avatar:'' },
+  { id:9,  nom:'Sud',       prenom:'Collecteur',username:'@csud',     email:'csud@example.com',         phone:'N/A',              role:'Collecteur',  statut:'Approuvé',   profession:'professionnel', dob:'1990-08-15', sexe:'m', adresse:'Tolagnaro, Madagascar',   avatar:'' },
+  { id:10, nom:'Nord',      prenom:'Opérateur',username:'@opnord',    email:'opnord@example.com',       phone:'N/A',              role:'Opérateur',   statut:'Approuvé',   profession:'professionnel', dob:'1987-02-28', sexe:'m', adresse:'Sambava, Madagascar',     avatar:'' },
 ];
 let nextId = 11;
 let editingId = null;
@@ -686,15 +998,37 @@ function renderTable() {
 
   const tbody = document.getElementById('users-tbody');
   if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">
-      <div class="icon">👤</div>
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
+      <div class="icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
       <div>Aucun utilisateur trouvé</div></div></td></tr>`;
     updateStats();
     return;
   }
 
-  tbody.innerHTML = filtered.map(u => `
-    <tr>
+  tbody.innerHTML = filtered.map(u => {
+    const isPending = u.statut === 'En attente';
+    const quickBtns = isPending ? `
+      <button class="action-icon approve" onclick="quickApprove(${u.id})" title="Approuver ce compte">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z"/>
+          <path d="M8 11c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3z"/>
+          <path d="M8 13c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13z"/>
+          <path d="M20.5 14.5l-3 3-1.5-1.5" stroke-width="2.2"/>
+        </svg>
+      </button>
+      <button class="action-icon reject"  onclick="quickReject(${u.id})"  title="Rejeter ce compte">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z"/>
+          <path d="M8 11c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3z"/>
+          <path d="M8 13c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13z"/>
+          <line x1="19.5" y1="13.5" x2="23.5" y2="17.5" stroke-width="2.2"/>
+          <line x1="23.5" y1="13.5" x2="19.5" y2="17.5" stroke-width="2.2"/>
+        </svg>
+      </button>` : '';
+    return `
+    <tr class="${isPending ? 'row-pending' : ''}">
       <td>
         <div class="user-cell">
           <div class="user-avatar">${u.avatar
@@ -708,20 +1042,35 @@ function renderTable() {
       </td>
       <td>
         <div class="contact-email">${escHtml(u.email)}</div>
-        <div class="contact-phone">${escHtml(u.phone || 'N/A')}</div>
+        <div class="contact-phone">${escHtml(u.phone && u.phone !== 'N/A' ? u.phone : '—')}</div>
+      </td>
+      <td>
+        <span class="profession-badge">${escHtml(professionLabel(u.profession))}</span>
       </td>
       <td><span class="role-badge ${roleClass(u.role)}">${escHtml(u.role)}</span></td>
       <td><span class="status-badge ${statusClass(u.statut)}">${escHtml(u.statut)}</span></td>
-      <td><span class="trash-count ${u.poubelles === 0 ? 'none' : ''}">${u.poubelles} poubelle(s)</span></td>
       <td>
-        <div class="action-btns" style="justify-content:flex-end">
-          <button class="action-icon view"     onclick="openView(${u.id})"     title="Voir">👁</button>
-          <button class="action-icon settings" onclick="openStatus(${u.id})"   title="Changer statut">⚙️</button>
-          <button class="action-icon edit"     onclick="openEdit(${u.id})"     title="Modifier">✏️</button>
-          <button class="action-icon del"      onclick="confirmDelete(${u.id})" title="Supprimer">🗑️</button>
+        <div class="lieu-cell">${escHtml(u.adresse || '—')}</div>
+      </td>
+      <td>
+        <div class="action-btns" style="justify-content:flex-end;flex-wrap:wrap;gap:.35rem">
+          ${quickBtns}
+          <button class="action-icon view"     onclick="openView(${u.id})"     title="Voir">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="action-icon settings" onclick="openStatus(${u.id})"   title="Changer statut">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+          <button class="action-icon edit"     onclick="openEdit(${u.id})"     title="Modifier">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="action-icon del"      onclick="confirmDelete(${u.id})" title="Supprimer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          </button>
         </div>
       </td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 
   updateStats();
 }
@@ -735,6 +1084,11 @@ function updateStats() {
 
 function initials(nom) {
   return nom.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+}
+
+function professionLabel(val) {
+  return { etudiant:'Étudiant(e)', enseignant:'Enseignant(e)', parent:'Parent / Tuteur',
+           professionnel:'Professionnel', autre:'Autre' }[val] || (val || '—');
 }
 
 function roleClass(role) {
@@ -753,9 +1107,11 @@ function openAdd() {
   editingId = null;
   avatarDataUrl = null;
   clearForm();
-  document.getElementById('modal-title').textContent = 'Nouvel utilisateur';
+  document.getElementById('modal-title').textContent = 'Créer un compte';
   document.getElementById('password-section').style.display = 'block';
   document.getElementById('user-modal').classList.add('open');
+  switchPhotoTab('file');
+  document.getElementById('um-student-extra').classList.remove('visible');
 }
 
 function openEdit(id) {
@@ -766,20 +1122,23 @@ function openEdit(id) {
   clearForm();
   document.getElementById('modal-title').textContent = 'Modifier l\'utilisateur';
   document.getElementById('password-section').style.display = 'none';
-  document.getElementById('um-nom').value     = u.nom;
-  document.getElementById('um-username').value= u.username;
-  document.getElementById('um-email').value   = u.email;
-  document.getElementById('um-phone').value   = u.phone;
-  document.getElementById('um-role').value    = u.role;
-  document.getElementById('um-statut').value  = u.statut;
-
+  // Remplir les champs
+  document.getElementById('um-nom').value      = u.nom || '';
+  document.getElementById('um-prenom').value   = u.prenom || '';
+  document.getElementById('um-username').value = u.username || '';
+  document.getElementById('um-email').value    = u.email || '';
+  document.getElementById('um-phone').value    = u.phone || '';
+  document.getElementById('um-role').value     = u.role || '';
+  document.getElementById('um-statut').value   = u.statut || 'En attente';
+  // Avatar
   const box = document.getElementById('avatar-preview-box');
   if (u.avatar) {
-    box.innerHTML = `<img src="${escHtml(u.avatar)}" alt=""/>`;
+    box.innerHTML = `<img src="${escHtml(u.avatar)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
   } else {
-    box.textContent = initials(u.nom);
+    box.innerHTML = `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="rgba(150,170,255,0.6)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
   }
-
+  switchPhotoTab('file');
+  document.getElementById('um-student-extra').classList.remove('visible');
   document.getElementById('user-modal').classList.add('open');
 }
 
@@ -788,14 +1147,27 @@ function closeUserModal() {
 }
 
 function clearForm() {
-  ['um-nom','um-username','um-email','um-phone','um-password','um-password2'].forEach(id => {
+  ['um-nom','um-prenom','um-username','um-email','um-phone','um-password','um-password2',
+   'um-adresse','um-filiere','um-etablissement','um-lien-etab','um-avatar-url'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
+  const avFile = document.getElementById('um-avatar');
+  if (avFile) avFile.value = '';
   document.getElementById('um-role').value   = '';
   document.getElementById('um-statut').value = 'En attente';
-  document.getElementById('um-avatar').value = '';
-  document.getElementById('avatar-preview-box').textContent = '👤';
+  document.getElementById('um-profession').value = '';
+  const sel = document.getElementById('um-sexe');
+  if (sel) sel.value = '';
+  const dob = document.getElementById('um-dob');
+  if (dob) dob.value = '';
+  document.getElementById('avatar-preview-box').innerHTML =
+    `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="rgba(150,170,255,0.6)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+  // reset pw strength
+  const bars = document.querySelectorAll('#um-pw-bars div');
+  bars.forEach(b => b.style.background = 'rgba(255,255,255,0.1)');
+  const lbl = document.getElementById('um-pw-label');
+  if (lbl) lbl.textContent = '';
 }
 
 function openView(id) {
@@ -811,13 +1183,21 @@ function openView(id) {
   document.getElementById('view-name').textContent   = u.nom;
   document.getElementById('view-handle').textContent = u.username;
 
+  const sexeLabel = { m:'Masculin', f:'Féminin', autre:'Autre / Non précisé' }[u.sexe] || '—';
+  const dobFmt = u.dob ? new Date(u.dob).toLocaleDateString('fr-FR') : '—';
+
   document.getElementById('view-grid').innerHTML = `
-    <div class="view-info-item"><div class="lbl">Email</div><div class="val">${escHtml(u.email)}</div></div>
-    <div class="view-info-item"><div class="lbl">Téléphone</div><div class="val">${escHtml(u.phone||'N/A')}</div></div>
+    <div class="view-info-item"><div class="lbl">Prénom</div><div class="val">${escHtml(u.prenom||'—')}</div></div>
+    <div class="view-info-item"><div class="lbl">Nom</div><div class="val">${escHtml(u.nom||'—')}</div></div>
+    <div class="view-info-item"><div class="lbl">Date de naissance</div><div class="val">${dobFmt}</div></div>
+    <div class="view-info-item"><div class="lbl">Sexe</div><div class="val">${sexeLabel}</div></div>
+    <div class="view-info-item"><div class="lbl">Email / Téléphone</div><div class="val">${escHtml(u.email)}</div></div>
+    <div class="view-info-item"><div class="lbl">Téléphone</div><div class="val">${escHtml(u.phone && u.phone !== 'N/A' ? u.phone : '—')}</div></div>
+    <div class="view-info-item"><div class="lbl">Profession</div><div class="val">${escHtml(professionLabel(u.profession))}</div></div>
+    <div class="view-info-item"><div class="lbl">Lieu d'habitation</div><div class="val">${escHtml(u.adresse||'—')}</div></div>
     <div class="view-info-item"><div class="lbl">Rôle</div><div class="val"><span class="role-badge ${roleClass(u.role)}">${escHtml(u.role)}</span></div></div>
     <div class="view-info-item"><div class="lbl">Statut</div><div class="val"><span class="status-badge ${statusClass(u.statut)}">${escHtml(u.statut)}</span></div></div>
-    <div class="view-info-item"><div class="lbl">Poubelles assignées</div><div class="val">${u.poubelles} poubelle(s)</div></div>
-    <div class="view-info-item"><div class="lbl">ID utilisateur</div><div class="val">#${u.id}</div></div>
+    <div class="view-info-item" style="grid-column:1/-1"><div class="lbl">ID utilisateur</div><div class="val">#${u.id}</div></div>
   `;
 
   document.getElementById('view-modal').classList.add('open');
@@ -864,22 +1244,29 @@ function applyStatus() {
 ═══════════════════════════════════════════════ */
 async function saveUser() {
   const nom      = document.getElementById('um-nom').value.trim();
+  const prenom   = document.getElementById('um-prenom').value.trim();
   const username = document.getElementById('um-username').value.trim();
   const email    = document.getElementById('um-email').value.trim();
   const phone    = document.getElementById('um-phone').value.trim() || 'N/A';
   const role     = document.getElementById('um-role').value;
   const statut   = document.getElementById('um-statut').value;
+  const dob      = document.getElementById('um-dob').value;
+  const sexe     = document.getElementById('um-sexe').value;
+  const adresse  = document.getElementById('um-adresse').value.trim();
+  const profession = document.getElementById('um-profession').value;
+  const nomComplet = (prenom + ' ' + nom).trim() || nom;
 
-  if (!nom)      { toast('Le nom est obligatoire.','err'); return; }
-  if (!username) { toast('Le nom d\'utilisateur est obligatoire.','err'); return; }
-  if (!email)    { toast('L\'email est obligatoire.','err'); return; }
-  if (!role)     { toast('Veuillez sélectionner un rôle.','err'); return; }
+  if (!nom)        { toast('Le nom est obligatoire.','err'); return; }
+  if (!username)   { toast('Le nom d\'utilisateur est obligatoire.','err'); return; }
+  if (!email)      { toast('L\'email est obligatoire.','err'); return; }
+  if (!role)       { toast('Veuillez sélectionner un rôle.','err'); return; }
+  if (!profession) { toast('Veuillez sélectionner une profession.','err'); return; }
 
   if (!editingId) {
     const pw  = document.getElementById('um-password').value;
     const pw2 = document.getElementById('um-password2').value;
-    if (!pw)       { toast('Le mot de passe est obligatoire.','err'); return; }
-    if (pw !== pw2){ toast('Les mots de passe ne correspondent pas.','err'); return; }
+    if (!pw)        { toast('Le mot de passe est obligatoire.','err'); return; }
+    if (pw !== pw2) { toast('Les mots de passe ne correspondent pas.','err'); return; }
     if (pw.length < 6){ toast('Le mot de passe doit comporter au moins 6 caractères.','err'); return; }
   }
 
@@ -890,19 +1277,20 @@ async function saveUser() {
   document.getElementById('save-spinner').style.display = 'inline-block';
   document.getElementById('save-label').textContent = 'Enregistrement…';
 
-  // Simulate API call
   await new Promise(r => setTimeout(r, 600));
 
   if (editingId) {
     const idx = allUsers.findIndex(u => u.id === editingId);
     if (idx !== -1) {
-      allUsers[idx] = { ...allUsers[idx], nom, username, email, phone, role, statut,
+      allUsers[idx] = { ...allUsers[idx], nom: nomComplet, prenom, username, email, phone,
+        role, statut, dob, sexe, adresse, profession,
         avatar: avatarDataUrl || allUsers[idx].avatar };
     }
     toast('✏️ Utilisateur mis à jour !','ok');
   } else {
-    allUsers.push({ id: nextId++, nom, username, email, phone, role, statut,
-      poubelles: 0, avatar: avatarDataUrl || '' });
+    allUsers.push({ id: nextId++, nom: nomComplet, prenom, username, email, phone,
+      role, statut, dob, sexe, adresse, profession,
+      avatar: avatarDataUrl || '' });
     toast('✅ Utilisateur créé !','ok');
   }
 
@@ -935,17 +1323,88 @@ async function doDelete() {
 /* ═══════════════════════════════════════════════
    AVATAR PREVIEW
 ═══════════════════════════════════════════════ */
-function previewAvatar(input) {
+function previewAvatarFile(input) {
   if (!input.files || !input.files[0]) return;
   const file = input.files[0];
-  if (file.size > 2 * 1024 * 1024) { toast('Image trop lourde (max 2 MB).','err'); return; }
+  if (file.size > 2 * 1024 * 1024) { toast('Image trop lourde (max 2 Mo).','err'); return; }
   const reader = new FileReader();
   reader.onload = e => {
     avatarDataUrl = e.target.result;
-    const box = document.getElementById('avatar-preview-box');
-    box.innerHTML = `<img src="${avatarDataUrl}" alt="aperçu"/>`;
+    _setAvatarPreview(avatarDataUrl);
   };
   reader.readAsDataURL(file);
+}
+function previewAvatarUrl(url) {
+  if (!url) return;
+  avatarDataUrl = url;
+  _setAvatarPreview(url);
+}
+function _setAvatarPreview(src) {
+  const box = document.getElementById('avatar-preview-box');
+  const img = new Image();
+  img.onload = () => {
+    box.innerHTML = `<img src="${src}" alt="aperçu" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
+  };
+  img.onerror = () => { toast('Impossible de charger cette image.','err'); };
+  img.src = src;
+}
+function switchPhotoTab(tab) {
+  const filePanel = document.getElementById('photo-file-panel');
+  const urlPanel  = document.getElementById('photo-url-panel');
+  const btnFile   = document.getElementById('tab-file');
+  const btnUrl    = document.getElementById('tab-url');
+  if (!filePanel) return;
+  if (tab === 'file') {
+    filePanel.style.display = 'block';
+    urlPanel.style.display  = 'none';
+    btnFile.style.background = 'rgba(74,112,255,0.25)';
+    btnFile.style.color      = '#a0b4ff';
+    btnFile.style.borderColor= 'rgba(100,130,255,0.45)';
+    btnUrl.style.background  = 'none';
+    btnUrl.style.color       = 'rgba(255,255,255,0.4)';
+    btnUrl.style.borderColor = 'rgba(100,130,255,0.2)';
+  } else {
+    filePanel.style.display = 'none';
+    urlPanel.style.display  = 'block';
+    btnUrl.style.background  = 'rgba(74,112,255,0.25)';
+    btnUrl.style.color       = '#a0b4ff';
+    btnUrl.style.borderColor = 'rgba(100,130,255,0.45)';
+    btnFile.style.background = 'none';
+    btnFile.style.color      = 'rgba(255,255,255,0.4)';
+    btnFile.style.borderColor= 'rgba(100,130,255,0.2)';
+  }
+}
+function umHandleProfession(val) {
+  const extra = document.getElementById('um-student-extra');
+  if (val === 'etudiant') extra.classList.add('visible');
+  else extra.classList.remove('visible');
+}
+function umCheckPwStrength(val) {
+  const bars = document.querySelectorAll('#um-pw-bars div');
+  const label = document.getElementById('um-pw-label');
+  let score = 0;
+  if (val.length >= 8)          score++;
+  if (/[A-Z]/.test(val))        score++;
+  if (/[0-9]/.test(val))        score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const colors = ['#ff6b6b','#ffaa4c','#f7d06e','#4cf78e'];
+  const labels = ['Très faible','Faible','Moyen','Fort'];
+  bars.forEach((b,i) => {
+    b.style.background = i < score ? colors[score-1] : 'rgba(255,255,255,0.1)';
+  });
+  label.textContent = val.length ? (labels[score-1]||'') : '';
+  label.style.color = val.length ? colors[score-1] : 'rgba(255,255,255,0.35)';
+}
+function umTogglePw(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  const paths = btn.querySelectorAll('circle,path,line');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.style.color = '#fff';
+  } else {
+    inp.type = 'password';
+    btn.style.color = 'rgba(255,255,255,0.45)';
+  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -961,6 +1420,68 @@ function checkUrlParams() {
     url.searchParams.delete('openAdd');
     window.history.replaceState({}, '', url);
   }
+}
+
+/* ═══════════════════════════════════════════════
+   QUICK APPROVE / REJECT (comptes "En attente")
+═══════════════════════════════════════════════ */
+let rejectTargetId = null;
+
+async function quickApprove(id) {
+  const u = allUsers.find(x => x.id === id);
+  if (!u) return;
+
+  // Visual feedback on button
+  const btn = event.currentTarget;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px"></span>';
+
+  // Simulate API call → replace with: fetch(`/api/users/${id}/approve`, {method:'POST'})
+  await new Promise(r => setTimeout(r, 700));
+
+  u.statut = 'Approuvé';
+  renderTable();
+  toast(`✅ Compte de ${u.nom} approuvé avec succès !`, 'ok');
+}
+
+function quickReject(id) {
+  const u = allUsers.find(x => x.id === id);
+  if (!u) return;
+  rejectTargetId = id;
+
+  // Fill info preview
+  document.getElementById('reject-user-info').innerHTML =
+    `<strong>👤 ${escHtml(u.nom)}</strong> &nbsp;•&nbsp; ${escHtml(u.username)}<br>
+     <span style="color:var(--muted)">${escHtml(u.email)}</span>`;
+  document.getElementById('reject-reason').value = '';
+  document.getElementById('reject-modal').classList.add('open');
+}
+
+function closeRejectModal() {
+  document.getElementById('reject-modal').classList.remove('open');
+  rejectTargetId = null;
+}
+
+async function confirmReject() {
+  if (!rejectTargetId) return;
+  const u = allUsers.find(x => x.id === rejectTargetId);
+  if (!u) return;
+
+  const reason = document.getElementById('reject-reason').value.trim();
+  const spinner = document.getElementById('reject-spinner');
+  spinner.style.display = 'inline-block';
+
+  // Simulate API call → replace with:
+  // fetch(`/api/users/${rejectTargetId}/reject`, {method:'POST', body: JSON.stringify({reason})})
+  await new Promise(r => setTimeout(r, 700));
+
+  u.statut = 'Rejeté';
+  if (reason) u.rejectReason = reason;
+
+  spinner.style.display = 'none';
+  closeRejectModal();
+  renderTable();
+  toast(`🚫 Compte de ${u.nom} rejeté.`, 'err');
 }
 
 /* ═══════════════════════════════════════════════
