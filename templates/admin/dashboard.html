@@ -28,6 +28,8 @@
       background-position: center 160px;
       background-size: 520px auto;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       position: relative;
     }
 
@@ -76,6 +78,7 @@
       background: var(--nav-bg);
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 4px;
       padding: 0 28px;
       height: 66px;
@@ -113,26 +116,45 @@
       color: #9ca3af;
     }
 
-    .nav-btn {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 15px;
-      font-weight: 500;
-      padding: 10px 24px;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background .18s;
-      white-space: nowrap;
+    .ds-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
-    .nav-btn:hover  { background: rgba(255,255,255,.08); }
-    .nav-btn.active { background: rgba(255,255,255,.13); }
+    .nav-btn {
+      background: #1f2937;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .55rem 1.4rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .2s; text-decoration: none; white-space: nowrap;
+    }
+    .nav-btn:hover { background: #374151; color: #fff }
+    .nav-btn.active { background: #2563eb }
+
+    .nav-btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .55rem 1.4rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s; text-decoration: none; white-space: nowrap;
+    }
+    .nav-btn-primary:hover { background: #1558d6; color: #fff }
 
     .nav-btn-accent {
       background: var(--accent);
       color: #fff;
       font-weight: 600;
-      margin-left: auto;
     }
     .nav-btn-accent:hover { background: #1558d6; }
 
@@ -143,6 +165,7 @@
       margin: 0 auto;
       position: relative;
       z-index: 2;
+      flex: 1;
     }
 
     /* ── Stat strip ── */
@@ -269,18 +292,18 @@
                   font-weight:800;font-size:17px;color:#fff;">DS</div>
       <div class="ds-logo-name">Digiscool</div>
     </a>
-
-    <button class="nav-btn active" onclick="setPage(this)">Acceuil</button>
-    <button class="nav-btn"        onclick="setPage(this)">Utilisateurs</button>
-    <a href="/admin/education" class="nav-btn">Education</a>
-    <button class="nav-btn"        onclick="setPage(this)">Test</button>
-    <a href="/admin/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}" title="Notifications">
-      <span class="notif-icon">🔔</span>
-      <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
-    </a>
-    <button class="nav-btn nav-btn-accent" onclick="deconnect()">Déconnecté</button>
+    <div class="ds-nav-links">
+      <a href="/admin/dashboard" class="nav-btn active">Acceuil</a>
+      <button class="nav-btn"        onclick="setPage(this)">Utilisateurs</button>
+      <a href="/admin/education" class="nav-btn">Education</a>
+      <a href="/admin/test" class="nav-btn">Test</a>
+      <a href="/admin/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}" title="Notifications">
+        <span class="notif-icon">🔔</span>
+        <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
+      </a>
+      <button class="nav-btn nav-btn-accent" onclick="deconnect()">Déconnecté</button>
+    </div>
   </nav>
-
   <!-- ── CONTENU ── -->
   <main class="ds-page">
 

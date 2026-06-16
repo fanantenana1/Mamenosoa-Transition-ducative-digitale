@@ -3,74 +3,229 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Education – Digiscool Admin</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Exo+2:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <title>Digiscool - Education</title>
   <style>
-    :root{
-      --bg:#b8c8e8; --navy:rgb(4,6,60); --blue:#2563eb; --green:#16a34a;
-      --red:#dc2626; --card:#fff; --text:#1a1a2e; --muted:#64748b;
-      --ds-cyan:#00c8ff; --ds-pink:#d63af9; --ds-muted:#7a9be0; --ds-text:#c8d8ff;
-    }
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--bg);font-family:'Exo 2',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── NAV ── */
-    .ds-nav{position:relative;z-index:10;display:flex;align-items:center;
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #BED6F3;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ══════════════════════════════ NAVBAR ══════════════════════════════ */
+    .ds-nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
       justify-content:space-between;padding:.85rem 2.5rem;
-      border-bottom:1px solid rgba(255,255,255,.326);background:var(--navy);backdrop-filter:blur(12px)}
+      border-bottom:1px solid rgba(255,255,255,.326);background:rgb(4,6,60);backdrop-filter:blur(12px)}
     .ds-logo{display:flex;align-items:center;gap:.6rem;font-family:'Orbitron',sans-serif;
       font-size:1rem;color:#fff;text-decoration:none}
     .ds-logo-box{width:75px;height:56px;border-radius:10px;overflow:hidden;
       display:flex;align-items:center;justify-content:center;
       box-shadow:0 0 18px #d63af955;padding-right:12px}
     .ds-logo-box img{width:100%;height:100%;object-fit:contain}
-    .ds-nav-links{display:flex;align-items:center;gap:.5rem}
+    .ds-nav-links{display:flex;align-items:center;gap:.75rem;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
     .nav-btn{background:#1f2937;color:#fff;border:none;border-radius:8px;
       padding:.55rem 1.4rem;font-size:1rem;font-weight:500;cursor:pointer;
       transition:background .2s;text-decoration:none;white-space:nowrap}
     .nav-btn:hover{background:#374151;color:#fff}
     .nav-btn.active{background:#2563eb}
-    .nav-btn-primary{background:var(--blue);color:#fff;border:none;border-radius:8px;
+    .nav-btn-primary{background:#2563eb;color:#fff;border:none;border-radius:8px;
       padding:.55rem 1.4rem;font-size:1rem;font-weight:600;cursor:pointer;
       transition:background .2s;text-decoration:none;white-space:nowrap}
     .nav-btn-primary:hover{background:#1d4ed8;color:#fff}
 
-    /* ── MAIN ── */
-    main{flex:1;padding:2rem 3rem}
+    .notif-link{position:relative;display:flex;align-items:center;justify-content:center;
+      width:42px;height:42px;border-radius:50%;background:#1f2937;text-decoration:none;
+      transition:background .2s}
+    .notif-link:hover{background:#374151}
+    .notif-icon{font-size:1.15rem;line-height:1}
+    .notif-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;
+      border-radius:50%;background:var(--red,#dc2626);color:#fff;font-size:.68rem;
+      font-weight:700;display:none;align-items:center;justify-content:center;
+      padding:0 4px;line-height:1}
+    .notif-badge.show{display:flex}
+    .notif-link.has-alert{box-shadow:0 0 0 2px rgba(220,38,38,.5)}
 
-    /* breadcrumb retour */
-    .back-bar{display:none;align-items:center;gap:.5rem;margin-bottom:1rem;cursor:pointer;color:var(--text);font-weight:600}
-    .back-bar:hover{color:var(--blue)}
-    .back-bar.show{display:flex}
 
-    /* ── TOOLBAR ── */
-    .toolbar{display:flex;align-items:center;justify-content:space-between;
-      margin-bottom:1.4rem;flex-wrap:wrap;gap:.8rem}
-    .toolbar h2{font-size:1.6rem;font-weight:800;color:var(--text)}
-    .toolbar-right{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap}
-    .sort-select{border:1.5px solid #cbd5e1;border-radius:8px;padding:.4rem .8rem;
-      font-size:.88rem;outline:none;background:#fff;cursor:pointer}
-    .search-box{border:1.5px solid #cbd5e1;border-radius:8px;padding:.4rem .9rem;
-      font-size:.88rem;outline:none;width:200px;transition:border-color .2s}
-    .search-box:focus{border-color:var(--blue)}
+    /* ══════════════════════════════ PAGE BODY ══════════════════════════════ */
+    .page-body {
+      background-image: url('/static/components/Rectangle 18.png');
+      background-size: 100% 100%;
+      flex: 1;
+      padding: 32px 40px 48px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 24px; margin-top: 25px;
+      min-height: calc(100vh - 157px);
+    }
 
-    /* ── TABLE ── */
+    /* ══════════════════════════════ SEARCH ROW ══════════════════════════════ */
+    .search-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 600px;
+      height: 45px;
+      background-image: url('/static/components/Rectangle 24.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      border-radius: 0 0 10px 10px;
+      margin-top: -48px;
+      gap: 10px;
+    }
+
+    .search-case {
+      position: relative;
+      width: 400px;
+      height: 30px;
+      background-image: url('/static/components/Rectangle 27.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      border-radius: 8px;
+      display: flex; align-items: center;
+      padding-left: 40px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      display: flex; align-items: center;
+      height: 100%;
+      pointer-events: none;
+    }
+    .search-icon svg { width: 18px; height: 18px; stroke: #666; fill: none; stroke-width: 2; }
+
+    .search-wrap input {
+      flex: 1;
+      height: 30px;
+      border: none; outline: none;
+      background: transparent;
+      font-size: 0.9rem; color: #555;
+    }
+
+    /* ══════════════════════════════ TRIER PAR ══════════════════════════════ */
+   .btn-trier {
+    width: 139px;
+    height: 28px;
+    background-image: url('/static/components/TRIER_PAR.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border: none;
+    background-color: #f5fbf9;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0 10px 0 12px;
+    position: relative;
+    gap: 4px;
+    border-radius: 5px;
+    border: 1px blue solid;
+  }
+
+ .sort-select {
+   flex: 1;
+   border: none;
+   outline: none;
+   background: transparent;
+   font-size: 0.82rem;
+   font-weight: 600;
+   color: #111;
+   cursor: pointer;
+   appearance: none;
+   -webkit-appearance: none;
+   -moz-appearance: none;
+ }
+
+.sort-select option {
+   background: #fff;
+   color: #111;
+   font-size: 0.9rem;
+}
+
+.arrow-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.arrow-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: #111;
+  display: block;
+}
+
+    /* ══════════════════════════════ TABLE HEADER ══════════════════════════════ */
+    .table-header {
+      width: 100%;
+      height: 50px;
+      background: rgba(180,200,225,0.45);
+      border-bottom: 2px solid #4a72b0;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+    }
+    .th-num   { width: 72px;  flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
+    .th-vid   { width: 115px; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
+    .th-titre { width: 265px; flex-shrink: 0; display:flex; align-items:center; }
+    .th-cours { width: 205px; flex-shrink: 0; display:flex; align-items:center; }
+    .th-exo   { flex: 1;      display:flex; align-items:center; }
+    .th-num img, .th-vid img, .th-titre img { display:block; }
+    .lbl { color: #2a4fb5; font-weight: 700; font-size: 1rem; }
+
+    /* ══════════════════════════════ TABLE ROWS ══════════════════════════════ */
+    .table-rows { display: flex; flex-direction: column; }
+    .row-item {
+      width: 100%; height: 92px;
+      display: block; border: none; padding: 0;
+      background: transparent; cursor: pointer;
+      transition: filter 0.15s;
+    }
+    .row-item:hover { filter: brightness(0.95); }
+    .row-item img { width: 100%; height: 100%; display: block; object-fit: fill; }
+
+
+    /* ══════════════════════════════ TABLE CARD ══════════════════════════════ */
+    .table-card {
+      width: 100%;
+      background-image: url('/static/components/Rectangle 29.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      border-radius: 12px;
+      overflow: hidden;
+      padding-bottom: 12px;
+    }
+
+    /* ══════════════════════════════ AJOUTER BUTTON ══════════════════════════════ */
+    .btn-ajouter {
+      background: #1976d2; color: #fff;
+      border: none; border-radius: 10px;
+      padding: 13px 52px;
+      font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; margin-top: 8px;
+    }
+
+    /* ══════════════════════════════ TABLE (cours) ══════════════════════════════ */
+    :root{
+      --navy:rgb(4,6,60); --blue:#2563eb; --green:#16a34a;
+      --red:#dc2626; --card:#fff; --text:#1a1a2e; --muted:#64748b;
+    }
     .table-wrap{background:var(--card);border-radius:16px;
-      box-shadow:0 4px 24px rgba(0,0,0,.08);overflow:hidden}
-    table{width:100%;border-collapse:collapse}
-    thead tr{background:#e8eef8}
-    thead th{padding:1rem 1.2rem;font-size:.82rem;font-weight:700;
+      box-shadow:0 4px 24px rgba(0,0,0,.08);overflow:hidden;width:100%}
+    .table-wrap table{width:100%;border-collapse:collapse}
+    .table-wrap thead tr{background:#e8eef8}
+    .table-wrap thead th{padding:1rem 1.2rem;font-size:.82rem;font-weight:700;
       text-transform:uppercase;letter-spacing:.08em;color:var(--blue);text-align:left}
-    tbody tr{border-top:1px solid #f1f5f9;transition:background .15s}
-    tbody tr:hover{background:#f0f6ff}
-    tbody td{padding:.9rem 1.2rem;vertical-align:middle}
+    .table-wrap tbody tr{border-top:1px solid #f1f5f9;transition:background .15s}
+    .table-wrap tbody tr:hover{background:#f0f6ff}
+    .table-wrap tbody td{padding:.9rem 1.2rem;vertical-align:middle}
 
-    /* N° */
     .num-cell{font-size:1.6rem;font-weight:800;color:var(--text);width:60px}
 
-    /* play button */
     .play-btn{width:60px;height:44px;border:3px solid var(--navy);border-radius:8px;
       background:#fff;display:flex;align-items:center;justify-content:center;
       cursor:pointer;transition:all .2s;flex-shrink:0}
@@ -81,12 +236,10 @@
       border-bottom:10px solid transparent;border-left:16px solid var(--navy);
       margin-left:4px}
 
-    /* titre */
     .title-cell .main-title{font-weight:700;font-size:.95rem;color:var(--text)}
     .title-cell .sub-title{font-size:.82rem;color:var(--muted);margin-top:.1rem}
     .bullet{display:inline-block;margin-right:.3rem;color:var(--text)}
 
-    /* doc badge */
     .doc-badge{display:flex;align-items:center;gap:.4rem;font-weight:600;
       font-size:.88rem;cursor:pointer;transition:opacity .2s}
     .doc-badge:hover{opacity:.75}
@@ -97,39 +250,15 @@
     .check-icon.ok{background:rgba(22,163,74,.12)}
     .check-icon.no{background:rgba(220,38,38,.08);color:var(--red)}
 
-    /* action btns */
     .action-icon{background:none;border:none;cursor:pointer;padding:.3rem;
       font-size:1.1rem;border-radius:6px;transition:background .15s}
     .action-icon:hover{background:#f1f5f9}
     .action-icon.edit{color:var(--blue)}
     .action-icon.del{color:var(--red)}
 
-    /* FAB */
-    .fab{position:fixed;bottom:2.5rem;right:2.5rem;width:58px;height:58px;
-      background:var(--blue);color:#fff;border:none;border-radius:14px;
-      font-size:1.8rem;cursor:pointer;box-shadow:0 6px 24px rgba(37,99,235,.4);
-      display:flex;align-items:center;justify-content:center;
-      transition:transform .2s,box-shadow .2s;z-index:50}
-    .fab:hover{transform:scale(1.08);box-shadow:0 10px 32px rgba(37,99,235,.5)}
-
-    /* ── VIDEO VIEWER ── */
-    #video-view{display:none}
-    #video-view.show{display:block}
-    #list-view.hide{display:none}
-
-    .video-header{display:flex;align-items:center;justify-content:space-between;
-      margin-bottom:1rem;flex-wrap:wrap;gap:.6rem}
-    .video-meta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
-    .video-meta .vtype{font-weight:800;font-size:1rem;color:var(--text)}
-    .video-meta .vtitle{font-weight:700;font-size:1rem;color:var(--text)}
-    .video-meta .vcat{color:var(--muted);font-size:.9rem}
-    .video-header-actions{display:flex;gap:.6rem}
-
-    .video-container{background:#fff;border-radius:14px;
-      box-shadow:0 4px 24px rgba(0,0,0,.1);overflow:hidden;position:relative}
-    .video-container video{width:100%;max-height:75vh;display:block;background:#000}
-    .video-container iframe{width:100%;height:70vh;border:none}
-    .no-video-msg{padding:4rem;text-align:center;color:var(--muted);font-size:1rem}
+    .spinner{display:inline-block;width:20px;height:20px;border:3px solid #e2e8f0;
+      border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
     /* ── MODAL overlay ── */
     .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
@@ -218,13 +347,15 @@
     #toast.ok{border-left:4px solid var(--green)}
     #toast.err{border-left:4px solid var(--red)}
 
-    /* loading spinner */
-    .spinner{display:inline-block;width:20px;height:20px;border:3px solid #e2e8f0;
-      border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    /* FAB */
+    .fab{position:fixed;bottom:2.5rem;right:2.5rem;width:58px;height:58px;
+      background:var(--blue);color:#fff;border:none;border-radius:14px;
+      font-size:1.8rem;cursor:pointer;box-shadow:0 6px 24px rgba(37,99,235,.4);
+      display:flex;align-items:center;justify-content:center;
+      transition:transform .2s,box-shadow .2s;z-index:50}
+    .fab:hover{transform:scale(1.08);box-shadow:0 10px 32px rgba(37,99,235,.5)}
 
     @media(max-width:768px){
-      main{padding:1rem}
       .form-row{grid-template-columns:1fr}
       .num-cell{display:none}
     }
@@ -234,46 +365,56 @@
 
 <!-- ══ NAVBAR ══ -->
 <nav class="ds-nav">
-  <a href="/dashboard_admin" class="ds-logo">
+  <a href="/dashboard/admin" class="ds-logo">
     <div class="ds-logo-box">
       <img src="{{ url_for('static', filename='image/Logo.png') }}" alt="Digiscool Logo"/>
     </div>
+    <div class="ds-logo-name">Digiscool</div>
   </a>
   <div class="ds-nav-links">
-    <a href="/dashboard_admin" class="nav-btn">Accueil</a>
-    <a href="/dashboard_admin" class="nav-btn">Utilisateurs</a>
+    <a href="/dashboard/admin" class="nav-btn">Accueil</a>
+    <a href="/dashboard/admin" class="nav-btn">Utilisateurs</a>
     <a href="/admin/education" class="nav-btn active">Education</a>
     <a href="/admin/test" class="nav-btn">Test</a>
     <a href="/admin/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}" title="Notifications">
       <span class="notif-icon">🔔</span>
       <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
-    </a>    <a href="/api/logout"      class="nav-btn-primary">Déconnexion</a>
+    </a>
+    <a href="/logout" class="nav-btn-primary">Déconnexion</a>
   </div>
 </nav>
 
-<main>
-  <!-- BACK BAR (visible en mode vidéo) -->
-  <div class="back-bar" id="back-bar" onclick="showList()">
-    ← Retour
-  </div>
+<!-- PAGE BODY -->
+<div class="page-body">
 
-  <!-- ══ LIST VIEW ══ -->
-  <div id="list-view">
-    <div class="toolbar">
-      <h2>Types</h2>
-      <div class="toolbar-right">
-        <select class="sort-select" id="sort-select" onchange="loadCours()">
-          <option value="id">Trier par N°</option>
-          <option value="titre">Trier par Titre</option>
-          <option value="matiere">Trier par Matière</option>
-          <option value="created_at">Trier par Date</option>
-        </select>
-        <span style="color:var(--muted);font-size:.9rem">🔍</span>
-        <input class="search-box" id="search-box" type="text"
-               placeholder="Recherche …." oninput="loadCours()"/>
-      </div>
-    </div>
+  <!-- Search row -->
+  <div class="search-wrap">
+    <div class="search-case"> 
+      <span class="search-icon">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </span>
+      <input type="text" id="search-box" placeholder="Recherche ....."/>
+    </div> 
 
+    <!-- Bouton Trier -->
+    <div class="btn-trier">
+  <select class="sort-select" id="sort-select" onchange="loadCours()">
+    <option value="id">Trier par N°</option>
+    <option value="titre">Trier par Titre</option>
+    <option value="matiere">Trier par Matière</option>
+    <option value="created_at">Trier par Date</option>
+  </select>
+  <span class="arrow-icon">
+    <svg viewBox="0 0 24 24">
+      <path d="M7 10l5 5 5-5z"/>
+    </svg>
+  </span>
+</div>
+
+  </div> <!-- fin .search-wrap -->
+
+  <!-- ════ TABLE CARD ════ -->
+  <div class="table-card">
     <div class="table-wrap">
       <table>
         <thead>
@@ -295,36 +436,10 @@
     </div>
   </div>
 
-  <!-- ══ VIDEO VIEW ══ -->
-  <div id="video-view">
-    <div class="video-header">
-      <div class="video-meta">
-        <span class="vtype" id="vv-type">VIDEO</span>
-        <span>:</span>
-        <span class="vtitle" id="vv-title">—</span>
-        <span>•</span>
-        <span class="vcat" id="vv-cat">—</span>
-      </div>
-      <div class="video-header-actions">
-        <button class="action-icon edit" title="Modifier" onclick="openEdit(currentCours)">
-          <i class="fa-regular fa-pen-to-square fa-lg"></i>
-        </button>
-        <button class="action-icon del" title="Supprimer" onclick="confirmDelete(currentCours.id)">
-          <i class="fa-solid fa-trash fa-lg"></i>
-        </button>
-      </div>
-    </div>
-    <div class="video-container" id="video-container">
-      <div class="no-video-msg">Aucune vidéo disponible pour ce cours.</div>
-    </div>
-  </div>
-</main>
+</div><!-- fin .page-body -->
 
 <!-- FAB -->
 <button class="fab" title="Ajouter un cours" onclick="openAdd()">＋</button>
-
-<!-- ── FOOTER ── -->
-{% include "footer.html" %}
 
 <!-- ══ MODAL : AJOUTER / MODIFIER COURS ══ -->
 <div id="cours-modal" class="modal-bg" onclick="if(event.target===this)closeCourseModal()">
@@ -469,7 +584,9 @@
 
 <div id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<!-- FOOTER -->
+{% include "footer.html" %}
+
 <script>
 /* ═══════════════════════════════════════════════
    STATE
@@ -546,7 +663,7 @@ function setCurrentFileInfo(type, filename) {
    LOAD
 ═══════════════════════════════════════════════ */
 async function loadCours() {
-  const q    = document.getElementById('search-box').value.trim();
+  const q    = document.getElementById('search-box') ? document.getElementById('search-box').value.trim() : '';
   const sort = document.getElementById('sort-select').value;
   try {
     const params = new URLSearchParams({ sort });
@@ -605,10 +722,10 @@ function renderTable() {
       <td>${docExoHtml}</td>
       <td style="text-align:right">
         <button class="action-icon edit" title="Modifier" onclick="openEdit(allCours.find(x=>x.id===${c.id}))">
-          <i class="fa-regular fa-pen-to-square fa-lg"></i>
+          ✏️
         </button>
         <button class="action-icon del" title="Supprimer" onclick="confirmDelete(${c.id})">
-          <i class="fa-solid fa-trash fa-lg"></i>
+          🗑️
         </button>
       </td>
     </tr>`;
@@ -622,42 +739,10 @@ function playVideo(id) {
   const c = allCours.find(x => x.id === id);
   if (!c) return;
   currentCours = c;
-
-  document.getElementById('vv-type').textContent  = 'VIDEO';
-  document.getElementById('vv-title').textContent = c.titre;
-  document.getElementById('vv-cat').textContent   = c.matiere;
-
-  const container = document.getElementById('video-container');
-  if (c.video_url) {
-    // URL externe → iframe
-    let src = c.video_url;
-    // convertir lien YouTube normal en embed
-    src = src.replace('watch?v=','embed/').replace('youtu.be/','youtube.com/embed/');
-    container.innerHTML = `<iframe src="${escHtml(src)}" allowfullscreen></iframe>`;
-  } else if (c.video_filename) {
-    container.innerHTML = `<video controls autoplay>
-      <source src="/uploads/videos/${escHtml(c.video_filename)}"/>
-      Votre navigateur ne supporte pas la lecture vidéo.
-    </video>`;
-  } else {
-    container.innerHTML = `<div class="no-video-msg">Aucune vidéo disponible.</div>`;
-  }
-
-  document.getElementById('list-view').classList.add('hide');
-  document.getElementById('video-view').classList.add('show');
-  document.getElementById('back-bar').classList.add('show');
-  document.querySelector('.fab').style.display = 'none';
-}
-
-function showList() {
-  document.getElementById('list-view').classList.remove('hide');
-  document.getElementById('video-view').classList.remove('show');
-  document.getElementById('back-bar').classList.remove('show');
-  document.querySelector('.fab').style.display = 'flex';
-  // stopper la video/iframe
-  const container = document.getElementById('video-container');
-  container.innerHTML = '';
-  currentCours = null;
+  let src = c.video_url || (c.video_filename ? `/uploads/videos/${c.video_filename}` : '');
+  if (c.video_url) src = src.replace('watch?v=','embed/').replace('youtu.be/','youtube.com/embed/');
+  // Redirect to dedicated video page to display the selected course video
+  window.location.href = '/admin/video/' + id;
 }
 
 /* ═══════════════════════════════════════════════
@@ -757,14 +842,13 @@ function openEdit(c) {
   document.getElementById('cm-desc').value    = c.description || '';
   document.getElementById('cm-video-url').value = c.video_url || '';
 
-    removedVideoFile = false;
-    removedCoursFile = false;
-    removedExoFile = false;
-    setCurrentFileInfo('video', c.video_filename);
-    setCurrentFileInfo('cours', c.cours_fichier);
-    setCurrentFileInfo('exo', c.exercice_fichier);
+  removedVideoFile = false;
+  removedCoursFile = false;
+  removedExoFile = false;
+  setCurrentFileInfo('video', c.video_filename);
+  setCurrentFileInfo('cours', c.cours_fichier);
+  setCurrentFileInfo('exo', c.exercice_fichier);
 
-  // QCM
   try { qcmData.cours = JSON.parse(c.cours_qcm || '[]'); }    catch(e){ qcmData.cours=[]; }
   try { qcmData.exo   = JSON.parse(c.exercice_qcm || '[]'); } catch(e){ qcmData.exo=[]; }
   renderQcm('cours');
@@ -806,12 +890,10 @@ function clearCourseForm() {
 ═══════════════════════════════════════════════ */
 function switchTab(btn, group) {
   const tabId = btn.dataset.tab;
-  // find sibling tabs
   const tabRow = btn.closest('.tab-row');
   tabRow.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 
-  // hide all content siblings
   const parent = tabRow.parentElement;
   parent.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   parent.querySelector('#' + tabId).classList.add('active');
@@ -885,11 +967,9 @@ async function saveCours() {
   fd.append('description', document.getElementById('cm-desc').value.trim());
   fd.append('video_url',   document.getElementById('cm-video-url').value.trim());
 
-  // video file
   const vf = document.getElementById('cm-video-file').files[0];
   if (vf) fd.append('video_file', vf);
 
-  // cours
   const ct = coursTabs.cours || 'fichier';
   fd.append('cours_type',  ct);
   if (ct === 'fichier') {
@@ -901,7 +981,6 @@ async function saveCours() {
     fd.append('cours_qcm', JSON.stringify(qcmData.cours));
   }
 
-  // exercice
   const et = coursTabs.exo || 'fichier';
   fd.append('exercice_type', et);
   if (et === 'fichier') {
@@ -934,7 +1013,6 @@ async function saveCours() {
     closeCourseModal();
     renderTable();
     toast(editingId ? '✏️ Cours mis à jour !' : '✅ Cours créé !','ok');
-    // si on était en vue vidéo, mettre à jour
     if (currentCours && currentCours.id === editingId) currentCours = data;
   } catch(e) {
     toast(e.message,'err');
@@ -963,7 +1041,6 @@ async function doDelete() {
     allCours = allCours.filter(x => x.id !== deletingId);
     renderTable();
     closeDelConfirm();
-    if (currentCours && currentCours.id === deletingId) showList();
     toast('🗑️ Cours supprimé.','ok');
   } catch(e) { toast(e.message,'err'); }
 }
@@ -982,6 +1059,8 @@ function toast(msg, type='ok') {
 function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+document.getElementById('search-box') && document.getElementById('search-box').addEventListener('input', loadCours);
 
 /* INIT */
 document.addEventListener('DOMContentLoaded', loadCours);

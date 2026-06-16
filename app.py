@@ -356,8 +356,6 @@ def uploaded_exercice(filename):
 
 @app.route('/')
 def index():
-    if 'user_id' in session:
-        return redirect(url_for('dashboard'))
     return render_template('index.html')
 
 
@@ -400,6 +398,25 @@ def admin_education():
         cours = db.execute('SELECT * FROM cours ORDER BY created_at DESC').fetchall()
         notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
     return render_template('admin/education.html', cours=cours, notif_count=notif_count)
+
+
+@app.route('/admin/video/<int:cours_id>')
+@login_required
+def admin_video(cours_id):
+    with get_db() as db:
+        cours = db.execute('SELECT * FROM cours WHERE id = ?', (cours_id,)).fetchone()
+        if not cours:
+            return redirect(url_for('admin_education'))
+        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+    return render_template('video.html', cours=cours, notif_count=notif_count)
+
+
+@app.route('/admin/test')
+@login_required
+def admin_test():
+    with get_db() as db:
+        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+    return render_template('admin/test.html', notif_count=notif_count)
 
 
 @app.route('/user/education')
@@ -451,6 +468,19 @@ def api_register():
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+
+@app.route('/api/logout')
+def api_logout():
+    session.clear()
+    return redirect(url_for('index'))
+
+
+@app.route('/dashboard_admin')
+def dashboard_admin_alias():
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+    return redirect(url_for('dashboard_admin'))
 
 
 @app.route('/files/videos/<path:filename>')

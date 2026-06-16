@@ -38,7 +38,7 @@
     .nav-btn-primary:hover{background:#1d4ed8;color:#fff}
 
     /* ── SECTION SWITCH ── */
-    .page-section{display:none}
+    .page-section{display:none;flex:1}
     .page-section.active{display:block}
 
     /* ── HERO ── */
@@ -200,7 +200,7 @@
     <a href="#" class="nav-btn active" onclick="showSection('accueil',this);return false">Accueil</a>
     <a href="#" class="nav-btn"        onclick="showSection('utilisateurs',this);return false">Utilisateurs</a>
     <a href="#" class="nav-btn">Education</a>
-    <a href="{{ url_for('api_logout') }}" class="nav-btn-primary">Déconnexion</a>
+    <a href="{{ url_for('logout') }}" class="nav-btn-primary">Déconnexion</a>
   </div>
 </nav>
 

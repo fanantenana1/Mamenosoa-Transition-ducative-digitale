@@ -26,7 +26,8 @@ body{font-family:'Inter',sans-serif;background:#080b4a;min-height:100%;display:f
 
 /* ── MAIN : occupe tout l'écran visible (viewport - navbar) ── */
 .main-body{
-  height: calc(100vh - 64px);   /* 64px = hauteur navbar */
+  flex:1;
+  min-height: calc(100vh - 64px);   /* 64px = hauteur navbar */
   background:#0a0d55;
   display:flex;
   align-items:stretch;
@@ -245,7 +246,7 @@ body{font-family:'Inter',sans-serif;background:#080b4a;min-height:100%;display:f
     </a>
   </div>
   <div class="nav-right">
-    <a href="/dashboard" class="lnk-connect">Se connecter</a>
+    <a href="#" class="lnk-connect" onclick="openModal('modal-login');return false;">Se connecter</a>
     <a href="#" class="btn-nav-creer" onclick="openModal('modal-register');return false;">Créer compte</a>
   </div>
 </nav>
@@ -284,8 +285,8 @@ body{font-family:'Inter',sans-serif;background:#080b4a;min-height:100%;display:f
       <h1 class="hero-title">Transition éducative digitale</h1>
       <p class="hero-sub">Transformer l'éducation vers un modèle<br>numérique innovant</p>
       <div class="hero-btns">
-        <a href="/dashboard" class="btn-hero-tableau">Accéder au tableau de bord</a>
-        <a href="#"  class="btn-hero-creer" onclick="openModal('modal-register');return false;">Créer compte</a>
+        <a href="#" class="btn-hero-tableau" onclick="openModal('modal-login');return false;">Accéder au tableau de bord</a>
+        <a href="#" class="btn-hero-creer" onclick="openModal('modal-register');return false;">Créer compte</a>
       </div>
     </div>
 

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Digiscool - {{ cours.titre }}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #BED6F3;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    :root{
+      --navy:rgb(4,6,60); --blue:#2563eb; --green:#16a34a;
+      --red:#dc2626; --teal:#0d9488; --text:#1a1a2e; --muted:#64748b;
+    }
+
+    /* ══════════════════════════════ NAVBAR ══════════════════════════════ */
+    .ds-nav{position:relative;z-index:10;display:flex;align-items:center;
+      justify-content:space-between;padding:.85rem 2.5rem;
+      border-bottom:1px solid rgba(255,255,255,.326);background:rgb(4,6,60);backdrop-filter:blur(12px)}
+    .ds-logo{display:flex;align-items:center;gap:.6rem;font-family:'Orbitron',sans-serif;
+      font-size:1rem;color:#fff;text-decoration:none}
+    .ds-logo-box{width:75px;height:56px;border-radius:10px;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 0 18px #d63af955;padding-right:12px}
+    .ds-logo-box img{width:100%;height:100%;object-fit:contain}
+    .ds-nav-links{display:flex;align-items:center;gap:.75rem;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+    .nav-btn{background:#1f2937;color:#fff;border:none;border-radius:8px;
+      padding:.55rem 1.4rem;font-size:1rem;font-weight:500;cursor:pointer;
+      transition:background .2s;text-decoration:none;white-space:nowrap}
+    .nav-btn:hover{background:#374151;color:#fff}
+    .nav-btn.active{background:#2563eb}
+    .nav-btn-primary{background:#2563eb;color:#fff;border:none;border-radius:8px;
+      padding:.55rem 1.4rem;font-size:1rem;font-weight:600;cursor:pointer;
+      transition:background .2s;text-decoration:none;white-space:nowrap}
+    .nav-btn-primary:hover{background:#1d4ed8;color:#fff}
+
+    .notif-link{position:relative;display:flex;align-items:center;justify-content:center;
+      width:42px;height:42px;border-radius:50%;background:#1f2937;text-decoration:none;
+      transition:background .2s}
+    .notif-link:hover{background:#374151}
+    .notif-icon{font-size:1.15rem;line-height:1}
+    .notif-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;
+      border-radius:50%;background:var(--red);color:#fff;font-size:.68rem;
+      font-weight:700;display:none;align-items:center;justify-content:center;
+      padding:0 4px;line-height:1}
+    .notif-badge.show{display:flex}
+    .notif-link.has-alert{box-shadow:0 0 0 2px rgba(220,38,38,.5)}
+
+    /* ══════════════════════════════ PAGE BODY ══════════════════════════════ */
+    .page-body{
+      max-width:1300px;
+      margin:0 auto;
+      padding:24px 24px 60px;
+    }
+
+    /* ── Retour ── */
+    .back-link{
+      display:inline-flex;align-items:center;gap:8px;
+      color:var(--text);text-decoration:none;font-weight:700;font-size:1.05rem;
+      margin-bottom:18px;
+    }
+    .back-link:hover{opacity:.7}
+    .back-link svg{width:20px;height:20px;stroke:var(--text);stroke-width:2.4;fill:none}
+
+    /* ── HEADER ── */
+    .video-header{
+      display:flex;align-items:center;justify-content:space-between;
+      flex-wrap:wrap;gap:16px;margin-bottom:18px;
+    }
+    .video-title{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px}
+    .vh-label{font-size:1.7rem;font-weight:800;color:var(--text);letter-spacing:.5px}
+    .vh-sep{font-size:1.7rem;font-weight:800;color:var(--text)}
+    .vh-name{font-size:1.7rem;font-weight:800;color:var(--text);text-transform:uppercase}
+    .vh-sub{font-size:1.1rem;color:#333;margin-left:18px;font-weight:500}
+    .vh-sub::before{content:"• ";color:var(--text);font-weight:800}
+
+    .video-actions{display:flex;align-items:center;gap:14px;flex-shrink:0}
+    .icon-btn{
+      display:flex;align-items:center;justify-content:center;
+      width:46px;height:46px;border-radius:10px;
+      text-decoration:none;cursor:pointer;background:none;border:none;
+      transition:opacity .15s;
+    }
+    .icon-btn.edit{border:2px solid var(--teal);color:var(--teal)}
+    .icon-btn.edit svg{width:20px;height:20px}
+    .icon-btn.del{color:var(--red)}
+    .icon-btn.del svg{width:28px;height:28px}
+    .icon-btn:hover{opacity:.7}
+
+    /* ── VIDEO CARD ── */
+    .video-card{
+      width:100%;background:#fff;border-radius:18px;overflow:hidden;
+      box-shadow:0 10px 35px rgba(0,0,0,.15);
+    }
+    .video-frame-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#000}
+    .video-frame-wrap video,
+    .video-frame-wrap iframe{
+      width:100%;height:100%;display:block;border:none;background:#000;
+    }
+    .video-empty{
+      display:flex;align-items:center;justify-content:center;
+      aspect-ratio:16/9;color:#94a3b8;font-size:1.1rem;background:#f1f5f9;
+    }
+
+    /* ── CUSTOM CONTROLS ── */
+    .video-controls{padding:14px 22px 18px;background:#fff}
+    .seek-bar{
+      position:relative;width:100%;height:6px;border-radius:4px;
+      background:#e2e8f0;cursor:pointer;margin-bottom:16px;
+    }
+    .seek-fill{
+      position:absolute;left:0;top:0;height:100%;border-radius:4px;
+      background:linear-gradient(90deg,#e63950,#ff6fae);width:0%;
+    }
+    .seek-thumb{
+      position:absolute;top:50%;transform:translate(-50%,-50%);
+      width:16px;height:16px;border-radius:50%;background:#e63950;
+      box-shadow:0 0 0 5px rgba(230,57,80,.18);left:0%;pointer-events:none;
+    }
+    .controls-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+    .ctrl-btn{
+      background:#f1f5f9;border:none;border-radius:50%;
+      width:42px;height:42px;display:flex;align-items:center;justify-content:center;
+      cursor:pointer;color:var(--text);transition:background .15s;flex-shrink:0;
+    }
+    .ctrl-btn:hover{background:#e2e8f0}
+    .ctrl-btn svg{width:18px;height:18px}
+    .time-display{
+      background:#f1f5f9;border-radius:20px;padding:9px 18px;
+      font-size:.9rem;font-weight:700;color:var(--text);white-space:nowrap;
+    }
+    .controls-spacer{flex:1}
+    .right-controls{display:flex;align-items:center;gap:10px}
+    .ctrl-btn-wrap{position:relative}
+    .hd-badge{
+      position:absolute;top:-4px;right:-4px;background:#e63950;color:#fff;
+      font-size:.55rem;font-weight:800;border-radius:4px;padding:1px 3px;
+      letter-spacing:.5px;
+    }
+
+    /* ── Secondary progress bar ── */
+    .lecture-progress-wrap{margin-top:24px}
+    .lecture-progress{
+      width:100%;height:10px;border-radius:6px;background:#c7cedd;overflow:hidden;
+    }
+    .lecture-progress-fill{
+      height:100%;background:#6b7280;border-radius:6px;width:0%;
+      transition:width .15s linear;
+    }
+
+    /* ── DELETE CONFIRM MODAL ── */
+    #del-confirm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);
+      z-index:600;align-items:center;justify-content:center}
+    #del-confirm.open{display:flex}
+    #del-confirm .box{background:#fff;border-radius:14px;padding:2rem;
+      width:min(380px,90vw);text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+    #del-confirm h3{font-size:1.1rem;font-weight:800;margin-bottom:.6rem;color:var(--text)}
+    #del-confirm p{font-size:.9rem;color:var(--muted);margin-bottom:1.2rem}
+    #del-confirm .actions{display:flex;gap:.7rem;justify-content:center}
+    #del-confirm .btn-del-confirm{background:var(--red);color:#fff;border:none;
+      border-radius:8px;padding:.55rem 1.3rem;font-weight:700;cursor:pointer;font-family:inherit}
+    #del-confirm .btn-cancel{background:#f1f5f9;border:none;border-radius:8px;
+      padding:.55rem 1.3rem;cursor:pointer;font-family:inherit;color:var(--muted)}
+
+    @media (max-width:768px){
+      .vh-label,.vh-sep,.vh-name{font-size:1.3rem}
+      .vh-sub{margin-left:0;display:block;font-size:1rem}
+      .video-title{flex-direction:column;align-items:flex-start;gap:2px}
+      .controls-row{gap:8px}
+      .time-display{font-size:.8rem;padding:8px 12px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="ds-nav">
+  <a href="/dashboard/admin" class="ds-logo">
+    <div class="ds-logo-box">
+      <img src="{{ url_for('static', filename='image/Logo.png') }}" alt="Digiscool Logo"/>
+    </div>
+  </a>
+  <div class="ds-nav-links">
+    <a href="/dashboard/admin" class="nav-btn">Accueil</a>
+    <a href="/dashboard/admin" class="nav-btn">Utilisateurs</a>
+    <a href="/admin/education" class="nav-btn active">Education</a>
+    <a href="/admin/test" class="nav-btn">Test</a>
+    <a href="/admin/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}" title="Notifications">
+      <span class="notif-icon">🔔</span>
+      <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
+    </a>
+    <a href="/logout" class="nav-btn-primary">Déconnexion</a>
+  </div>
+</nav>
+
+<!-- ══ PAGE BODY ══ -->
+<div class="page-body">
+
+  <a href="/admin/education" class="back-link">
+    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Retour
+  </a>
+
+  <div class="video-header">
+    <div class="video-title">
+      <span class="vh-label">VIDEO</span>
+      <span class="vh-sep">:</span>
+      <span class="vh-name">{{ cours.titre }}</span>
+      <span class="vh-sub">{{ cours.matiere }}</span>
+    </div>
+    <div class="video-actions">
+      <a href="/admin/education?edit={{ cours.id }}" class="icon-btn edit" title="Modifier le cours">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"/>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+        </svg>
+      </a>
+      <button class="icon-btn del" title="Supprimer le cours" onclick="openDelConfirm()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18"/>
+          <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6"/>
+          <path d="M14 11v6"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="video-card">
+    <div class="video-frame-wrap">
+      {% if cours.video_url %}
+        <iframe id="yt-frame" src="{{ cours.video_url }}" allowfullscreen
+                allow="autoplay; encrypted-media; picture-in-picture"></iframe>
+      {% elif cours.video_filename %}
+        <video id="main-video" src="/uploads/videos/{{ cours.video_filename }}"></video>
+      {% else %}
+        <div class="video-empty" style="width:100%;height:100%;position:absolute;inset:0">
+          Aucune vidéo disponible pour ce cours
+        </div>
+      {% endif %}
+    </div>
+
+    {% if cours.video_filename and not cours.video_url %}
+    <div class="video-controls">
+      <div class="seek-bar" id="seek-bar">
+        <div class="seek-fill" id="seek-fill"></div>
+        <div class="seek-thumb" id="seek-thumb"></div>
+      </div>
+      <div class="controls-row">
+        <button class="ctrl-btn" id="play-btn" title="Lecture / Pause">
+          <svg id="play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pause-icon" viewBox="0 0 24 24" fill="currentColor" style="display:none">
+            <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
+          </svg>
+        </button>
+        <button class="ctrl-btn" id="mute-btn" title="Couper le son">
+          <svg id="vol-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5 6 9H2v6h4l5 4z"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          </svg>
+          <svg id="mute-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" style="display:none">
+            <path d="M11 5 6 9H2v6h4l5 4z"/>
+            <path d="M23 9l-6 6M17 9l6 6"/>
+          </svg>
+        </button>
+        <div class="time-display"><span id="time-current">0:00</span> / <span id="time-duration">0:00</span></div>
+        <div class="controls-spacer"></div>
+        <div class="right-controls">
+          <div class="ctrl-btn-wrap">
+            <button class="ctrl-btn" title="Qualité">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06A2 2 0 1 1 7.04 4.29l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+            </button>
+            <span class="hd-badge">HD</span>
+          </div>
+          <button class="ctrl-btn" title="Sous-titres">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2"/>
+              <path d="M7 12h2M11 12h2M15 12h2M7 15h6"/>
+            </svg>
+          </button>
+          <button class="ctrl-btn" id="fullscreen-btn" title="Plein écran">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if cours.video_filename and not cours.video_url %}
+  <div class="lecture-progress-wrap">
+    <div class="lecture-progress">
+      <div class="lecture-progress-fill" id="lecture-progress-fill"></div>
+    </div>
+  </div>
+  {% endif %}
+
+</div><!-- fin .page-body -->
+
+<!-- ══ DELETE CONFIRM ══ -->
+<div id="del-confirm">
+  <div class="box">
+    <h3>Supprimer ce cours ?</h3>
+    <p>Cette action est irréversible. La vidéo et les documents associés seront supprimés.</p>
+    <div class="actions">
+      <button class="btn-cancel" onclick="closeDelConfirm()">Annuler</button>
+      <button class="btn-del-confirm" onclick="doDelete()">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   CUSTOM VIDEO PLAYER
+═══════════════════════════════════════════════ */
+const video = document.getElementById('main-video');
+
+if (video) {
+  const playBtn      = document.getElementById('play-btn');
+  const playIcon     = document.getElementById('play-icon');
+  const pauseIcon    = document.getElementById('pause-icon');
+  const muteBtn      = document.getElementById('mute-btn');
+  const volIcon      = document.getElementById('vol-icon');
+  const muteIcon     = document.getElementById('mute-icon');
+  const timeCurrent  = document.getElementById('time-current');
+  const timeDuration = document.getElementById('time-duration');
+  const seekBar      = document.getElementById('seek-bar');
+  const seekFill     = document.getElementById('seek-fill');
+  const seekThumb    = document.getElementById('seek-thumb');
+  const fullscreenBtn= document.getElementById('fullscreen-btn');
+  const lectureFill  = document.getElementById('lecture-progress-fill');
+
+  function fmtTime(s) {
+    if (!isFinite(s)) return '0:00';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60).toString().padStart(2, '0');
+    return `${m}:${sec}`;
+  }
+
+  function togglePlay() {
+    if (video.paused) { video.play(); } else { video.pause(); }
+  }
+
+  playBtn.addEventListener('click', togglePlay);
+  video.addEventListener('click', togglePlay);
+
+  video.addEventListener('play', () => {
+    playIcon.style.display = 'none';
+    pauseIcon.style.display = 'block';
+  });
+  video.addEventListener('pause', () => {
+    playIcon.style.display = 'block';
+    pauseIcon.style.display = 'none';
+  });
+
+  muteBtn.addEventListener('click', () => {
+    video.muted = !video.muted;
+    volIcon.style.display  = video.muted ? 'none'  : 'block';
+    muteIcon.style.display = video.muted ? 'block' : 'none';
+  });
+
+  video.addEventListener('loadedmetadata', () => {
+    timeDuration.textContent = fmtTime(video.duration);
+  });
+
+  video.addEventListener('timeupdate', () => {
+    timeCurrent.textContent = fmtTime(video.currentTime);
+    const pct = video.duration ? (video.currentTime / video.duration) * 100 : 0;
+    seekFill.style.width  = pct + '%';
+    seekThumb.style.left  = pct + '%';
+    if (lectureFill) lectureFill.style.width = pct + '%';
+  });
+
+  function seek(e) {
+    const rect = seekBar.getBoundingClientRect();
+    const pct  = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+    if (video.duration) video.currentTime = pct * video.duration;
+  }
+  seekBar.addEventListener('click', seek);
+
+  fullscreenBtn.addEventListener('click', () => {
+    const wrap = video.closest('.video-frame-wrap');
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else if (wrap.requestFullscreen) {
+      wrap.requestFullscreen();
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   DELETE CONFIRM
+═══════════════════════════════════════════════ */
+const COURS_ID = {{ cours.id }};
+
+function openDelConfirm()  { document.getElementById('del-confirm').classList.add('open'); }
+function closeDelConfirm() { document.getElementById('del-confirm').classList.remove('open'); }
+
+async function doDelete() {
+  try {
+    const res = await fetch(`/api/cours/${COURS_ID}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const d = await res.json();
+      throw new Error(d.error || 'Erreur lors de la suppression');
+    }
+    window.location.href = '/admin/education';
+  } catch (e) {
+    alert(e.message);
+    closeDelConfirm();
+  }
+}
+</script>
+</body>
+</html>
