@@ -204,8 +204,19 @@
       border: 1px blue solid;
     }
 
-    .sort-select {
+    .select-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
       flex: 1;
+      height: 100%;
+    }
+
+    .sort-select {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       border: none;
       outline: none;
       background: transparent;
@@ -216,6 +227,9 @@
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
+      padding-left: 4px;
+      padding-right: 28px;
+      z-index: 2;
     }
 
     .sort-select option {
@@ -225,15 +239,17 @@
     }
 
     .arrow-icon {
+      position: absolute;
+      right: 2px;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
       pointer-events: none;
+      z-index: 1;
     }
     .arrow-icon svg {
-      width: 30px;
-      height: 40px;
+      width: 24px;
+      height: 24px;
       fill: #111;
       display: block;
     }
@@ -353,18 +369,20 @@
   <!-- Search row -->
   <div class="search-wrap">
     <div class="search-case"> 
-      <select class="sort-select" id="sort-select" onchange="loadCours()">
-        <option value="id" class="select_indice">Selectionner</option>    
-        <option value="num">Trier par N°</option>
-        <option value="titre">Trier par Titre</option>
-        <option value="matiere">Trier par Matière</option>
-        <option value="created_at">Trier par Date</option>
-      </select>
-      <span class="arrow-icon">
-        <svg viewBox="0 0 24 24">
-          <path d="M7 10l5 5 5-5z"/>
-        </svg>
-      </span>
+      <div class="select-wrapper">
+        <select class="sort-select" id="sort-select" onchange="loadCours()">
+          <option value="id" class="select_indice">Selectionner</option>    
+          <option value="num">Trier par N°</option>
+          <option value="titre">Trier par Titre</option>
+          <option value="matiere">Trier par Matière</option>
+          <option value="created_at">Trier par Date</option>
+        </select>
+        <span class="arrow-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </span>
+      </div>
     </div>
     <button class="btn-resultat" onclick="window.location.href='/admin/test/resultats'">Résultat</button>
   </div> <!-- fin .search-wrap -->
