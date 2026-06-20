@@ -949,21 +949,10 @@
 
 <script>
 /* ═══════════════════════════════════════════════
-   DATA STORE (demo data — remplacer par API)
+   DATA STORE (live SQLite users)
 ═══════════════════════════════════════════════ */
-let allUsers = [
-  { id:1,  nom:'System',    prenom:'Admin',    username:'@admin',     email:'haaahiii012@gmail.com',   phone:'N/A',              role:'Admin',       statut:'Approuvé',   profession:'professionnel', dob:'1985-03-10', sexe:'m', adresse:'Antananarivo, Madagascar', avatar:'' },
-  { id:2,  nom:'Carlo',     prenom:'Robert',   username:'@user1',     email:'fafa000fafa0n3@gmail.com', phone:'N/A',              role:'Utilisateur', statut:'Approuvé',   profession:'etudiant',      dob:'2000-07-22', sexe:'m', adresse:'Toamasina, Madagascar',    avatar:'' },
-  { id:3,  nom:'Donasia',   prenom:'',         username:'@collector1',email:'fafa000fafa0n1@gmail.com', phone:'N/A',              role:'Utilisateur', statut:'Approuvé',   profession:'enseignant',    dob:'1992-11-05', sexe:'f', adresse:'Fianarantsoa, Madagascar', avatar:'' },
-  { id:4,  nom:'Collector', prenom:'Malou',    username:'@collector2',email:'fafa000fafa0n2@gmail.com', phone:'N/A',              role:'Collecteur',  statut:'Approuvé',   profession:'professionnel', dob:'1988-04-18', sexe:'f', adresse:'Mahajanga, Madagascar',   avatar:'' },
-  { id:5,  nom:'Jamala',    prenom:'',         username:'@da',        email:'fafa000fafa0n6@gmail.com', phone:'N/A',              role:'Opérateur',   statut:'Approuvé',   profession:'autre',         dob:'1995-09-30', sexe:'m', adresse:'Antsiranana, Madagascar', avatar:'' },
-  { id:6,  nom:'Dupont',    prenom:'Marie',    username:'@marie',     email:'marie.d@example.com',      phone:'+261 34 12 345 67',role:'Utilisateur', statut:'En attente', profession:'etudiant',      dob:'2003-01-14', sexe:'f', adresse:'Toliara, Madagascar',     avatar:'' },
-  { id:7,  nom:'Paul',      prenom:'Jean',     username:'@jeanp',     email:'jeanp@example.com',        phone:'N/A',              role:'Collecteur',  statut:'En attente', profession:'parent',        dob:'1979-06-02', sexe:'m', adresse:'Antsirabe, Madagascar',   avatar:'' },
-  { id:8,  nom:'Martin',    prenom:'Alice',    username:'@alice',     email:'alice.m@example.com',      phone:'N/A',              role:'Utilisateur', statut:'Rejeté',     profession:'etudiant',      dob:'2001-12-20', sexe:'f', adresse:'—',                       avatar:'' },
-  { id:9,  nom:'Sud',       prenom:'Collecteur',username:'@csud',     email:'csud@example.com',         phone:'N/A',              role:'Collecteur',  statut:'Approuvé',   profession:'professionnel', dob:'1990-08-15', sexe:'m', adresse:'Tolagnaro, Madagascar',   avatar:'' },
-  { id:10, nom:'Nord',      prenom:'Opérateur',username:'@opnord',    email:'opnord@example.com',       phone:'N/A',              role:'Opérateur',   statut:'Approuvé',   profession:'professionnel', dob:'1987-02-28', sexe:'m', adresse:'Sambava, Madagascar',     avatar:'' },
-];
-let nextId = 11;
+let allUsers = {{ users | tojson | safe }};
+let nextId = allUsers.length ? Math.max(...allUsers.map(u => u.id)) + 1 : 1;
 let editingId = null;
 let deletingId = null;
 let viewingId = null;
@@ -1431,15 +1420,25 @@ async function quickApprove(id) {
   const u = allUsers.find(x => x.id === id);
   if (!u) return;
 
-  // Visual feedback on button
   const btn = event.currentTarget;
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px"></span>';
 
-  // Simulate API call → replace with: fetch(`/api/users/${id}/approve`, {method:'POST'})
-  await new Promise(r => setTimeout(r, 700));
+  const response = await fetch(`/api/users/${id}/statut`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({statut: 'Approuvé'})
+  });
+  const result = await response.json();
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3z"/><path d="M8 11c1.66 0 3-1.34 3-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3z"/><path d="M8 13c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13z"/><path d="M20.5 14.5l-3 3-1.5-1.5" stroke-width="2.2"/></svg>';
 
-  u.statut = 'Approuvé';
+  if (!response.ok) {
+    toast(result.error || 'Impossible d’approuver le compte.', 'err');
+    return;
+  }
+
+  u.statut = result.statut || 'Approuvé';
   renderTable();
   toast(`✅ Compte de ${u.nom} approuvé avec succès !`, 'ok');
 }
@@ -1471,14 +1470,21 @@ async function confirmReject() {
   const spinner = document.getElementById('reject-spinner');
   spinner.style.display = 'inline-block';
 
-  // Simulate API call → replace with:
-  // fetch(`/api/users/${rejectTargetId}/reject`, {method:'POST', body: JSON.stringify({reason})})
-  await new Promise(r => setTimeout(r, 700));
-
-  u.statut = 'Rejeté';
-  if (reason) u.rejectReason = reason;
+  const response = await fetch(`/api/users/${rejectTargetId}/statut`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({statut: 'Rejeté'})
+  });
+  const result = await response.json();
 
   spinner.style.display = 'none';
+  if (!response.ok) {
+    toast(result.error || 'Impossible de rejeter le compte.', 'err');
+    return;
+  }
+
+  u.statut = result.statut || 'Rejeté';
+  if (reason) u.rejectReason = reason;
   closeRejectModal();
   renderTable();
   toast(`🚫 Compte de ${u.nom} rejeté.`, 'err');

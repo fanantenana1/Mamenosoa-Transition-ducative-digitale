@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Digiscool - Education</title>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+        :root {
+            --nav-bg: #1a1a2e;
+            --accent: #1a6bff;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #BED6F3;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ══════════════════════════════ NAVBAR ══════════════════════════════ */
+        .ds-nav {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .85rem 2.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, .326);
+            background: rgb(4, 6, 60);
+            backdrop-filter: blur(12px)
+        }
+
+        .ds-logo {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: #fff;
+            text-decoration: none
+        }
+
+        .ds-logo-box {
+            width: 75px;
+            height: 56px;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 18px #d63af955;
+            padding-right: 12px
+        }
+
+        .ds-logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain
+        }
+
+        .ds-nav-links {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            margin-left: auto;
+            flex-wrap: wrap;
+            justify-content: flex-end
+        }
+
+        .nav-btn {
+            background: #1f2937;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: .55rem 1.4rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background .2s;
+            text-decoration: none;
+            white-space: nowrap
+        }
+
+        .nav-btn:hover {
+            background: #374151;
+            color: #fff
+        }
+
+        .nav-btn.active {
+            background: #2563eb
+        }
+
+        .nav-btn-primary {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: .55rem 1.4rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s;
+            text-decoration: none;
+            white-space: nowrap
+        }
+
+        .nav-btn-primary:hover {
+            background: #1d4ed8;
+            color: #fff
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            color: #fff;
+            padding: .4rem .7rem
+        }
+
+        .user-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7dd3fc
+        }
+
+        .user-icon svg {
+            width: 22px;
+            height: 22px
+        }
+
+        .user-name {
+            font-size: .95rem;
+            font-weight: 500;
+            white-space: nowrap
+        }
+
+        .notif-link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #1f2937;
+            text-decoration: none;
+            transition: background .2s
+        }
+
+        .notif-link:hover {
+            background: #374151
+        }
+
+        .notif-icon {
+            font-size: 1.15rem;
+            line-height: 1
+        }
+
+        .notif-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--red, #dc2626);
+            color: #fff;
+            font-size: .68rem;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            line-height: 1
+        }
+
+        .notif-badge.show {
+            display: flex
+        }
+
+        .notif-link.has-alert {
+            box-shadow: 0 0 0 2px rgba(220, 38, 38, .5)
+        }
+
+        @media (max-width: 560px) {
+            .ds-nav {
+                padding: 0 12px;
+                gap: 2px;
+            }
+
+            .nav-btn {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
+
+        /* PAGE BODY */
+        .page-body {
+            background-image: url('/static/components/Rectangle 18.png');
+            background-size: 100% 100%;
+            min-height: calc(100vh - 66px);
+            padding: 32px 40px 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            margin-top: 25px;
+        }
+
+        /* SEARCH WRAP */
+        .search-wrap {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 700px;
+            height: 60px;
+            background-image: url('/static/components/Rectangle 24.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            border-radius: 0 0 10px 10px;
+            margin-top: -48px;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        /* ══════════════════════════════ BARRE RETOUR ══════════════════════════════ */
+        .retour-bar {
+            background: #fefeff;
+            padding: 4px 9px;
+            display: flex;
+            justify-content: flex-start;
+            /* aligne le bouton à gauche */
+            align-items: center;
+            border-bottom: 1px solid #b0c4de;
+            border-radius: 5px;
+        }
+
+        .btn-retour {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            padding: 0;
+        }
+
+        .btn-retour:hover {
+            color: var(--accent);
+        }
+
+        .btn-retour svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.5;
+        }
+
+        /* BOUTON COMMENTAIRES */
+        .bt_commentaire {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #1a6bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .bt_commentaire:hover {
+            background: #155bb5;
+        }
+
+        .bt_commentaire svg {
+            width: 18px;
+            height: 18px;
+            display: block;
+        }
+        .bt_commentaire .send-icon {
+            transform: scaleX(-1);
+        }
+
+        /* TITRE WRAP avec avatar */
+        .titre-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+        }
+
+        /* AVATAR UTILISATEUR */
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid #4a7fb5;
+            overflow: hidden;
+            background: #b8d0e8;
+            flex-shrink: 0;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .titre-resultat {
+            background: #dce8f5;
+            border-radius: 4px;
+            padding: 5px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+            min-width: 180px;
+            white-space: nowrap;
+        }
+
+        /* INPUT NOTE */
+        #reg-note {
+            width: 90px;
+            height: 30px;
+            background: #fff;
+            border: 1px solid #b0c4de;
+            border-radius: 8px;
+            padding: 0 10px;
+            font-size: 0.9rem;
+            color: #555;
+            outline: none;
+            flex-shrink: 0;
+        }
+
+        #reg-note:focus {
+            border-color: var(--accent);
+        }
+
+        /* TABLE CARD */
+        .table-card {
+            width: 100%;
+            max-width: 1100px;
+            background-image: url('components/Rectangle 29.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            border-radius: 12px;
+            overflow: hidden;
+            padding-bottom: 12px;
+        }
+
+        /* VIDEO CARD */
+        .video-card {
+            width: 100%;
+            max-width: 920px;
+            background: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, .12);
+            margin: 16px auto;
+            padding: 18px;
+            border: 1px solid #2563eb4d
+        }
+
+        .video-frame-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            max-height: 520px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, .06)
+        }
+
+        .video-frame-wrap iframe,
+        .video-frame-wrap video {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border: none;
+            background: #000
+        }
+
+        .video-description {
+            margin-top: 14px;
+            color: #334155;
+            line-height: 1.6
+        }
+
+        .video-meta {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            flex-wrap: wrap
+        }
+
+        .meta-pill {
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 10px;
+            color: #475569;
+            font-weight: 700
+        }
+
+        /* WRAPPER + MAROON ACCENT BEHIND VIDEO */
+        .video-card-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 960px;
+            margin: 0px auto
+        }
+
+        .video-card-wrap .video-card {
+            position: relative;
+            z-index: 1;
+            margin: 0
+        }
+
+        /* TABLE HEADER */
+        .table-header {
+            width: 100%;
+            height: 50px;
+            background: rgba(180, 200, 225, 0.45);
+            border-bottom: 2px solid #4a72b0;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+        }
+
+        .th-num {
+            width: 72px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .th-vid {
+            width: 115px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .th-titre {
+            width: 265px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .th-cours {
+            width: 205px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .th-exo {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .lbl {
+            color: #2a4fb5;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        /* TABLE ROWS */
+        .table-rows {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .row-item {
+            width: 100%;
+            height: 92px;
+            display: block;
+            border: none;
+            padding: 0;
+            background: transparent;
+            cursor: pointer;
+            transition: filter 0.15s;
+        }
+
+        .row-item:hover {
+            filter: brightness(0.95);
+        }
+
+        .row-item img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: fill;
+        }
+
+        /* ACTIONS ROW */
+        .table-actions-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 18px;
+            background: #e0eaf5;
+            border-bottom: 1px solid #c5d5e8;
+        }
+
+        .action-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #1a6bff;
+        }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-delete svg {
+            width: 20px;
+            height: 20px;
+            stroke: #e53935;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .btn-delete:hover svg {
+            stroke: #b71c1c;
+        }
+
+        /* LIGNES RÉSULTAT */
+        .result-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 18px;
+            background: #f5f8fc;
+            border-bottom: 1px solid #d0dcea;
+            transition: background .15s;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-row:hover {
+            background: #eaf1f9;
+        }
+
+        .row-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #1a6bff;
+            flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid #4a7fb5;
+            background: #b8d0e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .avatar svg {
+            width: 30px;
+            height: 30px;
+            fill: #4a7fb5;
+        }
+
+        .row-name {
+            font-weight: 700;
+            font-size: 0.97rem;
+            color: #1a1a2e;
+            min-width: 140px;
+            flex-shrink: 0;
+        }
+
+        .row-date {
+            flex: 1;
+            font-size: 0.88rem;
+            color: #6b7a8d;
+            text-align: center;
+        }
+
+        .row-voir {
+            color: #1a6bff;
+            font-size: 0.92rem;
+            font-weight: 600;
+            text-decoration: none;
+            flex-shrink: 0;
+            min-width: 70px;
+            text-align: right;
+        }
+
+        .row-voir:hover {
+            text-decoration: underline;
+        }
+
+        .btn-info {
+            background: #1a3a5e;
+            border: none;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .btn-info:hover {
+            background: #1a6bff;
+        }
+
+        /* AJOUTER */
+        .btn-ajouter {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 52px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .resultat-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            /* espace entre l’icône et le texte */
+            /*x ICONE */
+
+        }
+
+        /* TEXTAREA COMMENTAIRE */
+        .comment-textarea {
+            width: 100%;
+            max-width: 1100px;
+            min-height: 440px;
+            background: #d9d9d9;
+            border-radius: 10px;
+            padding: 24px 28px;
+            font-family: inherit;
+            font-size: 1.05rem;
+            color: #333;
+            resize: vertical;
+            outline: none;
+            overflow: hidden;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, .12);
+            border: 1px solid #2563eb4d
+        }
+
+        .comment-textarea::placeholder {
+            color: #6b7280;
+            font-size: 1.05rem;
+        }
+
+        .comment-textarea:focus {
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        /* TOAST */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: #1a1a2e;
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: .9rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s, transform .25s;
+            z-index: 100;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══ NAVBAR ══ -->
+    <nav class="ds-nav">
+        <a href="/dashboard/admin" class="ds-logo">
+            <div class="ds-logo-box">
+                <img src="{{ url_for('static', filename='image/Logo.png') }}" alt="Digiscool Logo" />
+            </div>
+            <div class="ds-logo-name">Digiscool</div>
+        </a>
+        <div class="ds-nav-links">
+            <a href="/dashboard/user" class="nav-btn">Acceuil</a>
+            <a href="/user/education" class="nav-btn">Education</a>
+            <a href="/user/test" class="nav-btn active">Test</a>
+            <div class="user-info">
+                <span class="user-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+                    </svg>
+                </span>
+                <span class="user-name">{{ user_name|default('Nom user') }}</span>
+            </div>
+            <a href="/user/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}"
+                title="Notifications">
+                <span class="notif-icon">🔔</span>
+                <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
+            </a>
+            <a href="/logout" class="nav-btn-primary">Déconnecté</a>
+        </div>
+    </nav>
+    <!-- PAGE BODY -->
+    <div class="page-body">
+        <!-- Search row -->
+        <div class="search-wrap">
+            <!-- Retour -->
+            <div class="retour-bar">
+                <button class="btn-retour" onclick="history.back()">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                        <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                    </svg>
+                    Anullerª
+                </button>
+            </div>
+            <!-- Bloc résultat utilisateur -->
+            <div class="resultat-user">
+                <div class="titre-resultat">COMMENTAIRE</div>
+            </div>
+            <!-- Bouton Commentaires -->
+            <button type="button" class="bt_commentaire">
+                <span>Envoyer</span>
+                <svg class="send-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M2 12l19-9-9 9 9 9-19-9z" />
+                </svg>
+            </button>
+        </div><!-- fin .search-wrap -->
+        <textarea id="comment-text" class="comment-textarea" placeholder="Ecrire une commentaire ……"></textarea>
+        <div id="toast"></div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const textarea = document.getElementById('comment-text');
+                const btnEnvoyer = document.querySelector('.bt_commentaire');
+                const btnAnnuler = document.querySelector('.btn-retour');
+                const toast = document.getElementById('toast');
+
+                function showToast(msg) {
+                    if (!toast) return;
+                    toast.textContent = msg;
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 2500);
+                }
+                if (btnEnvoyer) {
+                    btnEnvoyer.addEventListener('click', () => {
+                        const value = textarea.value.trim();
+                        if (!value) {
+                            textarea.focus();
+                            showToast('Veuillez écrire un commentaire avant d\'envoyer.');
+                            return;
+                        }
+                        // TODO: brancher l'envoi réel du commentaire (fetch vers l'API backend)
+                        showToast('Commentaire envoyé !');
+                        textarea.value = '';
+                    });
+                }
+                if (btnAnnuler) {
+                    btnAnnuler.addEventListener('click', (e) => {
+                        if (textarea) textarea.value = '';
+                    });
+                }
+            });
+        </script>
+</body>
+</html>

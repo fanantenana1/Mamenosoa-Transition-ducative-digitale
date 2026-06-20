@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Digiscool - {{ cours.titre }}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #BED6F3; min-height: 100vh; overflow-x: hidden; }
+    :root{ --navy:rgb(4,6,60); --blue:#2563eb; --green:#16a34a; --red:#dc2626; --text:#1a1a2e; --muted:#64748b; }
+    .ds-nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:.85rem 2.5rem;border-bottom:1px solid rgba(255,255,255,.326);background:rgb(4,6,60);backdrop-filter:blur(12px)}
+    .ds-logo{display:flex;align-items:center;gap:.6rem;font-family:'Orbitron',sans-serif;font-size:1rem;color:#fff;text-decoration:none}
+    .ds-logo-box{width:75px;height:56px;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px #d63af955;padding-right:12px}
+    .ds-logo-box img{width:100%;height:100%;object-fit:contain}
+    .ds-nav-links{display:flex;align-items:center;gap:.75rem;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+    .nav-btn{background:#1f2937;color:#fff;border:none;border-radius:8px;padding:.55rem 1.4rem;font-size:1rem;font-weight:500;cursor:pointer;transition:background .2s;text-decoration:none;white-space:nowrap}
+    .nav-btn:hover{background:#374151;color:#fff}
+    .nav-btn.active{background:#2563eb}
+    .nav-btn-primary{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:.55rem 1.4rem;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s;text-decoration:none;white-space:nowrap}
+    .nav-btn-primary:hover{background:#1d4ed8;color:#fff}
+    .user-info{display:flex;align-items:center;gap:.5rem;color:#fff;padding:.4rem .7rem}
+    .user-icon{display:flex;align-items:center;justify-content:center;color:#7dd3fc}
+    .user-icon svg{width:22px;height:22px}
+    .user-name{font-size:.95rem;font-weight:500;white-space:nowrap}
+    .notif-link{position:relative;display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:#1f2937;text-decoration:none;transition:background .2s}
+    .notif-link:hover{background:#374151}
+    .notif-icon{font-size:1.15rem;line-height:1}
+    .notif-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:.68rem;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 4px;line-height:1}
+    .notif-badge.show{display:flex}
+    .notif-link.has-alert{box-shadow:0 0 0 2px rgba(220,38,38,.5)}
+    .page-body{max-width:1300px;margin:0 auto;padding:24px 24px 60px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+    .back-link{display:inline-flex;align-items:center;gap:8px;color:var(--text);text-decoration:none;font-weight:700;font-size:1.05rem;margin-bottom:18px;width:100%;max-width:920px;}
+    .back-link:hover{opacity:.7}
+    .back-link svg{width:20px;height:20px;stroke:var(--text);stroke-width:2.4;fill:none}
+    .video-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:18px;width:100%;max-width:920px;}
+    .video-title{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px}
+    .video-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+    .video-actions button{background:#2563eb;color:#fff;border:none;border-radius:10px;padding:.6rem 1rem;cursor:pointer;font-weight:700;transition:background .2s;}
+    .video-actions button:hover{background:#1d4ed8;}
+    .vh-label{font-size:1.7rem;font-weight:800;color:var(--text);letter-spacing:.5px}
+    .vh-sep{font-size:1.7rem;font-weight:800;color:var(--text)}
+    .vh-name{font-size:1.7rem;font-weight:800;color:var(--text);text-transform:uppercase}
+    .vh-sub{font-size:1.1rem;color:#333;margin-left:18px;font-weight:500}
+    .vh-sub::before{content:"• ";color:var(--text);font-weight:800}
+    .video-card{width:100%;max-width:920px;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 10px 35px rgba(0,0,0,.15);margin:0 auto;border:1px solid rgba(37,99,235,.25);}
+    .video-frame-wrap{position:relative;width:100%;max-width:100%;aspect-ratio:16/9;max-height:520px;background:#000;border:1px solid rgba(37,99,235,.35);}
+    .video-frame-wrap video,.video-frame-wrap iframe{width:100%;height:100%;display:block;border:none;background:#000;}
+    .video-empty{display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;color:#94a3b8;font-size:1.1rem;background:#f1f5f9}
+    .video-description{margin-top:22px;background:#fff;border-radius:18px;padding:24px;box-shadow:0 10px 20px rgba(0,0,0,.08);}
+    .video-description h2{font-size:1.2rem;font-weight:800;color:var(--text);margin-bottom:12px}
+    .video-description p{color:var(--muted);line-height:1.7;white-space:pre-line}
+    .video-metadata{display:grid;grid-template-columns:repeat(2,minmax(200px,1fr));gap:16px;margin-top:18px}
+    .meta-card{background:#f8fafc;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px}
+    .meta-card strong{color:var(--text);font-size:.95rem}
+    .meta-card span{color:#475569;font-size:.92rem;line-height:1.5}
+    .meta-empty{color:#64748b;font-size:.92rem}
+    #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(10px);z-index:9999;background:#1e293b;color:#fff;padding:.7rem 1.5rem;border-radius:10px;font-size:.88rem;box-shadow:0 4px 20px rgba(0,0,0,.25);opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    #toast.ok{border-left:4px solid var(--green)}
+    #toast.err{border-left:4px solid var(--red)}
+    @media(max-width:900px){.video-header{flex-direction:column;align-items:flex-start;} .video-metadata{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<nav class="ds-nav">
+  <a href="/user/dashboard" class="ds-logo">
+    <div class="ds-logo-box">
+      <img src="{{ url_for('static', filename='image/Logo.png') }}" alt="Digiscool Logo"/>
+    </div>
+  </a>
+  <div class="ds-nav-links">
+    <a href="/user/dashboard" class="nav-btn">Accueil</a>
+    <a href="/user/education_user" class="nav-btn active">Education</a>
+    <div class="user-info">
+      <span class="user-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+      </span>
+      <span class="user-name">{{ user_name|default('Utilisateur') }}</span>
+    </div>
+    <a href="#" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}" title="Notifications">
+      <span class="notif-icon">🔔</span>
+      <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
+    </a>
+    <a href="/logout" class="nav-btn-primary">Déconnexion</a>
+  </div>
+</nav>
+<div class="page-body">
+  <a href="/user/education_user" class="back-link">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Retour à l'éducation
+  </a>
+  <div class="video-header">
+    <div class="video-title">
+      <span class="vh-label">VIDEO</span>
+      <span class="vh-sep">:</span>
+      <span class="vh-name">{{ cours.titre }}</span>
+      <span class="vh-sub">{{ cours.matiere }}</span>
+    </div>
+    <div class="video-actions">
+      <button type="button" onclick="commentClick()">Commentaires</button>
+    </div>
+  </div>
+  <div class="table-card">
+    <div class="video-card">
+    <div class="video-frame-wrap">
+      {% if cours.video_url %}
+        {% if 'youtube.com/embed' in video_src or 'youtu.be' in video_src or 'youtube.com' in video_src %}
+          <iframe src="{{ video_src }}" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
+        {% else %}
+          <video controls src="{{ video_src }}"></video>
+        {% endif %}
+      {% elif cours.video_filename %}
+        <video controls src="/uploads/videos/{{ cours.video_filename }}"></video>
+      {% else %}
+        <div class="video-empty">Aucune vidéo disponible pour ce cours.</div>
+      {% endif %}
+    </div>
+    </div>
+  </div>
+</div>
+<style>
+  .table-card {
+    width: 100%; max-width: 1100px;
+    background-image: url('/static/components/Rectangle 29.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border-radius: 12px;
+    overflow: hidden;
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+  }
+</style>
+<div id="toast"></div>
+<script>
+function commentClick() {
+  toast('Bouton Commentaires actif.', 'ok');
+}
+
+function toast(msg, type='ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => el.className = '', 3000);
+}
+</script>
+</body>
+</html>

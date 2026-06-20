@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Digiscool - Notifications</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #BED6F3;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ══════════════════════════════ NAVBAR ══════════════════════════════ */
+    .ds-nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
+      justify-content:space-between;padding:.85rem 2.5rem;
+      border-bottom:1px solid rgba(255,255,255,.326);background:rgb(4,6,60);backdrop-filter:blur(12px)}
+    .ds-logo{display:flex;align-items:center;gap:.6rem;font-family:'Orbitron',sans-serif;
+      font-size:1rem;color:#fff;text-decoration:none}
+    .ds-logo-box{width:75px;height:56px;border-radius:10px;overflow:hidden;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 0 18px #d63af955;padding-right:12px}
+    .ds-logo-box img{width:100%;height:100%;object-fit:contain}
+    .ds-nav-links{display:flex;align-items:center;gap:.75rem;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+    .nav-btn{background:#1f2937;color:#fff;border:none;border-radius:8px;
+      padding:.55rem 1.4rem;font-size:1rem;font-weight:500;cursor:pointer;
+      transition:background .2s;text-decoration:none;white-space:nowrap}
+    .nav-btn:hover{background:#374151;color:#fff}
+    .nav-btn.active{background:#2563eb}
+    .nav-btn-primary{background:#2563eb;color:#fff;border:none;border-radius:8px;
+      padding:.55rem 1.4rem;font-size:1rem;font-weight:600;cursor:pointer;
+      transition:background .2s;text-decoration:none;white-space:nowrap}
+    .nav-btn-primary:hover{background:#1d4ed8;color:#fff}
+
+    .user-info{display:flex;align-items:center;gap:.5rem;color:#fff;padding:.4rem .7rem}
+    .user-icon{display:flex;align-items:center;justify-content:center;color:#7dd3fc}
+    .user-icon svg{width:22px;height:22px}
+    .user-name{font-size:.95rem;font-weight:500;white-space:nowrap}
+
+    .notif-link{position:relative;display:flex;align-items:center;justify-content:center;
+      width:42px;height:42px;border-radius:50%;background:#1f2937;text-decoration:none;
+      transition:background .2s}
+    .notif-link:hover{background:#374151}
+    .notif-icon{font-size:1.15rem;line-height:1}
+    .notif-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;
+      border-radius:50%;background:var(--red,#dc2626);color:#fff;font-size:.68rem;
+      font-weight:700;display:none;align-items:center;justify-content:center;
+      padding:0 4px;line-height:1}
+    .notif-badge.show{display:flex}
+    .notif-link.has-alert{box-shadow:0 0 0 2px rgba(220,38,38,.5)}
+
+    /* ══════════════════════════════ PAGE BODY ══════════════════════════════ */
+    .page-body {
+      background-image: url('/static/components/Rectangle 18.png');
+      background-size: 100% 100%;
+      flex: 1;
+      padding: 32px 40px 48px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 24px; margin-top: 25px;
+      min-height: calc(100vh - 157px);
+    }
+
+    .notif-container {
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 35px rgba(0,0,0,.12);
+      overflow: hidden;
+    }
+
+    .notif-header {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #fff;
+      padding: 24px 28px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .notif-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notif-item {
+      padding: 18px 28px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      transition: background .15s;
+    }
+
+    .notif-item:hover {
+      background: #f8fafc;
+    }
+
+    .notif-item:last-child {
+      border-bottom: none;
+    }
+
+    .notif-item.unread {
+      background: #f0f6ff;
+    }
+
+    .notif-item.unread::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2563eb;
+      flex-shrink: 0;
+      margin-top: 8px;
+    }
+
+    .notif-content {
+      flex: 1;
+    }
+
+    .notif-message {
+      color: #1f2937;
+      font-size: 0.98rem;
+      line-height: 1.6;
+      margin-bottom: 6px;
+    }
+
+    .notif-time {
+      color: #6b7a8d;
+      font-size: 0.85rem;
+    }
+
+    .notif-empty {
+      padding: 48px 28px;
+      text-align: center;
+      color: #94a3b8;
+    }
+
+    .notif-empty-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="ds-nav">
+  <a href="/dashboard/user" class="ds-logo">
+    <div class="ds-logo-box">
+      <img src="{{ url_for('static', filename='image/Logo.png') }}" alt="Digiscool Logo"/>
+    </div>
+    <div class="ds-logo-name">Digiscool</div>
+  </a>
+  <div class="ds-nav-links">
+    <a href="/dashboard/user" class="nav-btn">Acceuil</a>
+    <a href="/user/education" class="nav-btn">Education</a>
+    <a href="/user/test" class="nav-btn">Test</a>
+    <div class="user-info">
+      <span class="user-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8"/>
+        </svg>
+      </span>
+      <span class="user-name">{{ user_name|default('Nom user') }}</span>
+    </div>
+    <a href="/user/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}" title="Notifications">
+      <span class="notif-icon">🔔</span>
+      <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
+    </a>
+    <a href="/logout" class="nav-btn-primary">Déconnecté</a>
+  </div>
+</nav>
+
+<!-- PAGE BODY -->
+<div class="page-body">
+  <div class="notif-container">
+    <div class="notif-header">Notifications</div>
+    <div class="notif-list">
+      {% if notifications %}
+        {% for notif in notifications %}
+          <div class="notif-item {% if not notif.is_read %}unread{% endif %}">
+            <div class="notif-content">
+              <div class="notif-message">{{ notif.message }}</div>
+              <div class="notif-time">{{ notif.created_at[:16].replace('T', ' ') if notif.created_at else '' }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="notif-empty">
+          <div class="notif-empty-icon">📭</div>
+          <p>Aucune notification pour le moment.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+{% include "footer.html" %}
+
+</body>
+</html>

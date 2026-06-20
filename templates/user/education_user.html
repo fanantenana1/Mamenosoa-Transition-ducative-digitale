@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digiscool - Education</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #BED6F3;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ══════════════════════════════ NAVBAR ══════════════════════════════ */
+    .ds-nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .85rem 2.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, .326);
+      background: rgb(4, 6, 60);
+      backdrop-filter: blur(12px)
+    }
+
+    .ds-logo {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      color: #fff;
+      text-decoration: none
+    }
+
+    .ds-logo-box {
+      width: 75px;
+      height: 56px;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 18px #d63af955;
+      padding-right: 12px
+    }
+
+    .ds-logo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain
+    }
+
+    .ds-nav-links {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      margin-left: auto;
+      flex-wrap: wrap;
+      justify-content: flex-end
+    }
+
+    .nav-btn {
+      background: #1f2937;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .55rem 1.4rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .2s;
+      text-decoration: none;
+      white-space: nowrap
+    }
+
+    .nav-btn:hover {
+      background: #374151;
+      color: #fff
+    }
+
+    .nav-btn.active {
+      background: #2563eb
+    }
+
+    .nav-btn-primary {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .55rem 1.4rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+      text-decoration: none;
+      white-space: nowrap
+    }
+
+    .nav-btn-primary:hover {
+      background: #1d4ed8;
+      color: #fff
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      color: #fff;
+      padding: .4rem .7rem
+    }
+
+    .user-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #7dd3fc
+    }
+
+    .user-icon svg {
+      width: 22px;
+      height: 22px
+    }
+
+    .user-name {
+      font-size: .95rem;
+      font-weight: 500;
+      white-space: nowrap
+    }
+
+    .notif-link {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #1f2937;
+      text-decoration: none;
+      transition: background .2s
+    }
+
+    .notif-link:hover {
+      background: #374151
+    }
+
+    .notif-icon {
+      font-size: 1.15rem;
+      line-height: 1
+    }
+
+    .notif-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--red, #dc2626);
+      color: #fff;
+      font-size: .68rem;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      line-height: 1
+    }
+
+    .notif-badge.show {
+      display: flex
+    }
+
+    .notif-link.has-alert {
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, .5)
+    }
+
+
+    /* ══════════════════════════════ PAGE BODY ══════════════════════════════ */
+    .page-body {
+      background-image: url('/static/components/Rectangle 18.png');
+      background-size: 100% 100%;
+      flex: 1;
+      padding: 32px 40px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      margin-top: 25px;
+      min-height: calc(100vh - 157px);
+    }
+
+    /* ══════════════════════════════ SEARCH ROW ══════════════════════════════ */
+    .search-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 600px;
+      height: 45px;
+      background-image: url('/static/components/Rectangle 24.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      border-radius: 0 0 10px 10px;
+      margin-top: -48px;
+      gap: 10px;
+    }
+
+    .search-case {
+      position: relative;
+      width: 400px;
+      height: 30px;
+      background-image: url('/static/components/Rectangle 27.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding-left: 40px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .search-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: #666;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .search-wrap input {
+      flex: 1;
+      height: 30px;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    /* ══════════════════════════════ TRIER PAR ══════════════════════════════ */
+    .btn-trier {
+      width: 139px;
+      height: 28px;
+      background-image: url('/static/components/TRIER_PAR.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      border: none;
+      background-color: #f5fbf9;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0 10px 0 12px;
+      position: relative;
+      gap: 4px;
+      border-radius: 5px;
+      border: 1px blue solid;
+    }
+
+    .sort-select {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #111;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+
+    .sort-select option {
+      background: #fff;
+      color: #111;
+      font-size: 0.9rem;
+    }
+
+    .arrow-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+
+    .arrow-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: #111;
+      display: block;
+    }
+
+    /* ══════════════════════════════ TABLE HEADER ══════════════════════════════ */
+    .table-header {
+      width: 100%;
+      height: 50px;
+      background: rgba(180, 200, 225, 0.45);
+      border-bottom: 2px solid #4a72b0;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+    }
+
+    .th-num {
+      width: 72px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .th-vid {
+      width: 115px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .th-titre {
+      width: 265px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .th-cours {
+      width: 205px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .th-exo {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .th-num img,
+    .th-vid img,
+    .th-titre img {
+      display: block;
+    }
+
+    .lbl {
+      color: #2a4fb5;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* ══════════════════════════════ TABLE ROWS ══════════════════════════════ */
+    .table-rows {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .row-item {
+      width: 100%;
+      height: 92px;
+      display: block;
+      border: none;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      transition: filter 0.15s;
+    }
+
+    .row-item:hover {
+      filter: brightness(0.95);
+    }
+
+    .row-item img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: fill;
+    }
+
+
+    /* ══════════════════════════════ TABLE CARD ══════════════════════════════ */
+    .table-card {
+      width: 100%;
+      background-image: url('/static/components/Rectangle 29.png');
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      border-radius: 12px;
+      overflow: hidden;
+      padding-bottom: 12px;
+    }
+
+    /* ══════════════════════════════ TABLE (cours) ══════════════════════════════ */
+    :root {
+      --navy: rgb(4, 6, 60);
+      --blue: #2563eb;
+      --green: #16a34a;
+      --red: #dc2626;
+      --card: #fff;
+      --text: #1a1a2e;
+      --muted: #64748b;
+    }
+
+    .table-wrap {
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
+      overflow: hidden;
+      width: 100%
+    }
+
+    .table-wrap table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    .table-wrap thead tr {
+      background: #e8eef8
+    }
+
+    .table-wrap thead th {
+      padding: 1rem 1.2rem;
+      font-size: .82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--blue);
+      text-align: left
+    }
+
+    .table-wrap tbody tr {
+      border-top: 1px solid #f1f5f9;
+      transition: background .15s
+    }
+
+    .table-wrap tbody tr:hover {
+      background: #f0f6ff
+    }
+
+    .table-wrap tbody td {
+      padding: .9rem 1.2rem;
+      vertical-align: middle
+    }
+
+    .num-cell {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
+      width: 60px
+    }
+
+    .play-btn {
+      width: 60px;
+      height: 44px;
+      border: 3px solid var(--navy);
+      border-radius: 8px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all .2s;
+      flex-shrink: 0
+    }
+
+    .play-btn:hover {
+      background: var(--navy)
+    }
+
+    .play-btn:hover .play-arrow {
+      border-left-color: #fff
+    }
+
+    .play-btn.no-video {
+      border-color: #cbd5e1;
+      cursor: default;
+      opacity: .4
+    }
+
+    .play-arrow {
+      width: 0;
+      height: 0;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-left: 16px solid var(--navy);
+      margin-left: 4px
+    }
+
+    .title-cell .main-title {
+      font-weight: 700;
+      font-size: .95rem;
+      color: var(--text)
+    }
+
+    .title-cell .sub-title {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-top: .1rem
+    }
+
+    .bullet {
+      display: inline-block;
+      margin-right: .3rem;
+      color: var(--text)
+    }
+
+    .doc-badge {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      font-weight: 600;
+      font-size: .88rem;
+      cursor: pointer;
+      transition: opacity .2s
+    }
+
+    .doc-badge:hover {
+      opacity: .75
+    }
+
+    .doc-badge.has {
+      color: var(--green)
+    }
+
+    .doc-badge.missing {
+      color: var(--muted);
+      cursor: default
+    }
+
+    .check-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      border: 2px solid currentColor;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem;
+      flex-shrink: 0
+    }
+
+    .check-icon.ok {
+      background: rgba(22, 163, 74, .12)
+    }
+
+    .check-icon.no {
+      background: rgba(220, 38, 38, .08);
+      color: var(--red)
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #e2e8f0;
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin .7s linear infinite
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    /* ── MODAL overlay ── */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .5);
+      z-index: 500;
+      align-items: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      padding: 2rem 1rem
+    }
+
+    .modal-bg.open {
+      display: flex
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 18px;
+      padding: 2rem;
+      width: min(680px, 96vw);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+      margin: auto
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.4rem
+    }
+
+    .modal-head h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text)
+    }
+
+    .modal-head-actions {
+      display: flex;
+      align-items: center;
+      gap: .6rem
+    }
+
+    .modal-action {
+      background: rgba(37, 99, 235, .1);
+      border: none;
+      color: var(--blue);
+      padding: .45rem .7rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: .85rem
+    }
+
+    .modal-action:hover {
+      background: rgba(37, 99, 235, .18)
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--muted)
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: .7rem;
+      margin-top: 1.4rem
+    }
+
+    .btn-cancel {
+      background: #f1f5f9;
+      border: none;
+      border-radius: 8px;
+      padding: .55rem 1.2rem;
+      font-size: .9rem;
+      cursor: pointer;
+      color: var(--muted);
+      font-family: inherit
+    }
+
+    /* doc viewer modal */
+    #doc-modal .modal-box {
+      width: min(860px, 96vw)
+    }
+
+    .doc-viewer-content {
+      min-height: 300px;
+      max-height: 60vh;
+      overflow-y: auto;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1.2rem;
+      background: #fafbff;
+      font-size: .93rem;
+      line-height: 1.7;
+      white-space: pre-wrap
+    }
+
+    .doc-viewer-content iframe {
+      width: 100%;
+      height: 55vh;
+      border: none
+    }
+
+    .qcm-viewer-item {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: .9rem;
+      margin-bottom: .8rem
+    }
+
+    .qcm-viewer-item h4 {
+      font-size: .9rem;
+      font-weight: 700;
+      margin-bottom: .6rem;
+      color: var(--text)
+    }
+
+    .qcm-viewer-item label {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .88rem;
+      margin-bottom: .35rem;
+      cursor: pointer
+    }
+
+    /* toast */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      z-index: 9999;
+      background: #1e293b;
+      color: #fff;
+      padding: .7rem 1.5rem;
+      border-radius: 10px;
+      font-size: .88rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
+      opacity: 0;
+      transition: all .3s;
+      pointer-events: none;
+      white-space: nowrap
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0)
+    }
+
+    #toast.ok {
+      border-left: 4px solid var(--green)
+    }
+
+    #toast.err {
+      border-left: 4px solid var(--red)
+    }
+
+    @media(max-width:768px) {
+      .form-row {
+        grid-template-columns: 1fr
+      }
+
+      .num-cell {
+        display: none
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="ds-nav">
+    <a href="/dashboard/admin" class="ds-logo">
+      <div class="ds-logo-box">
+        <img src="{{ url_for('static', filename='image/Logo.png') }}" alt="Digiscool Logo" />
+      </div>
+      <div class="ds-logo-name">Digiscool</div>
+    </a>
+    <div class="ds-nav-links">
+      <a href="/dashboard/user" class="nav-btn">Acceuil</a>
+      <a href="/user/education" class="nav-btn active">Education</a>
+      <a href="/user/test" class="nav-btn">Test</a>
+      <div class="user-info">
+        <span class="user-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+          </svg>
+        </span>
+        <span class="user-name">{{ user_name|default('Nom user') }}</span>
+      </div>
+      <a href="/user/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}"
+        title="Notifications">
+        <span class="notif-icon">🔔</span>
+        <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
+      </a>
+      <a href="/logout" class="nav-btn-primary">Déconnecté</a>
+    </div>
+  </nav>
+
+  <!-- PAGE BODY -->
+  <div class="page-body">
+
+    <!-- Search row -->
+    <div class="search-wrap">
+      <div class="search-case">
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </span>
+        <input type="text" id="search-box" placeholder="Recherche ....." />
+      </div>
+
+      <!-- Bouton Trier -->
+      <div class="btn-trier">
+        <select class="sort-select" id="sort-select" onchange="loadCours()">
+          <option value="id">Trier par N°</option>
+          <option value="titre">Trier par Titre</option>
+          <option value="matiere">Trier par Matière</option>
+          <option value="created_at">Trier par Date</option>
+        </select>
+        <span class="arrow-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z" />
+          </svg>
+        </span>
+      </div>
+
+    </div> <!-- fin .search-wrap -->
+
+    <!-- ════ TABLE CARD ════ -->
+    <div class="table-card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="num-cell">N°</th>
+              <th>Vidéos</th>
+              <th>Titre et description</th>
+              <th>Document-Cours</th>
+              <th>Document-Exercice</th>
+            </tr>
+          </thead>
+          <tbody id="cours-tbody">
+            <tr>
+              <td colspan="5" style="text-align:center;padding:2rem">
+                <span class="spinner"></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- fin .page-body -->
+
+
+  <!-- ══ MODAL : DOCUMENT VIEWER ══ -->
+  <div id="doc-modal" class="modal-bg" onclick="if(event.target===this)closeDocModal()">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="dm-title">Document</h3>
+        <div class="modal-head-actions">
+          <button class="modal-action" type="button" onclick="zoomDoc(1.2)">A+</button>
+          <button class="modal-action" type="button" onclick="zoomDoc(0.8)">A-</button>
+          <button class="modal-close" onclick="closeDocModal()">✕</button>
+        </div>
+      </div>
+      <div id="dm-content" class="doc-viewer-content">Chargement…</div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeDocModal()">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <!-- FOOTER -->
+  {% include "footer.html" %}
+
+  <script>
+    /* ═══════════════════════════════════════════════
+       STATE
+    ═══════════════════════════════════════════════ */
+    let allCours = [];
+    let currentCours = null;
+    let docZoom = 1;
+
+    function hasJsonItems(value) {
+      if (!value) return false;
+      try {
+        const arr = JSON.parse(value);
+        return Array.isArray(arr) && arr.length > 0;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function hasContent(c, type) {
+      const t = type === 'cours' ? c.cours_type : c.exercice_type;
+      const file = type === 'cours' ? c.cours_fichier : c.exercice_fichier;
+      const text = type === 'cours' ? c.cours_texte : c.exercice_texte;
+      const qcm = type === 'cours' ? c.cours_qcm : c.exercice_qcm;
+      if (file) return true;
+      if (t === 'texte') return !!(text || '').trim();
+      if (t === 'qcm') return hasJsonItems(qcm);
+      return false;
+    }
+
+    /* ═══════════════════════════════════════════════
+       LOAD
+    ═══════════════════════════════════════════════ */
+    async function loadCours() {
+      const q = document.getElementById('search-box') ? document.getElementById('search-box').value.trim() : '';
+      const sort = document.getElementById('sort-select').value;
+      try {
+        const params = new URLSearchParams({ sort });
+        if (q) params.set('q', q);
+        const r = await fetch('/api/cours?' + params);
+        if (!r.ok) throw new Error('Erreur serveur');
+        allCours = await r.json();
+        renderTable();
+      } catch (e) { toast(e.message, 'err'); }
+    }
+
+    /* ═══════════════════════════════════════════════
+       RENDER TABLE
+    ═══════════════════════════════════════════════ */
+    function renderTable() {
+      const tbody = document.getElementById('cours-tbody');
+      if (!allCours.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2.5rem;color:var(--muted)">
+      Aucun cours disponible.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = allCours.map((c, i) => {
+        const hasCours = hasContent(c, 'cours');
+        const hasExo = hasContent(c, 'exercice');
+        const hasVideo = !!(c.video_filename || c.video_url);
+
+        const docCoursHtml = hasCours
+          ? `<div class="doc-badge has" onclick="openDoc(${c.id},'cours')">
+           <div class="check-icon ok">✓</div> Voir
+         </div>`
+          : `<div class="doc-badge missing">
+           <div class="check-icon no">✕</div> Vide
+         </div>`;
+
+        const docExoHtml = hasExo
+          ? `<div class="doc-badge has" onclick="openDoc(${c.id},'exercice')">
+           <div class="check-icon ok">✓</div> Voir
+         </div>`
+          : `<div class="doc-badge missing">
+           <div class="check-icon no">✕</div> Vide
+         </div>`;
+
+        return `<tr>
+      <td class="num-cell">${i + 1}</td>
+      <td>
+        <div class="play-btn ${hasVideo ? '' : 'no-video'}"
+             onclick="${hasVideo ? `playVideo(${c.id})` : ''}">
+          <div class="play-arrow"></div>
+        </div>
+      </td>
+      <td class="title-cell">
+        <div class="main-title"><span class="bullet">•</span>${escHtml(c.titre)}</div>
+        <div class="sub-title"><span class="bullet">•</span>${escHtml(c.matiere)}</div>
+      </td>
+      <td>${docCoursHtml}</td>
+      <td>${docExoHtml}</td>
+    </tr>`;
+      }).join('');
+    }
+
+    /* ═══════════════════════════════════════════════
+       PLAY VIDEO
+    ═══════════════════════════════════════════════ */
+    function playVideo(id) {
+      const c = allCours.find(x => x.id === id);
+      if (!c) return;
+      window.location.href = '/user/video/' + id;
+    }
+
+    /* ═══════════════════════════════════════════════
+       DOC VIEWER MODAL
+    ═══════════════════════════════════════════════ */
+    async function openDoc(id, type) {
+      const c = allCours.find(x => x.id === id);
+      if (!c) return;
+      const isExo = type === 'exercice';
+      const prefix = isExo ? 'exercice' : 'cours';
+      const label = isExo ? 'Document-Exercice' : 'Document-Cours';
+
+      document.getElementById('dm-title').textContent = `${c.titre} — ${label}`;
+      const content = document.getElementById('dm-content');
+      content.innerHTML = '<span class="spinner"></span>';
+      document.getElementById('doc-modal').classList.add('open');
+      const docBox = document.querySelector('#doc-modal .modal-box');
+      if (docBox) {
+        docZoom = 1;
+        docBox.style.transform = 'scale(1)';
+      }
+
+      const docType = isExo ? c.exercice_type : c.cours_type;
+      const docFichier = isExo ? c.exercice_fichier : c.cours_fichier;
+      const docTexte = isExo ? c.exercice_texte : c.cours_texte;
+      const docQcm = isExo ? c.exercice_qcm : c.cours_qcm;
+
+      if (docType === 'fichier' && docFichier) {
+        const url = `/uploads/${prefix === 'cours' ? 'cours' : 'exercices'}/${encodeURIComponent(docFichier)}`;
+        const ext = docFichier.split('.').pop().toLowerCase();
+        if (ext === 'pdf') {
+          content.innerHTML = `<iframe src="${url}" style="width:100%;height:58vh;border:none;border-radius:6px"></iframe>`;
+        } else if (['png', 'jpg', 'jpeg'].includes(ext)) {
+          content.innerHTML = `<img src="${url}" style="max-width:100%;border-radius:8px"/>`;
+        } else {
+          content.innerHTML = `<p>Fichier : <a href="${url}" target="_blank" style="color:var(--blue)">${escHtml(docFichier)}</a></p>`;
+        }
+      } else if (docType === 'texte' && docTexte) {
+        content.innerHTML = `<pre style="white-space:pre-wrap;font-family:inherit">${escHtml(docTexte)}</pre>`;
+      } else if (docType === 'qcm' && docQcm) {
+        let qs = [];
+        try { qs = JSON.parse(docQcm); } catch (e) { qs = []; }
+        if (qs.length) {
+          content.innerHTML = qs.map((q, i) => `
+        <div class="qcm-viewer-item">
+          <h4>${i + 1}. ${escHtml(q.question || '')}</h4>
+          ${(q.options || []).map((o, j) => `
+            <label>
+              <input type="radio" name="q${id}_${i}" value="${j}"/>
+              ${escHtml(o)}
+            </label>`).join('')}
+        </div>`).join('');
+        } else {
+          content.textContent = 'QCM vide.';
+        }
+      } else {
+        content.textContent = 'Aucun contenu disponible.';
+      }
+    }
+
+    function closeDocModal() {
+      document.getElementById('doc-modal').classList.remove('open');
+      const box = document.querySelector('#doc-modal .modal-box');
+      if (box) {
+        box.style.transform = 'scale(1)';
+        docZoom = 1;
+      }
+    }
+
+    function zoomDoc(factor) {
+      docZoom = Math.max(0.8, Math.min(1.8, docZoom * factor));
+      const box = document.querySelector('#doc-modal .modal-box');
+      if (box) {
+        box.style.transform = `scale(${docZoom})`;
+        box.style.transformOrigin = 'top center';
+      }
+    }
+
+
+    let _tt;
+    function toast(msg, type = 'ok') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = 'show ' + type;
+      clearTimeout(_tt);
+      _tt = setTimeout(() => el.className = '', 3200);
+    }
+    function escHtml(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    document.getElementById('search-box') && document.getElementById('search-box').addEventListener('input', loadCours);
+
+    /* INIT */
+    document.addEventListener('DOMContentLoaded', loadCours);
+  </script>
+</body>
+
+</html>

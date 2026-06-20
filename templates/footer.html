@@ -1,13 +1,13 @@
 <!-- ── FOOTER COMPONENT ────────────────────────────────────────────────────── -->
 <style>
   :root {
-    --ds-navy:   #07094a;
-    --ds-deep:   #0b0d5e;
-    --ds-blue:   #1a3de4;
-    --ds-cyan:   #00c8ff;
-    --ds-pink:   #d63af9;
-    --ds-text:   #c8d8ff;
-    --ds-muted:  #7a9be0;
+    --ds-navy: #07094a;
+    --ds-deep: #0b0d5e;
+    --ds-blue: #1a3de4;
+    --ds-cyan: #00c8ff;
+    --ds-pink: #d63af9;
+    --ds-text: #c8d8ff;
+    --ds-muted: #7a9be0;
   }
 
   /* ── FOOTER ────────────────────────────────────────────────────── */
@@ -31,78 +31,82 @@
 
   .footer-brand {
     font-family: 'Orbitron', sans-serif;
-    font-size: 1.15rem; 
+    font-size: 1.15rem;
     color: var(--ds-cyan);
     margin-bottom: .6rem;
   }
 
   .footer-desc {
-    font-size: .84rem; 
-    color: var(--ds-muted); 
+    font-size: .84rem;
+    color: var(--ds-muted);
     line-height: 1.6;
   }
 
   .footer-col h6 {
     font-family: 'Exo 2', sans-serif;
-    font-size: .8rem; 
+    font-size: .8rem;
     text-transform: uppercase;
-    letter-spacing: .12em; 
+    letter-spacing: .12em;
     color: var(--ds-muted);
     margin-bottom: .8rem;
   }
 
   .footer-col a {
-    display: block; 
+    display: block;
     color: var(--ds-text);
-    font-size: .88rem; 
+    font-size: .88rem;
     text-decoration: none;
     margin-bottom: .45rem;
     transition: color .2s;
   }
 
-  .footer-col a:hover { 
-    color: var(--ds-cyan); 
+  .footer-col a:hover {
+    color: var(--ds-cyan);
   }
 
   .footer-bottom {
-    display: flex; 
-    flex-wrap: wrap; 
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between; 
+    justify-content: space-between;
     gap: .5rem;
-    border-top: 1px solid rgba(255,255,255,.07);
+    border-top: 1px solid rgba(255, 255, 255, .07);
     padding-top: 1rem;
-    font-size: .8rem; 
+    font-size: .8rem;
     color: var(--ds-muted);
   }
+
   .ds-logo_foot {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      margin-right: 16px;
-      flex-shrink: 0;
-      margin-left: -10px;
-    }
-    .ds-logo_foot img {
-      height: 25px;
-      width: auto;
-      border-radius: 8px;
-      object-fit: contain;
-    }
-    .ds-logo-name_foot {
-      font-weight: 700;
-      font-size: 16px;
-      color: #fff;
-      line-height: 1.2;
-    }
-  .footer-bottom a { 
-    color: var(--ds-muted); 
-    text-decoration: none; 
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    margin-right: 16px;
+    flex-shrink: 0;
+    margin-left: -10px;
   }
 
-  .footer-bottom a:hover { 
-    color: var(--ds-cyan); 
+  .ds-logo_foot img {
+    height: 25px;
+    width: auto;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+
+  .ds-logo-name_foot {
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .footer-bottom a {
+    color: var(--ds-muted);
+    text-decoration: none;
+  }
+
+  .footer-bottom a:hover {
+    color: var(--ds-cyan);
   }
 
   /* Responsive footer */
@@ -110,7 +114,7 @@
     footer {
       padding: 1rem 1.5rem;
     }
-    
+
     .footer-grid {
       gap: 1.5rem;
     }
@@ -129,17 +133,16 @@
 
     <div>
       <div class="footer-brand">
-      <a href="#" class="ds-logo_foot">
-      <img src="../static/image/Logo.png" alt="Digiscool logo"
-           onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex'">
-      <!-- Fallback si chemin invalide -->
-      <div id="logo-fallback"
-           style="display:none;width:44px;height:44px;border-radius:9px;
+        <a href="#" class="ds-logo_foot">
+          <img src="../static/image/Logo.png" alt="Digiscool logo"
+            onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex'">
+          <!-- Fallback si chemin invalide -->
+          <div id="logo-fallback" style="display:none;width:44px;height:44px;border-radius:9px;
                   background:linear-gradient(135deg,#a855f7,#3b82f6);
                   align-items:center;justify-content:center;
                   font-weight:800;font-size:17px;color:#fff;">DS</div>
-      <div class="ds-logo-name">Digiscool</div>
-    </a>
+          <div class="ds-logo-name">Digiscool</div>
+        </a>
       </div>
       <p class="footer-desc">
         Plateforme de transition éducative numérique pour les établissements scolaires,

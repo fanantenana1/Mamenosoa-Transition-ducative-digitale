@@ -44,13 +44,41 @@ def init_db():
         db.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nom TEXT DEFAULT '',
+                prenom TEXT DEFAULT '',
                 name TEXT NOT NULL,
                 email TEXT NOT NULL UNIQUE,
                 password_hash TEXT NOT NULL,
                 role TEXT NOT NULL DEFAULT 'user',
+                statut TEXT NOT NULL DEFAULT 'En attente',
+                sexe TEXT DEFAULT '',
+                adresse TEXT DEFAULT '',
+                classe TEXT DEFAULT '',
+                dob TEXT DEFAULT '',
+                profession TEXT DEFAULT '',
+                etablissement TEXT DEFAULT '',
+                filiere TEXT DEFAULT '',
+                lien_etablissement TEXT DEFAULT '',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+        user_columns = [row[1] for row in db.execute("PRAGMA table_info(users)").fetchall()]
+        for col, col_def in [
+            ('nom', "TEXT DEFAULT ''"),
+            ('prenom', "TEXT DEFAULT ''"),
+            ('statut', "TEXT NOT NULL DEFAULT 'En attente'"),
+            ('sexe', "TEXT DEFAULT ''"),
+            ('adresse', "TEXT DEFAULT ''"),
+            ('classe', "TEXT DEFAULT ''"),
+            ('dob', "TEXT DEFAULT ''"),
+            ('profession', "TEXT DEFAULT ''"),
+            ('etablissement', "TEXT DEFAULT ''"),
+            ('filiere', "TEXT DEFAULT ''"),
+            ('lien_etablissement', "TEXT DEFAULT ''"),
+        ]:
+            if col not in user_columns:
+                db.execute(f'ALTER TABLE users ADD COLUMN {col} {col_def}')
+
         db.execute('''
             CREATE TABLE IF NOT EXISTS cours (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -95,11 +123,25 @@ def init_db():
                 FOREIGN KEY(user_id) REFERENCES users(id)
             )
         ''')
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS commentaires (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                cours_id INTEGER NOT NULL,
+                texte TEXT NOT NULL,
+                note INTEGER NOT NULL DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(user_id) REFERENCES users(id),
+                FOREIGN KEY(cours_id) REFERENCES cours(id)
+            )
+        ''')
         if not db.execute('SELECT 1 FROM users WHERE email=?', ('admin@digiscool.mg',)).fetchone():
             db.execute(
-                'INSERT INTO users(name,email,password_hash,role) VALUES(?,?,?,?)',
-                ('Admin', 'admin@digiscool.mg', generate_password_hash('admin123'), 'admin')
+                'INSERT INTO users(nom,prenom,name,email,password_hash,role,statut) VALUES(?,?,?,?,?,?,?)',
+                ('Admin', 'Admin', 'Admin', 'admin@digiscool.mg', generate_password_hash('admin123'), 'admin', 'Approuvé')
             )
+        db.execute("UPDATE users SET statut='Approuvé' WHERE email=? AND (statut IS NULL OR statut='')", ('admin@digiscool.mg',))
+        db.execute("UPDATE users SET statut='En attente' WHERE statut IS NULL",)
         db.commit()
 
 
@@ -126,8 +168,21 @@ def allowed_file(filename, allowed_set):
 
 
 def get_user_by_email(email):
+    if not email:
+        return None
     with get_db() as db:
-        return db.execute('SELECT * FROM users WHERE email=?', (email,)).fetchone()
+        return db.execute('SELECT * FROM users WHERE LOWER(email)=?', (email.lower(),)).fetchone()
+
+
+def normalize_video_url(url):
+    if not url:
+        return ''
+    cleaned = url.strip()
+    if 'youtube.com/watch?v=' in cleaned:
+        return cleaned.replace('watch?v=', 'embed/')
+    if 'youtu.be/' in cleaned:
+        return cleaned.replace('youtu.be/', 'www.youtube.com/embed/')
+    return cleaned
 
 
 def serialize_cours(row):
@@ -391,8 +446,24 @@ def dashboard_user():
     return render_template('user/dashboard.html', user_name=session.get('name'), cours=cours, notif_count=notif_count)
 
 
+@app.route('/user/dashboard')
+@login_required
+def user_dashboard_alias():
+    if session.get('role') == 'admin':
+        return redirect(url_for('dashboard_admin'))
+    return redirect(url_for('dashboard_user'))
+
+
+@app.route('/admin/dashboard')
+@login_required
+@admin_required
+def admin_dashboard_alias():
+    return redirect(url_for('dashboard_admin'))
+
+
 @app.route('/admin/education')
 @login_required
+@admin_required
 def admin_education():
     with get_db() as db:
         cours = db.execute('SELECT * FROM cours ORDER BY created_at DESC').fetchall()
@@ -402,6 +473,7 @@ def admin_education():
 
 @app.route('/admin/video/<int:cours_id>')
 @login_required
+@admin_required
 def admin_video(cours_id):
     with get_db() as db:
         cours = db.execute('SELECT * FROM cours WHERE id = ?', (cours_id,)).fetchone()
@@ -413,28 +485,64 @@ def admin_video(cours_id):
 
 @app.route('/admin/test')
 @login_required
+@admin_required
 def admin_test():
     with get_db() as db:
         notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
     return render_template('admin/test.html', notif_count=notif_count)
 @app.route('/admin/test/resultats')
 @login_required
+@admin_required
 def admin_test_resultat():
     #with get_db() as db:
         #notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
     return render_template('admin/resultat.html')
 @app.route('/admin/test/travaille_user')
 @login_required
+@admin_required
 def admin_travaille_user():
     #with get_db() as db:
         #notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
     return render_template('admin/travaille_user.html')
 @app.route('/admin/utilisateur')
 @login_required
+@admin_required
 def admin_utilisateur():
-    #with get_db() as db:
-        #notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
-    return render_template('admin/utilisateur.html')
+    with get_db() as db:
+        rows = db.execute('SELECT * FROM users ORDER BY created_at DESC').fetchall()
+        users = []
+        for row in rows:
+            user = dict(row)
+            user['nom'] = user.get('nom') or ''
+            user['prenom'] = user.get('prenom') or ''
+            user['username'] = user.get('username') or ''
+            user['phone'] = user.get('phone') or ''
+            user['adresse'] = user.get('adresse') or ''
+            user['profession'] = user.get('profession') or ''
+            user['dob'] = user.get('dob') or ''
+            user['classe'] = user.get('classe') or ''
+            user['filiere'] = user.get('filiere') or ''
+            user['etablissement'] = user.get('etablissement') or ''
+            user['lien_etablissement'] = user.get('lien_etablissement') or ''
+            user['statut'] = user.get('statut') or 'En attente'
+            users.append(user)
+    return render_template('admin/utilisateur.html', users=users)
+
+@app.route('/api/users/<int:user_id>/statut', methods=['POST'])
+@login_required
+@admin_required
+def api_update_user_statut(user_id):
+    data = request.get_json(silent=True) or {}
+    statut = data.get('statut', '').strip()
+    if statut not in ('Approuvé', 'En attente', 'Rejeté'):
+        return jsonify({'error': 'Statut invalide.'}), 400
+    with get_db() as db:
+        user = db.execute('SELECT * FROM users WHERE id=?', (user_id,)).fetchone()
+        if not user:
+            return jsonify({'error': 'Utilisateur introuvable.'}), 404
+        db.execute('UPDATE users SET statut=? WHERE id=?', (statut, user_id))
+        db.commit()
+    return jsonify({'ok': True, 'statut': statut})
 
 @app.route('/user/education')
 @login_required
@@ -442,8 +550,72 @@ def user_education():
     with get_db() as db:
         cours = db.execute('SELECT * FROM cours ORDER BY created_at DESC').fetchall()
         notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)).fetchone()[0]
-    return render_template('user/dashboard.html', cours=cours, user_name=session.get('name'), notif_count=notif_count)
+    return render_template('user/education_user.html', cours=cours, user_name=session.get('name'), notif_count=notif_count)
 
+
+@app.route('/user/education_user')
+@login_required
+def user_education_user():
+    return redirect(url_for('user_education'))
+
+
+@app.route('/user/video/<int:cours_id>')
+@login_required
+def user_video(cours_id):
+    with get_db() as db:
+        cours = db.execute('SELECT * FROM cours WHERE id = ?', (cours_id,)).fetchone()
+        if not cours:
+            return redirect(url_for('user_education'))
+        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)).fetchone()[0]
+    video_src = normalize_video_url(cours['video_url']) if cours['video_url'] else ''
+    return render_template('user/affichage_video.html', cours=cours, video_src=video_src, user_name=session.get('name'), notif_count=notif_count)
+
+@app.route('/user/commentaire/<int:cours_id>')
+@login_required
+def user_commentaire(cours_id):
+    with get_db() as db:
+        cours = db.execute('SELECT * FROM cours WHERE id = ?', (cours_id,)).fetchone()
+        if not cours:
+            return redirect(url_for('user_education'))
+        comments = db.execute(
+            'SELECT c.*, u.name FROM commentaires c JOIN users u ON c.user_id=u.id WHERE c.cours_id=? ORDER BY c.created_at DESC',
+            (cours_id,)
+        ).fetchall()
+        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)).fetchone()[0]
+    video_src = normalize_video_url(cours['video_url']) if cours['video_url'] else ''
+    return render_template('user/commentaire_user.html', cours=cours, comments=comments, video_src=video_src, user_name=session.get('name'), notif_count=notif_count)
+
+@app.route('/user/test')
+@login_required
+def user_test():
+    with get_db() as db:
+        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)).fetchone()[0]
+    return render_template('user/test_user.html', user_name=session.get('name'), notif_count=notif_count)
+
+@app.route('/user/notifications')
+@login_required
+def user_notifications():
+    with get_db() as db:
+        notifications = db.execute('SELECT * FROM notifications WHERE user_id=? ORDER BY created_at DESC', (session['user_id'],)).fetchall()
+        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)).fetchone()[0]
+    return render_template('user/notifications.html', notifications=notifications, user_name=session.get('name'), notif_count=notif_count)
+
+@app.route('/api/commentaires', methods=['POST'])
+@login_required
+def api_commentaires():
+    data = request.get_json(silent=True) or {}
+    cours_id = data.get('cours_id')
+    texte = (data.get('texte') or '').strip()
+    note = int(data.get('note') or 0)
+    if not cours_id or not texte:
+        return jsonify({'error': 'Le commentaire et la note sont requis.'}), 400
+    with get_db() as db:
+        db.execute(
+            'INSERT INTO commentaires (user_id, cours_id, texte, note) VALUES (?, ?, ?, ?)',
+            (session['user_id'], cours_id, texte, note)
+        )
+        db.commit()
+    return jsonify({'ok': True})
 
 @app.route('/api/login', methods=['POST'])
 def api_login():
@@ -455,6 +627,10 @@ def api_login():
     user = get_user_by_email(email)
     if not user or not check_password_hash(user['password_hash'], password):
         return jsonify({'error': 'Identifiants incorrects.'}), 401
+    if user['role'] != 'admin' and user['statut'] != 'Approuvé':
+        if user['statut'] == 'Rejeté':
+            return jsonify({'error': 'Votre compte a été rejeté.'}), 403
+        return jsonify({'error': 'Votre compte doit être approuvé par un administrateur.'}), 403
     session.clear()
     session['user_id'] = user['id']
     session['name'] = user['name']
@@ -465,20 +641,30 @@ def api_login():
 @app.route('/api/register', methods=['POST'])
 def api_register():
     data = request.get_json(silent=True) or {}
-    name = data.get('name', '').strip()
+    nom = data.get('nom', '').strip()
+    prenom = data.get('prenom', '').strip()
     email = data.get('email', '').strip().lower()
     password = data.get('password', '')
-    if not name or not email or not password:
-        return jsonify({'error': 'Tous les champs sont requis.'}), 400
+    dob = data.get('dob', '').strip()
+    sexe = data.get('sexe', '').strip()
+    profession = data.get('profession', '').strip()
+    classe = data.get('classe', '').strip()
+    filiere = data.get('filiere', '').strip()
+    etablissement = data.get('etablissement', '').strip()
+    lien_etablissement = data.get('lien_etablissement', '').strip()
+    adresse = data.get('adresse', '').strip()
+    if not nom or not prenom or not email or not password:
+        return jsonify({'error': 'Veuillez remplir les champs obligatoires.'}), 400
     if get_user_by_email(email):
         return jsonify({'error': 'Email déjà utilisé.'}), 409
+    full_name = f"{prenom} {nom}".strip()
     with get_db() as db:
         db.execute(
-            'INSERT INTO users(name,email,password_hash) VALUES(?,?,?)',
-            (name, email, generate_password_hash(password))
+            'INSERT INTO users(nom,prenom,name,email,password_hash,role,statut,dob,sexe,profession,classe,filiere,etablissement,lien_etablissement,adresse) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            (nom, prenom, full_name, email, generate_password_hash(password), 'user', 'En attente', dob, sexe, profession, classe, filiere, etablissement, lien_etablissement, adresse)
         )
         db.commit()
-    return jsonify({'ok': True, 'message': 'Compte créé, connectez-vous.'})
+    return jsonify({'ok': True, 'message': 'Compte créé. Votre profil est en attente de validation par l’administrateur.'})
 
 
 @app.route('/logout')
