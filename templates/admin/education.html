@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Digiscool - Education</title>
+{% extends "admin/dashboard.html" %}
+{% set active_page = 'education' %}
+
+{% block title %}Digiscool - Education{% endblock %}
+
+{% block extra_head %}
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,7 +16,7 @@
       flex-direction: column;
     }
 
-    /* ══════════════════════════════ NAVBAR ══════════════════════════════ */
+    /* ══════════════════════════════ NAVBAR ══════════════════════════════ 
     .ds-nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
       justify-content:space-between;padding:.85rem 2.5rem;
       border-bottom:1px solid rgba(255,255,255,.326);background:rgb(4,6,60);backdrop-filter:blur(12px)}
@@ -48,7 +48,7 @@
       padding:0 4px;line-height:1}
     .notif-badge.show{display:flex}
     .notif-link.has-alert{box-shadow:0 0 0 2px rgba(220,38,38,.5)}
-
+   */
 
     /* ══════════════════════════════ PAGE BODY ══════════════════════════════ */
     .page-body {
@@ -360,30 +360,9 @@
       .num-cell{display:none}
     }
   </style>
-</head>
-<body>
+{% endblock %}
 
-<!-- ══ NAVBAR ══ -->
-<nav class="ds-nav">
-  <a href="/dashboard/admin" class="ds-logo">
-    <div class="ds-logo-box">
-      <img src="{{ url_for('static', filename='image/Logo.png') }}" alt="Digiscool Logo"/>
-    </div>
-    <div class="ds-logo-name">Digiscool</div>
-  </a>
-  <div class="ds-nav-links">
-    <a href="/dashboard/admin" class="nav-btn">Accueil</a>
-    <a href="/dashboard/admin" class="nav-btn">Utilisateurs</a>
-    <a href="/admin/education" class="nav-btn active">Education</a>
-    <a href="/admin/test" class="nav-btn">Test</a>
-    <a href="/admin/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}" title="Notifications">
-      <span class="notif-icon">🔔</span>
-      <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
-    </a>
-    <a href="/logout" class="nav-btn-primary">Déconnexion</a>
-  </div>
-</nav>
-
+{% block content %}
 <!-- PAGE BODY -->
 <div class="page-body">
 
@@ -583,10 +562,9 @@
 </div>
 
 <div id="toast"></div>
+{% endblock %}
 
-<!-- FOOTER -->
-{% include "footer.html" %}
-
+{% block extra_js %}
 <script>
 /* ═══════════════════════════════════════════════
    STATE
@@ -1065,5 +1043,4 @@ document.getElementById('search-box') && document.getElementById('search-box').a
 /* INIT */
 document.addEventListener('DOMContentLoaded', loadCours);
 </script>
-</body>
-</html>
+{% endblock %}

@@ -134,13 +134,7 @@
     <div>
       <div class="footer-brand">
         <a href="#" class="ds-logo_foot">
-          <img src="../static/image/Logo.png" alt="Digiscool logo"
-            onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex'">
-          <!-- Fallback si chemin invalide -->
-          <div id="logo-fallback" style="display:none;width:44px;height:44px;border-radius:9px;
-                  background:linear-gradient(135deg,#a855f7,#3b82f6);
-                  align-items:center;justify-content:center;
-                  font-weight:800;font-size:17px;color:#fff;">DS</div>
+          <img src="{{ url_for('static', filename='image/Logo.png') }}" alt="Digiscool logo">
           <div class="ds-logo-name">Digiscool</div>
         </a>
       </div>

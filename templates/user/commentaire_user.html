@@ -1,213 +1,18 @@
-<!DOCTYPE html>
-<html lang="fr">
+{% extends "user/dashboard.html" %}
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Digiscool - Education</title>
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
-    <style>
-        :root {
-            --nav-bg: #1a1a2e;
-            --accent: #1a6bff;
-        }
+{% block title %}Digiscool - Commentaire{% endblock %}
 
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+{% block active_page %}education{% endblock %}
 
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #BED6F3;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
+<style>
+:root {
+    --nav-bg: #1a1a2e;
+    --accent: #1a6bff;
+}
 
-        /* ══════════════════════════════ NAVBAR ══════════════════════════════ */
-        .ds-nav {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: .85rem 2.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, .326);
-            background: rgb(4, 6, 60);
-            backdrop-filter: blur(12px)
-        }
-
-        .ds-logo {
-            display: flex;
-            align-items: center;
-            gap: .6rem;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1rem;
-            color: #fff;
-            text-decoration: none
-        }
-
-        .ds-logo-box {
-            width: 75px;
-            height: 56px;
-            border-radius: 10px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 18px #d63af955;
-            padding-right: 12px
-        }
-
-        .ds-logo-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain
-        }
-
-        .ds-nav-links {
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            margin-left: auto;
-            flex-wrap: wrap;
-            justify-content: flex-end
-        }
-
-        .nav-btn {
-            background: #1f2937;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: .55rem 1.4rem;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background .2s;
-            text-decoration: none;
-            white-space: nowrap
-        }
-
-        .nav-btn:hover {
-            background: #374151;
-            color: #fff
-        }
-
-        .nav-btn.active {
-            background: #2563eb
-        }
-
-        .nav-btn-primary {
-            background: #2563eb;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: .55rem 1.4rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background .2s;
-            text-decoration: none;
-            white-space: nowrap
-        }
-
-        .nav-btn-primary:hover {
-            background: #1d4ed8;
-            color: #fff
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: .5rem;
-            color: #fff;
-            padding: .4rem .7rem
-        }
-
-        .user-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #7dd3fc
-        }
-
-        .user-icon svg {
-            width: 22px;
-            height: 22px
-        }
-
-        .user-name {
-            font-size: .95rem;
-            font-weight: 500;
-            white-space: nowrap
-        }
-
-        .notif-link {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: #1f2937;
-            text-decoration: none;
-            transition: background .2s
-        }
-
-        .notif-link:hover {
-            background: #374151
-        }
-
-        .notif-icon {
-            font-size: 1.15rem;
-            line-height: 1
-        }
-
-        .notif-badge {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            min-width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--red, #dc2626);
-            color: #fff;
-            font-size: .68rem;
-            font-weight: 700;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 0 4px;
-            line-height: 1
-        }
-
-        .notif-badge.show {
-            display: flex
-        }
-
-        .notif-link.has-alert {
-            box-shadow: 0 0 0 2px rgba(220, 38, 38, .5)
-        }
-
-        @media (max-width: 560px) {
-            .ds-nav {
-                padding: 0 12px;
-                gap: 2px;
-            }
-
-            .nav-btn {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-        }
-
-        /* PAGE BODY */
+/* PAGE BODY */
         .page-body {
             background-image: url('/static/components/Rectangle 18.png');
             background-size: 100% 100%;
@@ -724,41 +529,10 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
-    </style>
-</head>
+</style>
+{% endblock %}
 
-<body>
-
-    <!-- ══ NAVBAR ══ -->
-    <nav class="ds-nav">
-        <a href="/dashboard/admin" class="ds-logo">
-            <div class="ds-logo-box">
-                <img src="{{ url_for('static', filename='image/Logo.png') }}" alt="Digiscool Logo" />
-            </div>
-            <div class="ds-logo-name">Digiscool</div>
-        </a>
-        <div class="ds-nav-links">
-            <a href="/dashboard/user" class="nav-btn">Acceuil</a>
-            <a href="/user/education" class="nav-btn">Education</a>
-            <a href="/user/test" class="nav-btn">Test</a>
-            <div class="user-info">
-                <span class="user-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="8" r="4" />
-                        <path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" />
-                    </svg>
-                </span>
-                <span class="user-name">{{ user_name|default('Nom user') }}</span>
-            </div>
-            <a href="/user/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}"
-                title="Notifications">
-                <span class="notif-icon">🔔</span>
-                <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
-            </a>
-            <a href="/logout" class="nav-btn-primary">Déconnecté</a>
-        </div>
-    </nav>
-
+{% block content %}
     <!-- PAGE BODY -->
     <div class="page-body">
 
@@ -798,7 +572,11 @@
 
 
         <div id="toast"></div>
-        <script>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
             document.addEventListener('DOMContentLoaded', () => {
                 const textarea = document.getElementById('comment-text');
                 const btnEnvoyer = document.querySelector('.bt_commentaire');
@@ -833,8 +611,4 @@
                 }
             });
         </script>
-
-
-</body>
-
-</html>
+{% endblock %}

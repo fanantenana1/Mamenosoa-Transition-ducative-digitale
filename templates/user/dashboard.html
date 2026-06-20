@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard Admin – Digiscool</title>
+  <title>{% block title %}Dashboard Admin – Digiscool{% endblock %}</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg-main: #b8c8e8;
+      --bg-main: #BED6F3;
       --card-bg: #fff;
       --text-dark: #1a1a2e;
       --text-muted: #4b5563;
@@ -405,21 +405,25 @@
       }
     }
   </style>
+
+  {# Bloc pour le CSS propre a chaque page enfant (sera injecte apres le style commun ci-dessus) #}
+  {% block extra_head %}{% endblock %}
 </head>
 
 <body>
 
-  <!-- ══ NAVBAR ══ -->
+  <!-- ══ NAVBAR (fixe, commune a toutes les pages) ══ -->
   <nav class="ds-nav">
     <a href="/" class="ds-logo">
       <div class="ds-logo-box">
-        <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="Digiscool Logo" />
+        <img src="{{ url_for('static', filename='image/Logo.png') }}" alt="Digiscool Logo" />
       </div>
+      <div class="ds-logo-name">Digiscool</div>
     </a>
     <div class="ds-nav-links">
-      <a href="/user/dashboard" class="nav-btn active">Accueil</a>
-      <a href="/user/education" class="nav-btn">Education</a>
-      <a href="/user/test" class="nav-btn">Test</a>
+      <a href="/user/dashboard" class="nav-btn{% if self.active_page() == 'accueil' %} active{% endif %}">Accueil</a>
+      <a href="/user/education" class="nav-btn{% if self.active_page() == 'education' %} active{% endif %}">Education</a>
+      <a href="/user/test" class="nav-btn{% if self.active_page() == 'test' %} active{% endif %}">Test</a>
       <div class="user-info">
         <span class="user-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -438,7 +442,11 @@
     </div>
   </nav>
 
-  <!-- ══ SECTION ACCUEIL ══ -->
+  {# Permet a chaque page enfant d'indiquer quel lien de nav doit etre actif #}
+ <!-- {% block active_page %}accueil{% endblock %}-->
+
+  <!-- ══ CONTENU DE LA PAGE (different pour chaque page enfant) ══ -->
+  {% block content %}
   <div id="section-accueil" class="page-section active">
     <section class="hero-section">
       <div class="dot-cluster">
@@ -522,8 +530,9 @@
       </div>
     </section>
   </div>
+  {% endblock %}
 
-  <!-- ── FOOTER ── -->
+  <!-- ── FOOTER (fixe, commun a toutes les pages) ── -->
   {% include "footer.html" %}
 
   <!-- toast -->
@@ -532,7 +541,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
   <script>
     /* ═══════════════════════════════════════════════════
-       TOAST
+       TOAST (utilitaire commun a toutes les pages)
     ═══════════════════════════════════════════════════ */
     let _toastTimer;
     function toast(msg, type = 'ok') {
@@ -549,8 +558,10 @@
     function escHtml(s) {
       return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
-
   </script>
+
+  {# Bloc pour le JS propre a chaque page enfant #}
+  {% block extra_scripts %}{% endblock %}
 </body>
 
 </html>

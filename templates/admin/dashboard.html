@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Digiscool – Dashboard Admin</title>
+  <title>{% block title %}Digiscool – Dashboard Admin{% endblock %}</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"/>
   <style>
@@ -33,8 +33,8 @@
       position: relative;
     }
 
-    /* ── molecule_bas : collée en bas à gauche ── */
-    body::after {
+    /* ── molecule_bas : collée en bas à gauche (page d'accueil uniquement) ── */
+    .ds-page::after {
       content: '';
       position: fixed;
       bottom: 0; left: 0;
@@ -73,7 +73,7 @@
       z-index: 1;
     }
 
-    /* ────────── NAVBAR ────────── */
+    /* ────────── NAVBAR (commune à toutes les pages) ────────── */
     .ds-nav {
       background: var(--nav-bg);
       display: flex;
@@ -158,7 +158,14 @@
     }
     .nav-btn-accent:hover { background: #1558d6; }
 
-    /* ────────── PAGE ────────── */
+    .notif-link { position: relative; display: flex; align-items: center; gap: 4px;
+      text-decoration: none; color: #fff; font-size: 1.2rem; }
+    .notif-icon { font-size: 1.15rem; line-height: 1; }
+    .notif-badge { display: none; background: #ef4444; color: #fff; font-size: 11px;
+      font-weight: 700; border-radius: 999px; padding: 1px 6px; }
+    .notif-badge.show { display: inline-block; }
+
+    /* ────────── PAGE (contenu par défaut du dashboard) ────────── */
     .ds-page {
       padding: 36px 32px 160px;   /* bottom padding laisse place à bockin */
       max-width: 1280px;
@@ -271,40 +278,38 @@
       .nav-btn    { padding:8px 12px; font-size:13px; }
     }
   </style>
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
+  {% set active_page = active_page|default('accueil') %}
+  {% set notif_count = notif_count|default(0) %}
 
-  <!-- Décorations fixes -->
+  <!-- ── NAVBAR (fixe, héritée par toutes les pages) ── -->
+  <nav class="ds-nav">
+    <a href="/dashboard/admin" class="ds-logo">
+      <img src="{{ url_for('static', filename='image/Logo.png') }}" alt="Digiscool logo">
+      <div class="ds-logo-name">Digiscool</div>
+    </a>
+    <div class="ds-nav-links">
+      <a href="/dashboard/admin" class="nav-btn{% if active_page == 'accueil' %} active{% endif %}">Accueil</a>
+      <a href="/admin/utilisateur" class="nav-btn{% if active_page == 'utilisateurs' %} active{% endif %}">Utilisateurs</a>
+      <a href="/admin/education" class="nav-btn{% if active_page == 'education' %} active{% endif %}">Education</a>
+      <a href="/admin/test" class="nav-btn{% if active_page == 'test' %} active{% endif %}">Test</a>
+      <a href="/admin/notifications" class="notif-link" title="Notifications">
+        <span class="notif-icon">🔔</span>
+        <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
+      </a>
+      <a href="/logout" class="nav-btn nav-btn-accent">Déconnexion</a>
+    </div>
+  </nav>
+
+  <!-- ── CONTENU (remplacé par chaque page enfant) ── -->
+  {% block content %}
+  <!-- Décorations fixes (page d'accueil uniquement) -->
   <img class="deco-points"  src="../static/image/points.png"          alt="" aria-hidden="true">
   <img class="deco-centre"  src="../static/image/molecule_centre.png" alt="" aria-hidden="true">
   <img class="deco-bockin"  src="../static/image/bockin.png"          alt="" aria-hidden="true">
 
-  <!-- ── NAVBAR ── -->
-  <nav class="ds-nav">
-    <a href="#" class="ds-logo">
-      <img src="../static/image/Logo.png" alt="Digiscool logo"
-           onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex'">
-      <!-- Fallback si chemin invalide -->
-      <div id="logo-fallback"
-           style="display:none;width:44px;height:44px;border-radius:9px;
-                  background:linear-gradient(135deg,#a855f7,#3b82f6);
-                  align-items:center;justify-content:center;
-                  font-weight:800;font-size:17px;color:#fff;">DS</div>
-      <div class="ds-logo-name">Digiscool</div>
-    </a>
-    <div class="ds-nav-links">
-      <a href="/admin/dashboard" class="nav-btn active">Acceuil</a>
-      <a href="/admin/utilisateur" class="nav-btn">Utilisateurs</a>
-      <a href="/admin/education" class="nav-btn">Education</a>
-      <a href="/admin/test" class="nav-btn">Test</a>
-      <a href="/admin/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}" title="Notifications">
-        <span class="notif-icon">🔔</span>
-        <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
-      </a>
-      <button class="nav-btn nav-btn-accent" onclick="deconnect()">Déconnecté</button>
-    </div>
-  </nav>
-  <!-- ── CONTENU ── -->
   <main class="ds-page">
 
     <!-- Statistiques rapides -->
@@ -358,7 +363,7 @@
         <div class="card-title">Utilisateurs</div>
         <div class="card-desc">Gérez les comptes élèves, enseignants et administrateurs. Activez, suspendez ou supprimez des profils.</div>
         <div class="card-footer">
-          <a href="#" class="card-action">Voir tout <i class="bi bi-arrow-right"></i></a>
+          <a href="/admin/utilisateur" class="card-action">Voir tout <i class="bi bi-arrow-right"></i></a>
           <span class="card-meta">1 248 comptes</span>
         </div>
       </div>
@@ -371,7 +376,7 @@
         <div class="card-title">Cours & Modules</div>
         <div class="card-desc">Créez et organisez les cours, leçons et modules éducatifs disponibles sur la plateforme.</div>
         <div class="card-footer">
-          <a href="#" class="card-action">Gérer <i class="bi bi-arrow-right"></i></a>
+          <a href="/admin/education" class="card-action">Gérer <i class="bi bi-arrow-right"></i></a>
           <span class="card-meta">87 cours</span>
         </div>
       </div>
@@ -426,46 +431,15 @@
           <a href="#" class="card-action">Configurer <i class="bi bi-arrow-right"></i></a>
           <span class="card-meta">Système v2.4.1</span>
         </div>
-      </div>   
+      </div>
     </div>
   </main>
-  <!-- ── FOOTER (imported component) ── -->
-      {% include "footer.html" %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+
   <script>
-    /* Navbar – état actif */
-    function setPage(btn) {
-      document.querySelectorAll('.nav-btn:not(.nav-btn-accent)')
-              .forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-
-    /* Déconnexion */
-    function deconnect() {
-      if (confirm('Voulez-vous vraiment vous déconnecter ?')) {
-        document.body.style.backgroundImage = 'none';
-        document.body.innerHTML = `
-          <div style="min-height:100vh;display:flex;align-items:center;
-                      justify-content:center;background:#b8c8e8;
-                      flex-direction:column;gap:18px">
-            <img src="../static/image/Logo.png" style="height:64px;border-radius:12px"
-                 onerror="this.style.display='none'">
-            <div style="font-size:22px;font-weight:700;color:#1e3a5f">
-              Vous êtes déconnecté(e).
-            </div>
-            <button onclick="location.reload()"
-              style="padding:11px 32px;border-radius:12px;border:none;
-                     background:#1a6bff;color:#fff;font-size:15px;cursor:pointer;
-                     font-weight:600">
-              Se reconnecter
-            </button>
-          </div>`;
-      }
-    }
-
-    /* Compteurs animés */
+    /* Compteurs animés (page d'accueil uniquement) */
     function animCount(id, target) {
       const el = document.getElementById(id);
+      if (!el) return;
       let n = 0;
       const step = Math.max(1, Math.ceil(target / 50));
       const t = setInterval(() => {
@@ -476,7 +450,6 @@
         if (n >= target) clearInterval(t);
       }, 28);
     }
-
     window.addEventListener('DOMContentLoaded', () => {
       animCount('s-users',    1248);
       animCount('s-cours',      87);
@@ -484,5 +457,12 @@
       animCount('s-sessions', 4600);
     });
   </script>
+  {% endblock %}
+
+  <!-- ── FOOTER (fixe, héritée par toutes les pages) ── -->
+  {% include "footer.html" %}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  {% block extra_js %}{% endblock %}
 </body>
 </html>

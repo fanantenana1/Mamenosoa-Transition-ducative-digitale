@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Digiscool – Gestion des Utilisateurs</title>
+{% extends "admin/dashboard.html" %}
+{% set active_page = 'utilisateurs' %}
+
+{% block title %}Digiscool – Gestion des Utilisateurs{% endblock %}
+
+{% block extra_head %}
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -32,7 +32,7 @@
       overflow-x: hidden;
     }
 
-    /* ══ NAVBAR ══ */
+    /* ══ NAVBAR ══ 
     .ds-nav {
       position: sticky; top: 0; z-index: 20;
       display: flex; align-items: center; justify-content: space-between;
@@ -69,7 +69,7 @@
       font-weight: 700; display: none; align-items: center; justify-content: center;
       padding: 0 4px; }
     .notif-badge.show { display: flex; }
-
+*/
     /* ══ PAGE BODY ══ */
     .page-body {
       flex: 1; padding: 32px 40px 48px;
@@ -489,30 +489,9 @@
     }
     .um-toggle-pw:hover { color: #fff; }
   </style>
-</head>
-<body>
+{% endblock %}
 
-<!-- ══ NAVBAR ══ -->
-<nav class="ds-nav">
-  <a href="/dashboard/admin" class="ds-logo">
-    <div class="ds-logo-box">
-      <img src="/static/image/Logo.png" alt="Digiscool Logo" onerror="this.style.display='none'"/>
-    </div>
-    <div class="ds-logo-name">Digiscool</div>
-  </a>
-  <div class="ds-nav-links">
-    <a href="/dashboard/admin" class="nav-btn">Accueil</a>
-    <a href="/admin/utilisateur" class="nav-btn active">Utilisateurs</a>
-    <a href="/admin/education" class="nav-btn">Education</a>
-    <a href="/admin/test" class="nav-btn">Test</a>
-    <a href="/admin/notifications" class="notif-link" title="Notifications">
-      <span class="notif-icon">🔔</span>
-      <span class="notif-badge" id="notif-badge"></span>
-    </a>
-    <a href="/logout" class="nav-btn-primary">Déconnexion</a>
-  </div>
-</nav>
-
+{% block content %}
 <!-- ══ PAGE BODY ══ -->
 <div class="page-body">
 
@@ -947,6 +926,9 @@
 <!-- Toast -->
 <div id="toast"></div>
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
 /* ═══════════════════════════════════════════════
    DATA STORE (live SQLite users)
@@ -1512,5 +1494,4 @@ document.addEventListener('DOMContentLoaded', () => {
   checkUrlParams();
 });
 </script>
-</body>
-</html>
+{% endblock %}
