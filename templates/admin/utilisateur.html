@@ -85,8 +85,8 @@
     .page-header-left p { color: var(--muted); font-size: .9rem; margin-top: .2rem; }
     .btn-add-user {
       display: flex; align-items: center; gap: .5rem;
-      background: #10b981; color: #fff; border: none; border-radius: 10px;
-      padding: .65rem 1.4rem; font-size: .95rem; font-weight: 700;
+      background: #2e3d60; color: #fff; border: none; border-radius: 10px;
+      padding: .4rem 1.4rem; font-size: .95rem; font-weight: 700;
       cursor: pointer; transition: background .2s; white-space: nowrap;
     }
     .btn-add-user:hover { background: #059669; }
@@ -101,16 +101,17 @@
       display: flex; align-items: center; justify-content: space-between;
       box-shadow: 0 2px 10px rgba(0,0,0,.06);
       border-left: 4px solid transparent;
+      max-height: 50px;
     }
     .stat-card.total   { border-left-color: #94a3b8; }
     .stat-card.approuv { border-left-color: var(--green); background: #f0fdf4; }
     .stat-card.attente { border-left-color: var(--yellow); background: #fffbeb; }
     .stat-card.rejete  { border-left-color: var(--red); background: #fff5f5; }
-    .stat-info .stat-label { font-size: .78rem; color: var(--muted); font-weight: 600;
+    .stat-info .stat-label { font-size: .73rem; color: var(--muted); font-weight: 600;
       text-transform: uppercase; letter-spacing: .05em; }
-    .stat-info .stat-num { font-size: 2rem; font-weight: 800; color: var(--text);
+    .stat-info .stat-num { font-size: 1.5rem; font-weight: 800; color: var(--text);
       line-height: 1.1; margin-top: .1rem; }
-    .stat-icon { font-size: 2rem; opacity: .7; }
+    .stat-icon { font-size: 1.5rem; opacity: .7;width: 20px;height: 30px; }
 
     /* ══ FILTERS ROW ══ */
     .filters-row {
@@ -515,7 +516,7 @@
         <div class="stat-num" id="stat-total">0</div>
       </div>
       <div class="stat-icon">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <svg width="20" height="30" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       </div>
     </div>
     <div class="stat-card approuv">

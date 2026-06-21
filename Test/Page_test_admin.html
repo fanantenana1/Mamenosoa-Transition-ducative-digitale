@@ -1,486 +1,559 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Digiscool - Test</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"/>
-  <style>
-    :root {
-      --bg:          #b8c8e8;
-      --nav-bg:      #1a1a2e;
-      --accent:      #1a6bff;
-      --card-bg:     #ffffff;
-      --card-shadow: 0 4px 20px rgba(0,0,0,.13);
-      --radius:      18px;
-      --font-ui:     'Segoe UI', system-ui, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digiscool — Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:   #0b0c2b;
+    --navy-panel:  #161a3a;
+    --navy-active: #5d7c92;
+    --blue-accent: #2f6bf0;
+    --blue-light:  #cfe2fa;
+    --blue-border: #3b6fd8;
+    --grey-mid:    #efecee;
+    --grey-btn:    #d9d6d9;
+    --grey-btn-bd: #a9a6a9;
+    --surface-bg:  #fdf6f8;
+    --surface-bd:  #aac9ee;
+    --ink:         #14152b;
+    --muted:       #8a8a93;
+  }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *{ box-sizing:border-box; }
 
-    body {
-      font-family: var(--font-ui);
-      background-color: var(--bg);
-      background-image: url('../static/image/molecule.png');
-      background-repeat: no-repeat;
-      background-position: center 160px;
-      background-size: 520px auto;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-    }
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--blue-light);
+    font-family:"Inter", sans-serif;
+    color:var(--ink);
+  }
 
-    /* ── molecule_bas ── */
-    body::after {
-      content: '';
-      position: fixed;
-      bottom: 0; left: 0;
-      width: 280px; height: 280px;
-      background: url('../static/image/molecule_bas.png') no-repeat left bottom / contain;
-      pointer-events: none;
-      z-index: 0;
-    }
+  /* ===================== NAVBAR ===================== */
+  .navbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+    padding:18px 36px;
+    background:linear-gradient(180deg, #0b0c2b 0%, #11123a 100%);
+    border-bottom:2px solid #2a2f63;
+  }
 
-    /* ────────── NAVBAR (identique dashboard) ────────── */
-    .ds-nav {
-      background: var(--nav-bg);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 4px;
-      padding: 0 28px;
-      height: 66px;
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      border-bottom: 2px solid rgba(255,255,255,.06);
-    }
+  .logo-block{
+    display:flex;
+    flex-direction:column;
+    line-height:0.78;
+    user-select:none;
+  }
+  .logo-ds{
+    font-weight:800;
+    font-size:40px;
+    letter-spacing:-1px;
+    background:linear-gradient(120deg, #b066f0 0%, #e85fc0 55%, #ff7ab8 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .logo-caption{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.04em;
+    background:linear-gradient(120deg, #b066f0, #5fa8ff);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin-top:2px;
+  }
 
-    .ds-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      margin-right: 16px;
-      flex-shrink: 0;
-      margin-left: -22px;
-    }
-    .ds-logo img {
-      height: 44px;
-      width: auto;
-      border-radius: 8px;
-      object-fit: contain;
-    }
-    .ds-logo-name {
-      font-weight: 700;
-      font-size: 16px;
-      color: #fff;
-      line-height: 1.2;
-    }
-    .ds-logo-name span {
-      display: block;
-      font-weight: 400;
-      font-size: 11px;
-      color: #9ca3af;
-    }
+  .nav-links{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex:1;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .nav-pill{
+    appearance:none;
+    border:none;
+    cursor:pointer;
+    padding:14px 30px;
+    border-radius:10px;
+    font-family:"Inter", sans-serif;
+    font-weight:600;
+    font-size:16px;
+    color:#fff;
+    background:var(--navy-panel);
+    transition:background-color .15s ease, transform .1s ease;
+  }
+  .nav-pill:hover{ background:#1f244e; }
+  .nav-pill.active{
+    background:var(--navy-active);
+  }
 
-    .ds-nav-links {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-left: auto;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-    .nav-btn {
-      background: #1f2937;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: .55rem 1.4rem;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background .2s;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    .nav-btn:hover { background: #374151; color: #fff; }
-    .nav-btn.active { background: #2563eb; }
+  .navbar-right{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
 
-    .nav-btn-primary {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: .55rem 1.4rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background .2s;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    .nav-btn-primary:hover { background: #1558d6; color: #fff; }
+  .bell-btn{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:2px solid #8d8fe0;
+    background:transparent;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    flex:none;
+  }
+  .bell-btn svg{ width:18px; height:18px; color:#c9caf5; }
 
-    .nav-btn-accent {
-      background: var(--accent);
-      color: #fff;
-      font-weight: 600;
-    }
-    .nav-btn-accent:hover { background: #1558d6; }
+  .btn-deconnecte{
+    appearance:none;
+    border:none;
+    cursor:pointer;
+    padding:14px 28px;
+    border-radius:10px;
+    font-family:"Inter", sans-serif;
+    font-weight:700;
+    font-size:16px;
+    color:#fff;
+    background:linear-gradient(135deg, #3457f3, #2b46e8);
+    box-shadow:0 4px 14px rgba(43,70,232,0.4);
+  }
 
-    /* notif bell */
-    .notif-link {
-      position: relative;
-      display: flex; align-items: center; justify-content: center;
-      width: 42px; height: 42px;
-      border-radius: 50%;
-      background: #1f2937;
-      text-decoration: none;
-      transition: background .2s;
-    }
-    .notif-link:hover { background: #374151; }
-    .notif-icon { font-size: 1.15rem; line-height: 1; }
-    .notif-badge {
-      position: absolute; top: -4px; right: -4px;
-      min-width: 18px; height: 18px;
-      border-radius: 50%; background: #dc2626; color: #fff;
-      font-size: .68rem; font-weight: 700;
-      display: none; align-items: center; justify-content: center;
-      padding: 0 4px; line-height: 1;
-    }
-    .notif-badge.show { display: flex; }
-    .notif-link.has-alert { box-shadow: 0 0 0 2px rgba(220,38,38,.5); }
+  /* ===================== PAGE / CARD ===================== */
+  .page{
+    max-width:1300px;
+    margin:0 auto;
+    padding:30px 24px 50px;
+  }
 
-    /* ════════════════════════════════ PAGE BODY ════════════════════════════════ */
-    .page-body {
-      background-image: url('/static/components/Rectangle 18.png');
-      background-size: 100% 100%;
-      min-height: calc(100vh - 66px);
-      padding: 32px 40px 48px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 24px;
-      margin-top: 25px;
-      position: relative;
-      z-index: 2;
-    }
+  .card{
+    background:#fff;
+    border-radius:18px;
+    box-shadow:0 6px 24px rgba(20,21,43,0.10);
+    overflow:hidden;
+  }
 
-    /* ════════════════════════════════ TYPE TOOLBAR ════════════════════════════════ */
-    .search-wrap {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 600px;
-      height: 45px;
-      background-image: url('/static/components/Rectangle 24.png');
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      border-radius: 0 0 10px 10px;
-      margin-top: -48px;
-      gap: 10px;
-    }
+  /* top strip: Type..... + Résultat */
+  .type-strip{
+    background:var(--blue-light);
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding:24px 30px;
+  }
 
-    .search-case {
-      position: relative;
-      width: 400px;
-      height: 30px;
-      background-image: url('/static/components/Rectangle 27.png');
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      border-radius: 8px;
-      display: flex; align-items: center;
-      padding-left: 12px;
-    }
+  .type-input-wrap{
+    flex:1;
+    max-width:560px;
+    position:relative;
+  }
+  select.type-select{
+    width:100%;
+    appearance:none;
+    -webkit-appearance:none;
+    background:#fff;
+    border:2px solid var(--blue-border);
+    color:var(--muted);
+    font-family:"Inter", sans-serif;
+    font-size:16px;
+    font-weight:500;
+    padding:14px 44px 14px 18px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  select.type-select:focus{
+    outline:none;
+    box-shadow:0 0 0 3px rgba(59,111,216,0.25);
+  }
+  .type-input-wrap::after{
+    content:"";
+    position:absolute;
+    right:18px;
+    top:50%;
+    transform:translateY(-50%);
+    width:0; height:0;
+    border-left:8px solid transparent;
+    border-right:8px solid transparent;
+    border-top:9px solid #1a1a2e;
+    pointer-events:none;
+  }
 
-    .sort-select {
-      flex: 1;
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #111;
-      cursor: pointer;
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-    }
-    .sort-select option { background: #fff; color: #111; font-size: 0.9rem; }
+  .btn-resultat{
+    appearance:none;
+    border:none;
+    cursor:pointer;
+    padding:14px 30px;
+    border-radius:10px;
+    font-family:"Inter", sans-serif;
+    font-weight:700;
+    font-size:16px;
+    color:#fff;
+    background:#16315c;
+    white-space:nowrap;
+  }
+  .btn-resultat:hover{ background:#1b3c70; }
 
-    .arrow-icon {
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; pointer-events: none;
-    }
-    .arrow-icon svg { width: 30px; height: 40px; fill: #111; display: block; }
+  /* middle controls section */
+  .controls-strip{
+    background:var(--grey-mid);
+    display:flex;
+    align-items:center;
+    gap:24px;
+    padding:22px 30px;
+    flex-wrap:wrap;
+  }
 
-    /* ════════════════════════════════ BOUTON RÉSULTAT ════════════════════════════════ */
-    .btn-resultat {
-      height: 30px;
-      background: #043C70;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 0 32px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      white-space: nowrap;
-      transition: opacity .15s;
-      flex-shrink: 0;
-    }
-    .btn-resultat:hover { opacity: .85; }
+  .select-wrap{
+    position:relative;
+  }
+  select.select-type{
+    appearance:none;
+    -webkit-appearance:none;
+    background:#fff;
+    border:2px solid #1a1a2e;
+    color:#1a1a2e;
+    font-family:"Inter", sans-serif;
+    font-size:17px;
+    font-weight:700;
+    padding:12px 42px 12px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    min-width:190px;
+  }
+  select.select-type:focus{
+    outline:none;
+    box-shadow:0 0 0 3px rgba(26,26,46,0.18);
+  }
+  .select-wrap::after{
+    content:"";
+    position:absolute;
+    right:16px;
+    top:50%;
+    transform:translateY(-50%);
+    width:0; height:0;
+    border-left:7px solid transparent;
+    border-right:7px solid transparent;
+    border-top:8px solid #1a1a2e;
+    pointer-events:none;
+  }
 
-    /* ════════════════════════════════ TABLE CARD ════════════════════════════════ */
-    .table-card {
-      width: 100%; max-width: 1100px;
-      background-image: url('/static/components/Rectangle 29.png');
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      border-radius: 12px;
-      overflow: hidden;
-      padding-bottom: 12px;
-      min-height: 500px;
-    }
+  .btn-importer{
+    appearance:none;
+    cursor:pointer;
+    padding:12px 22px;
+    border-radius:8px;
+    font-family:"Inter", sans-serif;
+    font-weight:700;
+    font-size:16px;
+    color:#1a1a2e;
+    background:var(--grey-btn);
+    border:2px solid var(--grey-btn-bd);
+    white-space:nowrap;
+  }
+  .btn-importer:hover{ background:#cfccd0; }
 
-    /* Questions QCM */
-    .qcm-wrap { padding: 28px 36px; display: flex; flex-direction: column; gap: 18px; }
-    .qcm-item { background: #f8fafc; border-radius: 12px; padding: 1.1rem 1.3rem; }
-    .qcm-item p { font-weight: 700; font-size: .97rem; color: #1a1a2e; margin-bottom: .7rem; }
-    .qcm-option {
-      display: flex; align-items: center; gap: .6rem;
-      font-size: .93rem; cursor: pointer;
-      padding: .32rem .5rem; border-radius: 7px; transition: background .15s;
-    }
-    .qcm-option:hover { background: #eef2ff; }
-    .qcm-option input[type=radio] { width: 15px; height: 15px; flex-shrink: 0; }
+  .time-box{
+    margin-left:auto;
+    background:#fff;
+    border:2px solid #1a1a2e;
+    border-radius:8px;
+    padding:10px 18px;
+    font-family:"JetBrains Mono", monospace;
+    font-size:20px;
+    font-weight:700;
+    color:#1a1a2e;
+    width:128px;
+    text-align:center;
+  }
+  .time-box:focus{
+    outline:none;
+    box-shadow:0 0 0 3px rgba(26,26,46,0.18);
+  }
 
-    .test-placeholder {
-      padding: 3rem;
-      text-align: center;
-      color: #64748b;
-      font-size: 1rem;
-    }
+  .hidden{ display:none !important; }
 
-    /* ════════════════════════════════ BOUTON ENVOYER ════════════════════════════════ */
-    .btn-envoyer {
-      background: #1976d2;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      height: 30px;
-      padding: 0 40px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      align-self: center;
-      font-family: inherit;
-      transition: background .15s;
-    }
-    .btn-envoyer:hover { background: #1565c0; }
-    .btn-envoyer:disabled { background: #94a3b8; cursor: not-allowed; }
+  /* surface */
+  .surface-wrap{
+    padding:0 30px 30px;
+    background:var(--grey-mid);
+  }
+  .exam-surface{
+    background:var(--surface-bg);
+    border:1.5px solid var(--surface-bd);
+    border-radius:6px;
+    min-height:420px;
+    padding:18px 20px;
+  }
 
-    /* TABLE HEADER / ROWS (conservés) */
-    .table-header {
-      width: 100%; height: 50px;
-      background: rgba(180,200,225,0.45);
-      border-bottom: 2px solid #4a72b0;
-      display: flex; align-items: center; padding: 0 16px;
-    }
-    .th-num   { width: 72px;  flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
-    .th-vid   { width: 115px; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
-    .th-titre { width: 265px; flex-shrink: 0; display:flex; align-items:center; }
-    .th-cours { width: 205px; flex-shrink: 0; display:flex; align-items:center; }
-    .th-exo   { flex: 1; display:flex; align-items:center; }
-    .lbl { color: #2a4fb5; font-weight: 700; font-size: 1rem; }
+  .surface-placeholder{
+    color:#9a9aa3;
+    font-size:17px;
+  }
 
-    .table-rows { display: flex; flex-direction: column; }
-    .row-item {
-      width: 100%; height: 92px; display: block; border: none; padding: 0;
-      background: transparent; cursor: pointer; transition: filter 0.15s;
-    }
-    .row-item:hover { filter: brightness(0.95); }
-    .row-item img { width: 100%; height: 100%; display: block; object-fit: fill; }
+  textarea.surface-textarea{
+    width:100%;
+    height:420px;
+    border:none;
+    background:transparent;
+    resize:vertical;
+    font-family:"Inter", sans-serif;
+    font-size:17px;
+    color:var(--ink);
+  }
+  textarea.surface-textarea::placeholder{ color:#9a9aa3; }
+  textarea.surface-textarea:focus{ outline:none; }
 
-    .btn-ajouter {
-      background: #1976d2; color: #fff; border: none; border-radius: 10px;
-      padding: 13px 52px; font-size: 1.05rem; font-weight: 700;
-      cursor: pointer; margin-top: 8px;
-    }
+  .file-zone{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:14px;
+  }
+  .file-display{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:16px 18px;
+    border:1.5px dashed #c8b8bc;
+    border-radius:8px;
+    background:#fff;
+    color:#9a9aa3;
+    font-size:15.5px;
+    width:100%;
+  }
+  .file-display.has-file{
+    border-style:solid;
+    border-color:var(--blue-border);
+    color:var(--ink);
+    font-weight:600;
+  }
+  .file-display svg{ width:20px; height:20px; flex:none; color:var(--blue-accent); }
 
-    /* ── Responsive ── */
-    @media (max-width: 768px) {
-      .search-wrap { width: 98%; }
-      .search-case { width: 60%; }
-      .page-body { padding: 16px 10px 40px; }
-      .ds-nav { padding: 0 12px; }
-      .nav-btn { padding: 8px 12px; font-size: 13px; }
-    }
-  </style>
+  .qcm-zone .qfield{ margin-bottom:16px; }
+  .qcm-zone label{
+    display:block;
+    font-size:14px;
+    font-weight:700;
+    color:#3c3c46;
+    margin-bottom:6px;
+  }
+  .qcm-zone input[type="text"]{
+    width:100%;
+    font-family:"Inter", sans-serif;
+    font-size:16px;
+    padding:11px 14px;
+    border:1.5px solid #d8d3d6;
+    border-radius:7px;
+    background:#fff;
+    color:var(--ink);
+  }
+  .qcm-zone input[type="text"]:focus{
+    outline:none;
+    border-color:var(--blue-border);
+    box-shadow:0 0 0 3px rgba(59,111,216,0.18);
+  }
+  .answer-row{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .answer-marker{
+    font-family:"JetBrains Mono", monospace;
+    font-size:13px;
+    font-weight:700;
+    color:#9a9aa3;
+    width:20px;
+    flex:none;
+  }
+  .answer-row input{ flex:1; }
+
+  /* envoyer */
+  .send-wrap{
+    background:#fff;
+    display:flex;
+    justify-content:center;
+    padding:26px 0 32px;
+  }
+  .btn-envoyer{
+    appearance:none;
+    border:none;
+    cursor:pointer;
+    padding:15px 70px;
+    border-radius:10px;
+    font-family:"Inter", sans-serif;
+    font-weight:700;
+    font-size:18px;
+    color:#fff;
+    background:var(--blue-accent);
+    box-shadow:0 5px 16px rgba(47,107,240,0.4);
+  }
+  .btn-envoyer:hover{ background:#2a5fd9; }
+
+  @media (max-width:760px){
+    .navbar{ flex-wrap:wrap; padding:16px 18px; }
+    .nav-links{ order:3; width:100%; justify-content:flex-start; }
+    .type-strip{ flex-direction:column; align-items:stretch; }
+    .controls-strip{ flex-direction:column; align-items:stretch; }
+    .time-box{ margin-left:0; width:100%; }
+  }
+</style>
 </head>
 <body>
 
-  <!-- ── NAVBAR (identique dashboard) ── -->
-  <nav class="ds-nav">
-    <a href="/admin/dashboard" class="ds-logo">
-      <img src="../static/image/Logo.png" alt="Digiscool logo"
-           onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex'">
-      <div id="logo-fallback"
-           style="display:none;width:44px;height:44px;border-radius:9px;
-                  background:linear-gradient(135deg,#a855f7,#3b82f6);
-                  align-items:center;justify-content:center;
-                  font-weight:800;font-size:17px;color:#fff;">DS</div>
-      <div class="ds-logo-name">Digiscool</div>
-    </a>
-    <div class="ds-nav-links">
-      <a href="/admin/dashboard" class="nav-btn">Accueil</a>
-      <a href="/admin/utilisateurs" class="nav-btn">Utilisateurs</a>
-      <a href="/admin/education" class="nav-btn">Education</a>
-      <a href="/admin/test" class="nav-btn active">Test</a>
-      <a href="/admin/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}" title="Notifications">
-        <span class="notif-icon">🔔</span>
-        <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
-      </a>
-      <a href="/logout" class="nav-btn nav-btn-accent">Déconnecté</a>
-    </div>
-  </nav>
+<!-- ===================== NAVBAR ===================== -->
+<div class="navbar">
+  <div class="logo-block">
+    <span class="logo-ds">DS</span>
+    <span class="logo-caption">Digiscool</span>
+  </div>
 
-  <!-- ── PAGE BODY ── -->
-  <div class="page-body">
+  <div class="nav-links">
+    <button class="nav-pill">Acceuil</button>
+    <button class="nav-pill">Utilisateurs</button>
+    <button class="nav-pill">Education</button>
+    <button class="nav-pill active">Test</button>
+  </div>
 
-    <!-- Select Type + Bouton Résultat -->
-    <div class="search-wrap">
-      <div class="search-case">
-        <select class="sort-select" id="sort-select" onchange="loadTest()">
-          <option value="" selected disabled hidden>Type.....</option>
+  <div class="navbar-right">
+    <button class="bell-btn" aria-label="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </button>
+    <button class="btn-deconnecte">Déconnecté</button>
+  </div>
+</div>
+
+<!-- ===================== PAGE ===================== -->
+<div class="page">
+  <div class="card">
+
+    <!-- Type..... + Résultat -->
+    <div class="type-strip">
+      <div class="type-input-wrap">
+        <select class="type-select" id="exam-type">
+          <option value="" selected>Type.....</option>
+          <option value="examen">Examen</option>
+          <option value="quiz">Quiz</option>
+          <option value="devoir">Devoir</option>
         </select>
-        <span class="arrow-icon">
-          <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
-        </span>
       </div>
-      <button class="btn-resultat" onclick="window.location.href='/admin/test/resultats'">Résultat</button>
+      <button class="btn-resultat" type="button">Résultat</button>
     </div>
 
-    <!-- Table Card (contenu QCM dynamique) -->
-    <div class="table-card" id="test-card-content">
-      <div class="test-placeholder">Sélectionnez un type de test pour afficher les questions.</div>
+    <!-- Selectionner + Importer fichier + temps -->
+    <div class="controls-strip">
+      <div class="select-wrap">
+        <select class="select-type" id="content-select">
+          <option value="" selected>Selectionner</option>
+          <option value="fichier">Fichier</option>
+          <option value="texte">Texte</option>
+          <option value="qcm">QCM</option>
+        </select>
+      </div>
+
+      <button class="btn-importer hidden" id="import-btn" type="button">Importer fichier....</button>
+
+      <input class="time-box hidden" id="time-box" type="text" value="00:00" inputmode="numeric" aria-label="Durée">
     </div>
 
-    <!-- Bouton Envoyer -->
-    <button class="btn-envoyer" id="btn-envoyer" onclick="envoyerTest()" disabled>Envoyer</button>
+    <!-- Surface -->
+    <div class="surface-wrap">
+      <div class="exam-surface" id="exam-surface">
+        <p class="surface-placeholder">Saisire les context d'examen ....</p>
+      </div>
+    </div>
 
-  </div><!-- fin .page-body -->
+    <!-- Envoyer -->
+    <div class="send-wrap">
+      <button class="btn-envoyer" type="button">Envoyer</button>
+    </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
-  <script>
-    let allCours = [];
-    let currentQuestions = [];
-    let currentMeta = null;
+  </div>
+</div>
 
-    /* ── Charge la liste des cours → remplit le select ── */
-    async function loadTypes() {
-      try {
-        const r = await fetch('/api/cours');
-        if (!r.ok) throw new Error('Erreur serveur');
-        allCours = await r.json();
+<script>
+  const contentSelect = document.getElementById("content-select");
+  const importBtn     = document.getElementById("import-btn");
+  const timeBox        = document.getElementById("time-box");
+  const surface        = document.getElementById("exam-surface");
 
-        const select = document.getElementById('sort-select');
-        allCours.forEach(c => {
-          const hasCoursQcm = c.cours_type === 'qcm' && hasJsonItems(c.cours_qcm);
-          const hasExoQcm   = c.exercice_type === 'qcm' && hasJsonItems(c.exercice_qcm);
-          if (hasCoursQcm) {
-            const opt = document.createElement('option');
-            opt.value = `${c.id}:cours`;
-            opt.textContent = `${c.titre} — Cours`;
-            select.appendChild(opt);
-          }
-          if (hasExoQcm) {
-            const opt = document.createElement('option');
-            opt.value = `${c.id}:exercice`;
-            opt.textContent = `${c.titre} — Exercice`;
-            select.appendChild(opt);
-          }
-        });
-      } catch (e) { console.error(e); }
+  function renderDefault(){
+    surface.innerHTML = `<p class="surface-placeholder">Saisire les context d'examen ....</p>`;
+  }
+
+  function renderFichier(){
+    surface.innerHTML = `
+      <div class="file-zone">
+        <div id="file-display" class="file-display">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Aucun fichier importé.
+        </div>
+      </div>
+    `;
+  }
+
+  function renderTexte(){
+    surface.innerHTML = `<textarea class="surface-textarea" placeholder="Saisire les context d'examen ...."></textarea>`;
+  }
+
+  function renderQcm(){
+    surface.innerHTML = `
+      <div class="qcm-zone">
+        <div class="qfield">
+          <label>Question</label>
+          <input type="text" placeholder="Saisir la question">
+        </div>
+        <label>Réponses</label>
+        <div class="answer-row"><span class="answer-marker">01</span><input type="text" placeholder="Réponse 1"></div>
+        <div class="answer-row"><span class="answer-marker">02</span><input type="text" placeholder="Réponse 2"></div>
+        <div class="answer-row"><span class="answer-marker">03</span><input type="text" placeholder="Réponse 3"></div>
+      </div>
+    `;
+  }
+
+  contentSelect.addEventListener("change", () => {
+    const choix = contentSelect.value;
+
+    if (choix === "") {
+      // rien de selectionné -> pas de temps, pas d'import
+      importBtn.classList.add("hidden");
+      timeBox.classList.add("hidden");
+      renderDefault();
+      return;
     }
 
-    function hasJsonItems(val) {
-      if (!val) return false;
-      try { const a = JSON.parse(val); return Array.isArray(a) && a.length > 0; }
-      catch (e) { return false; }
+    // un element est selectionné -> afficher le champ temps
+    timeBox.classList.remove("hidden");
+
+    if (choix === "fichier") {
+      importBtn.classList.remove("hidden");
+      renderFichier();
+    } else if (choix === "texte") {
+      importBtn.classList.add("hidden");
+      renderTexte();
+    } else if (choix === "qcm") {
+      importBtn.classList.add("hidden");
+      renderQcm();
     }
+  });
 
-    /* ── Affiche les questions du type sélectionné ── */
-    function loadTest() {
-      const val = document.getElementById('sort-select').value;
-      const card = document.getElementById('test-card-content');
-      const btn  = document.getElementById('btn-envoyer');
+  importBtn.addEventListener("click", () => {
+    const fd = document.getElementById("file-display");
+    if (!fd) return;
+    fd.classList.add("has-file");
+    fd.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Fichier importé : exemple.pdf
+    `;
+  });
+</script>
 
-      if (!val) {
-        card.innerHTML = '<div class="test-placeholder">Sélectionnez un type de test pour afficher les questions.</div>';
-        btn.disabled = true;
-        currentQuestions = [];
-        return;
-      }
-
-      const [id, kind] = val.split(':');
-      const c = allCours.find(x => x.id == id);
-      if (!c) return;
-
-      const qcmRaw = kind === 'cours' ? c.cours_qcm : c.exercice_qcm;
-      let questions = [];
-      try { questions = JSON.parse(qcmRaw || '[]'); } catch (e) { questions = []; }
-
-      currentQuestions = questions;
-      currentMeta = { id: c.id, titre: c.titre, kind };
-
-      if (!questions.length) {
-        card.innerHTML = '<div class="test-placeholder">Aucune question disponible pour ce type.</div>';
-        btn.disabled = true;
-        return;
-      }
-
-      card.innerHTML = `<div class="qcm-wrap">
-        ${questions.map((q, i) => `
-          <div class="qcm-item">
-            <p>${i+1}. ${escHtml(q.question || '')}</p>
-            ${(q.options || []).map((o, j) => `
-              <label class="qcm-option">
-                <input type="radio" name="q${i}" value="${j}"/>
-                ${escHtml(o)}
-              </label>`).join('')}
-          </div>`).join('')}
-      </div>`;
-
-      btn.disabled = false;
-    }
-
-    /* ── Soumettre ── */
-    function envoyerTest() {
-      if (!currentQuestions.length) return;
-      let answered = 0, correct = 0;
-      currentQuestions.forEach((q, i) => {
-        const sel = document.querySelector(`input[name="q${i}"]:checked`);
-        if (sel) { answered++; if (parseInt(sel.value) === q.correct) correct++; }
-      });
-      if (answered < currentQuestions.length) {
-        alert(`Veuillez répondre à toutes les questions (${answered}/${currentQuestions.length} répondues).`);
-        return;
-      }
-      alert(`✅ Résultat : ${correct} / ${currentQuestions.length} bonnes réponses`);
-    }
-
-    function escHtml(s) {
-      return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-
-    document.addEventListener('DOMContentLoaded', loadTypes);
-  </script>
 </body>
 </html>

@@ -35,25 +35,36 @@
     background-size: 100% 100%;
     background-repeat: no-repeat;
     border-radius: 8px;
-    display: flex; align-items: center;
+    display: flex;
+    align-items: center;
     padding-left: 12px;
   }
 
   .search-icon {
     position: absolute;
     left: 14px;
-    display: flex; align-items: center;
+    display: flex;
+    align-items: center;
     height: 100%;
     pointer-events: none;
   }
-  .search-icon svg { width: 18px; height: 18px; stroke: #666; fill: none; stroke-width: 2; }
+
+  .search-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: #666;
+    fill: none;
+    stroke-width: 2;
+  }
 
   .search-wrap input {
     flex: 1;
     height: 30px;
-    border: none; outline: none;
+    border: none;
+    outline: none;
     background: transparent;
-    font-size: 0.9rem; color: #555;
+    font-size: 0.9rem;
+    color: #555;
   }
 
   /* ══════════════════════════════ TRIER PAR ══════════════════════════════ */
@@ -118,6 +129,7 @@
     pointer-events: none;
     z-index: 1;
   }
+
   .arrow-icon svg {
     width: 24px;
     height: 24px;
@@ -129,41 +141,516 @@
   .table-header {
     width: 100%;
     height: 50px;
-    background: rgba(180,200,225,0.45);
+    background: rgba(180, 200, 225, 0.45);
     border-bottom: 2px solid #4a72b0;
     display: flex;
     align-items: center;
     padding: 0 16px;
   }
-  .th-num   { width: 72px;  flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
-  .th-vid   { width: 115px; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
-  .th-titre { width: 265px; flex-shrink: 0; display:flex; align-items:center; }
-  .th-cours { width: 205px; flex-shrink: 0; display:flex; align-items:center; }
-  .th-exo   { flex: 1;      display:flex; align-items:center; }
-  .th-num img, .th-vid img, .th-titre img { display:block; }
-  .lbl { color: #2a4fb5; font-weight: 700; font-size: 1rem; }
+
+  .th-num {
+    width: 72px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .th-vid {
+    width: 115px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .th-titre {
+    width: 265px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .th-cours {
+    width: 205px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .th-exo {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .th-num img,
+  .th-vid img,
+  .th-titre img {
+    display: block;
+  }
+
+  .lbl {
+    color: #2a4fb5;
+    font-weight: 700;
+    font-size: 1rem;
+  }
 
   /* ══════════════════════════════ TABLE ROWS ══════════════════════════════ */
-  .table-rows { display: flex; flex-direction: column; }
+  .table-rows {
+    display: flex;
+    flex-direction: column;
+  }
+
   .row-item {
-    width: 100%; height: 92px;
-    display: block; border: none; padding: 0;
-    background: transparent; cursor: pointer;
+    width: 100%;
+    height: 92px;
+    display: block;
+    border: none;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
     transition: filter 0.15s;
   }
-  .row-item:hover { filter: brightness(0.95); }
-  .row-item img { width: 100%; height: 100%; display: block; object-fit: fill; }
+
+  .row-item:hover {
+    filter: brightness(0.95);
+  }
+
+  .row-item img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: fill;
+  }
 
   /* ══════════════════════════════ TABLE CARD ══════════════════════════════ */
   .table-card {
-    width: 100%; max-width: 1100px;
+    width: 100%;
+    max-width: 1100px;
     background-image: url('components/Rectangle 29.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
+    background-color: #fff;
     border-radius: 12px;
     overflow: hidden;
     padding-bottom: 12px;
   }
+
+  /* ══════════════════════════════ PORTERE (conteneur regroupant surface + contrôles) ══════════════════════════════ */
+  .portere {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1.5px solid #4a72b0;
+    border-radius: 10px;
+    margin: 6px 26px 0;
+    overflow: hidden;
+  }
+
+  /* ══════════════════════════════ CONTENU DU TEST (Selectionner / Importer / Dates / Surface) ══════════════════════════════ */
+  .content-controls {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+    padding: 22px 26px;
+    background: rgba(180, 200, 225, 0.25);
+  }
+
+  .content-select-wrap {
+    position: relative;
+  }
+
+  .select-content {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #fff;
+    border: 1px solid #043C70;
+    color: #111;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 2px 42px 2px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    min-width: 180px;
+  }
+
+  .select-content:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(4, 60, 112, 0.18);
+  }
+
+  .content-select-wrap::after {
+    content: "";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 8px solid #043C70;
+    pointer-events: none;
+  }
+
+  .btn-importer {
+    appearance: none;
+    cursor: pointer;
+    padding: 0px 20px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #111;
+    background: #e6e6e8;
+    border: 2px solid #a9a6a9;
+    white-space: nowrap;
+  }
+
+  .btn-importer:hover {
+    background: #d8d6d9;
+  }
+
+  .datetime-row {
+    display: flex;
+    gap: 22px;
+    margin-left: auto;
+    flex-wrap: wrap;
+  }
+
+  .dt-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .dt-field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .dt-field label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: #2a4fb5;
+  }
+
+  .dt-field input {
+  border: 1px solid #4a72b0;
+  border-radius: 6px;
+  padding: 0px 8px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: #111;
+  background: #fff;
+
+  /* centrage horizontal et vertical */
+  text-align: center;
+  line-height: 1.5;   /* ajuste la hauteur pour centrer verticalement */
+}
+
+
+  .dt-field input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 114, 176, 0.25);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  .surface-box {
+    padding: 0px 0px 0;
+  }
+
+  .exam-surface {
+    background: #fdf6f8;
+    border: 1.5px solid #aac9ee;
+    border-radius: 8px;
+    min-height: 360px;
+    padding: 18px 20px;
+  }
+
+  .surface-placeholder {
+    color: #9a9aa3;
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .surface-textarea {
+    width: 100%;
+    height: 360px;
+    border: none;
+    background: transparent;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 1rem;
+    color: #111;
+  }
+
+  .surface-textarea:focus {
+    outline: none;
+  }
+
+  .surface-textarea::placeholder {
+    color: #9a9aa3;
+  }
+
+  .file-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .file-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border: 1.5px dashed #c8b8bc;
+    border-radius: 8px;
+    background: #fff;
+    color: #9a9aa3;
+    font-size: 0.95rem;
+  }
+
+  .file-display.has-file {
+    border-style: solid;
+    border-color: #4a72b0;
+    color: #111;
+    font-weight: 600;
+  }
+
+  .file-display svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: #1976d2;
+  }
+
+  /* ── QCM ── */
+  .qcm-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  .qcm-block {
+    position: relative;
+    background: #fff;
+    border: 1.5px solid #d8d3d6;
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+
+  .qcm-block-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .qcm-block-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #2a4fb5;
+  }
+
+  .btn-remove-question {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: #9a9aa3;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 5px;
+  }
+
+  .btn-remove-question:hover {
+    color: #c0392b;
+    background: rgba(192, 57, 43, 0.08);
+  }
+
+  .qfield {
+    margin-bottom: 14px;
+  }
+
+  .qfield label,
+  .qcm-block>label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #3c3c46;
+    margin-bottom: 6px;
+  }
+
+  .qfield input[type="text"],
+  .answer-row input[type="text"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 0.92rem;
+    padding: 9px 12px;
+    border: 1.5px solid #d8d3d6;
+    border-radius: 6px;
+    background: #fff;
+    color: #111;
+  }
+
+  .qfield input[type="text"]:focus,
+  .answer-row input[type="text"]:focus {
+    outline: none;
+    border-color: #4a72b0;
+    box-shadow: 0 0 0 3px rgba(74, 114, 176, 0.18);
+  }
+
+  .answer-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .answer-marker {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #9a9aa3;
+    width: 18px;
+    flex-shrink: 0;
+  }
+
+  .btn-remove-answer {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: #c2bfc2;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+
+  .btn-remove-answer:hover {
+    color: #c0392b;
+    background: rgba(192, 57, 43, 0.08);
+  }
+
+  .btn-add-answer {
+    appearance: none;
+    border: 1.5px dashed #4a72b0;
+    background: #f3f7fc;
+    color: #1976d2;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 7px 14px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .btn-add-answer:hover {
+    background: #e7f0fb;
+  }
+
+  .btn-add-answer .plus-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #1976d2;
+    color: #fff;
+    font-size: 0.82rem;
+    line-height: 16px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .btn-add-question {
+    appearance: none;
+    border: none;
+    cursor: pointer;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #1976d2;
+    color: #fff;
+    font-size: 1.5rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px auto 0;
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.35);
+    transition: background-color .15s ease, transform .1s ease;
+  }
+
+  .btn-add-question:hover {
+    background: #1565c0;
+  }
+
+  .btn-add-question:active {
+    transform: scale(0.94);
+  }
+
+  /* ── Import fichier : sélecteur natif + URL ── */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .file-url-field {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 460px;
+  }
+
+  .file-url-field label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #2a4fb5;
+  }
+
+  .file-url-field input[type="url"] {
+    border: 1.5px solid #d8d3d6;
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: #111;
+    background: #fff;
+  }
+
+  .file-url-field input[type="url"]:focus {
+    outline: none;
+    border-color: #4a72b0;
+    box-shadow: 0 0 0 3px rgba(74, 114, 176, 0.18);
+  }
+
   .btn-resultat {
     height: 30px;
     background: #043C70;
@@ -179,7 +666,10 @@
     transition: opacity .15s;
     flex-shrink: 0;
   }
-  .btn-resultat:hover { opacity: .85; }
+
+  .btn-resultat:hover {
+    opacity: .85;
+  }
 
   /* Bouton Envoyer */
   .btn-envoyer {
@@ -195,15 +685,22 @@
     margin-top: auto;
     align-self: center;
   }
-  .btn-envoyer:hover { background: #1565c0; }
+
+  .btn-envoyer:hover {
+    background: #1565c0;
+  }
 
   /* ══════════════════════════════ AJOUTER BUTTON ══════════════════════════════ */
   .btn-ajouter {
-    background: #1976d2; color: #fff;
-    border: none; border-radius: 10px;
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
     padding: 13px 52px;
-    font-size: 1.05rem; font-weight: 700;
-    cursor: pointer; margin-top: 8px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
   }
 
   /* ══════════════════════════════ PAGE BODY (spécifique à cette page) ══════════════════════════════ */
@@ -230,15 +727,13 @@
     <div class="search-case">
       <div class="select-wrapper">
         <select class="sort-select" id="sort-select" onchange="loadCours()">
-          <option value="id" class="select_indice">Selectionner</option>
-          <option value="num">Trier par N°</option>
-          <option value="titre">Trier par Titre</option>
-          <option value="matiere">Trier par Matière</option>
-          <option value="created_at">Trier par Date</option>
+          <option value="" class="select_indice">Sélectionner</option>
+          <option value="exercice">Exercice</option>
+          <option value="examen">Examen</option>
         </select>
         <span class="arrow-icon">
           <svg viewBox="0 0 24 24">
-            <path d="M7 10l5 5 5-5z"/>
+            <path d="M7 10l5 5 5-5z" />
           </svg>
         </span>
       </div>
@@ -247,18 +742,213 @@
   </div> <!-- fin .search-wrap -->
 
   <!-- ════ TABLE CARD ════ -->
-  <div class="table-card"> </div>
-    <!-- ════ BOUTON ENVOYER ════ -->
+  <div class="table-card">
+
+    <div class="portere">
+       <!-- Selectionner / Importer fichier / Dates -->
+      <div class="content-controls">
+        <div class="content-select-wrap">
+          <select class="select-content" id="content-select" onchange="onContentChange()">
+            <option value="" selected>Selectionner</option>
+            <option value="fichier">Fichier</option>
+            <option value="texte">Texte</option>
+            <option value="qcm">QCM</option>
+          </select>
+        </div>
+
+        <input type="file" id="file-input" class="visually-hidden" onchange="onFileSelected()">
+        <button class="btn-importer hidden" id="import-btn" type="button"
+          onclick="document.getElementById('file-input').click()">Importer fichier....</button>
+
+        <div class="datetime-row" id="datetime-row">
+  <div class="dt-group">
+    <div class="dt-field">
+      <label for="start-date">Date début</label>
+      <input type="date" id="start-date">
+    </div>
+    <div class="dt-field">
+      <label for="start-time">Heure début</label>
+      <input type="time" id="start-time">
+    </div>
+  </div>
+  <div class="dt-group">
+    <div class="dt-field">
+      <label for="end-date">Date fin</label>
+      <input type="date" id="end-date">
+    </div>
+    <div class="dt-field">
+      <label for="end-time">Heure fin</label>
+      <input type="time" id="end-time">
+    </div>
+  </div>
+</div>
+
+      </div>
+      <!-- Surface -->
+      <div class="surface-box">
+        <div class="exam-surface" id="exam-surface">
+          <p class="surface-placeholder">Saisire les context d'examen ....</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <!-- ════ BOUTON ENVOYER ════ -->
   <button class="btn-envoyer">Envoyer</button>
 </div><!-- fin .page-body -->
 {% endblock %}
 
 {% block extra_js %}
 <script>
- /*
-  function showResultats() {
-    window.location.href = 'resultats.html';
-  }*/
+  /*
+   function showResultats() {
+     window.location.href = 'resultats.html';
+   }*/
 
+  const contentSelect = document.getElementById('content-select');
+  const importBtn = document.getElementById('import-btn');
+  const datetimeRow = document.getElementById('datetime-row');
+  const surface = document.getElementById('exam-surface');
+
+  let qcmCount = 0;
+
+  function renderDefault() {
+    surface.innerHTML = `<p class="surface-placeholder">Saisire les context d'examen ....</p>`;
+  }
+
+  function renderFichier() {
+    surface.innerHTML = `
+      <div class="file-zone">
+        <div id="file-display" class="file-display">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span id="file-display-text">Aucun fichier importé.</span>
+        </div>
+        <div class="file-url-field">
+          <label for="file-url">Ou insérer une URL de fichier (internet)</label>
+          <input type="url" id="file-url" placeholder="https://exemple.com/fichier.pdf" oninput="onFileUrlInput()">
+        </div>
+      </div>
+    `;
+  }
+
+  function renderTexte() {
+    surface.innerHTML = `<textarea class="surface-textarea" placeholder="Saisire les context d'examen ...."></textarea>`;
+  }
+
+  function renderQcm() {
+    qcmCount = 0;
+    surface.innerHTML = `
+      <div class="qcm-zone" id="qcm-zone"></div>
+      <button type="button" class="btn-add-question" id="add-question-btn" onclick="addQuestionBlock()" aria-label="Ajouter une question">+</button>
+    `;
+    addQuestionBlock();
+  }
+
+  function addQuestionBlock() {
+    qcmCount += 1;
+    const zone = document.getElementById('qcm-zone');
+    if (!zone) return;
+    const num = String(qcmCount).padStart(2, '0');
+
+    const block = document.createElement('div');
+    block.className = 'qcm-block';
+    block.innerHTML = `
+      <div class="qcm-block-head">
+        <span class="qcm-block-title">Question ${num}</span>
+        <button type="button" class="btn-remove-question" onclick="this.closest('.qcm-block').remove()" aria-label="Supprimer cette question">&times;</button>
+      </div>
+      <div class="qfield">
+        <label>Question</label>
+        <input type="text" placeholder="Saisir la question">
+      </div>
+      <label>Réponses</label>
+      <div class="answers-list">
+        <div class="answer-row"><span class="answer-marker">01</span><input type="text" placeholder="Réponse 1"><button type="button" class="btn-remove-answer" onclick="this.closest('.answer-row').remove()" aria-label="Supprimer cette réponse">&times;</button></div>
+        <div class="answer-row"><span class="answer-marker">02</span><input type="text" placeholder="Réponse 2"><button type="button" class="btn-remove-answer" onclick="this.closest('.answer-row').remove()" aria-label="Supprimer cette réponse">&times;</button></div>
+        <div class="answer-row"><span class="answer-marker">03</span><input type="text" placeholder="Réponse 3"><button type="button" class="btn-remove-answer" onclick="this.closest('.answer-row').remove()" aria-label="Supprimer cette réponse">&times;</button></div>
+      </div>
+      <button type="button" class="btn-add-answer" onclick="addAnswerRow(this)">
+        <span class="plus-circle">+</span> Ajouter une réponse
+      </button>
+    `;
+    zone.appendChild(block);
+  }
+
+  function addAnswerRow(btn) {
+    const block = btn.closest('.qcm-block');
+    if (!block) return;
+    const list = block.querySelector('.answers-list');
+    const count = list.querySelectorAll('.answer-row').length + 1;
+    const num = String(count).padStart(2, '0');
+
+    const row = document.createElement('div');
+    row.className = 'answer-row';
+    row.innerHTML = `
+      <span class="answer-marker">${num}</span>
+      <input type="text" placeholder="Réponse ${count}">
+      <button type="button" class="btn-remove-answer" onclick="this.closest('.answer-row').remove()" aria-label="Supprimer cette réponse">&times;</button>
+    `;
+    list.appendChild(row);
+  }
+
+  function onContentChange() {
+    const choix = contentSelect.value;
+
+    if (choix === '') {
+      // rien de selectionné -> pas de date/temps, pas d'import
+      importBtn.classList.add('hidden');
+      datetimeRow.classList.add('hidden');
+      renderDefault();
+      return;
+    }
+
+    // un element est selectionné -> afficher les dates/heures
+    datetimeRow.classList.remove('hidden');
+
+    if (choix === 'fichier') {
+      importBtn.classList.remove('hidden');
+      renderFichier();
+    } else if (choix === 'texte') {
+      importBtn.classList.add('hidden');
+      renderTexte();
+    } else if (choix === 'qcm') {
+      importBtn.classList.add('hidden');
+      renderQcm();
+    }
+  }
+
+  function onFileSelected() {
+    const input = document.getElementById('file-input');
+    const fd = document.getElementById('file-display');
+    const fdText = document.getElementById('file-display-text');
+    if (!input || !input.files || !input.files[0] || !fd || !fdText) return;
+
+    fd.classList.add('has-file');
+    fdText.textContent = 'Fichier importé : ' + input.files[0].name;
+
+    // si une URL avait été saisie, on l'efface car un fichier local prend le dessus
+    const urlInput = document.getElementById('file-url');
+    if (urlInput) urlInput.value = '';
+  }
+
+  function onFileUrlInput() {
+    const urlInput = document.getElementById('file-url');
+    const fd = document.getElementById('file-display');
+    const fdText = document.getElementById('file-display-text');
+    if (!urlInput || !fd || !fdText) return;
+
+    const url = urlInput.value.trim();
+    if (url !== '') {
+      fd.classList.add('has-file');
+      fdText.textContent = 'Fichier (URL) : ' + url;
+      // si un fichier local avait été choisi, on le réinitialise
+      const fileInput = document.getElementById('file-input');
+      if (fileInput) fileInput.value = '';
+    } else {
+      fd.classList.remove('has-file');
+      fdText.textContent = 'Aucun fichier importé.';
+    }
+  }
 </script>
 {% endblock %}

@@ -422,7 +422,8 @@
     </a>
     <div class="ds-nav-links">
       <a href="/user/dashboard" class="nav-btn{% if self.active_page() == 'accueil' %} active{% endif %}">Accueil</a>
-      <a href="/user/education" class="nav-btn{% if self.active_page() == 'education' %} active{% endif %}">Education</a>
+      <a href="/user/education"
+        class="nav-btn{% if self.active_page() == 'education' %} active{% endif %}">Education</a>
       <a href="/user/test" class="nav-btn{% if self.active_page() == 'test' %} active{% endif %}">Test</a>
       <div class="user-info">
         <span class="user-icon">
@@ -435,7 +436,9 @@
       </div>
       <a href="/user/notifications" class="notif-link{% if notif_count > 0 %} has-alert{% endif %}"
         title="Notifications">
-        <span class="notif-icon">🔔</span>
+        <span class="notif-icon">
+          <img src="/static/image/notifi3.png" alt="Notifications" width="40" height="35">
+        </span>
         <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
       </a>
       <a href="{{ url_for('logout') }}" class="nav-btn-primary">Déconnecté</a>
@@ -443,7 +446,7 @@
   </nav>
 
   {# Permet a chaque page enfant d'indiquer quel lien de nav doit etre actif #}
- <!-- {% block active_page %}accueil{% endblock %}-->
+  <!-- {% block active_page %}accueil{% endblock %}-->
 
   <!-- ══ CONTENU DE LA PAGE (different pour chaque page enfant) ══ -->
   {% block content %}

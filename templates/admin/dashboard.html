@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Digiscool – Dashboard Admin{% endblock %}</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" />
   <style>
     :root {
-      --bg:          #b8c8e8;
-      --nav-bg:      #1a1a2e;
-      --accent:      #1a6bff;
-      --card-bg:     #ffffff;
-      --card-shadow: 0 4px 20px rgba(0,0,0,.13);
-      --radius:      18px;
-      --font-ui:     'Segoe UI', system-ui, sans-serif;
+      --bg: #b8c8e8;
+      --nav-bg: #1a1a2e;
+      --accent: #1a6bff;
+      --card-bg: #ffffff;
+      --card-shadow: 0 4px 20px rgba(0, 0, 0, .13);
+      --radius: 18px;
+      --font-ui: 'Segoe UI', system-ui, sans-serif;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: var(--font-ui);
@@ -37,8 +45,10 @@
     .ds-page::after {
       content: '';
       position: fixed;
-      bottom: 0; left: 0;
-      width: 280px; height: 280px;
+      bottom: 0;
+      left: 0;
+      width: 280px;
+      height: 280px;
       background: url('../static/image/molecule_bas.png') no-repeat left bottom / contain;
       pointer-events: none;
       z-index: 0;
@@ -47,7 +57,8 @@
     /* ── molecule_centre : flotte à droite du centre ── */
     .deco-centre {
       position: fixed;
-      top: 50%; right: 40px;
+      top: 50%;
+      right: 40px;
       transform: translateY(-50%);
       width: 200px;
       opacity: .45;
@@ -58,7 +69,8 @@
     /* ── bockin (mascotte) bas droite ── */
     .deco-bockin {
       position: fixed;
-      bottom: 0; right: 60px;
+      bottom: 0;
+      right: 60px;
       width: 160px;
       pointer-events: none;
       z-index: 1;
@@ -67,7 +79,8 @@
     /* ── points cluster haut droit ── */
     .deco-points {
       position: fixed;
-      top: 76px; right: 24px;
+      top: 76px;
+      right: 24px;
       width: 110px;
       pointer-events: none;
       z-index: 1;
@@ -81,11 +94,11 @@
       justify-content: space-between;
       gap: 4px;
       padding: 0 28px;
-      height: 66px;
+      height: 60px;
       position: sticky;
       top: 0;
       z-index: 200;
-      border-bottom: 2px solid rgba(255,255,255,.06);
+      border-bottom: 2px solid rgba(255, 255, 255, .06);
     }
 
     .ds-logo {
@@ -97,18 +110,21 @@
       flex-shrink: 0;
       margin-left: -22px;
     }
+
     .ds-logo img {
       height: 44px;
       width: auto;
       border-radius: 8px;
       object-fit: contain;
     }
+
     .ds-logo-name {
       font-weight: 700;
       font-size: 16px;
       color: #fff;
       line-height: 1.2;
     }
+
     .ds-logo-name span {
       display: block;
       font-weight: 400;
@@ -124,19 +140,29 @@
       flex-wrap: wrap;
       justify-content: flex-end;
     }
+
     .nav-btn {
       background: #1f2937;
       color: #fff;
       border: none;
       border-radius: 8px;
-      padding: .55rem 1.4rem;
+      padding: .2rem 1.4rem;
       font-size: 1rem;
       font-weight: 500;
       cursor: pointer;
-      transition: background .2s; text-decoration: none; white-space: nowrap;
+      transition: background .2s;
+      text-decoration: none;
+      white-space: nowrap;
     }
-    .nav-btn:hover { background: #374151; color: #fff }
-    .nav-btn.active { background: #2563eb }
+
+    .nav-btn:hover {
+      background: #374151;
+      color: #fff
+    }
+
+    .nav-btn.active {
+      background: #2563eb
+    }
 
     .nav-btn-primary {
       background: var(--accent);
@@ -147,27 +173,59 @@
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background .2s; text-decoration: none; white-space: nowrap;
+      transition: background .2s;
+      text-decoration: none;
+      white-space: nowrap;
     }
-    .nav-btn-primary:hover { background: #1558d6; color: #fff }
+
+    .nav-btn-primary:hover {
+      background: #1558d6;
+      color: #fff
+    }
 
     .nav-btn-accent {
       background: var(--accent);
       color: #fff;
       font-weight: 600;
     }
-    .nav-btn-accent:hover { background: #1558d6; }
 
-    .notif-link { position: relative; display: flex; align-items: center; gap: 4px;
-      text-decoration: none; color: #fff; font-size: 1.2rem; }
-    .notif-icon { font-size: 1.15rem; line-height: 1; }
-    .notif-badge { display: none; background: #ef4444; color: #fff; font-size: 11px;
-      font-weight: 700; border-radius: 999px; padding: 1px 6px; }
-    .notif-badge.show { display: inline-block; }
+    .nav-btn-accent:hover {
+      background: #1558d6;
+    }
+
+    .notif-link {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      color: #fff;
+      font-size: 1.2rem;
+    }
+
+    .notif-icon {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+
+    .notif-badge {
+      display: none;
+      background: #ef4444;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 1px 6px;
+    }
+
+    .notif-badge.show {
+      display: inline-block;
+    }
 
     /* ────────── PAGE (contenu par défaut du dashboard) ────────── */
     .ds-page {
-      padding: 36px 32px 160px;   /* bottom padding laisse place à bockin */
+      padding: 36px 32px 160px;
+      /* bottom padding laisse place à bockin */
       max-width: 1280px;
       margin: 0 auto;
       position: relative;
@@ -182,6 +240,7 @@
       gap: 16px;
       margin-bottom: 32px;
     }
+
     .stat-card {
       background: var(--card-bg);
       border-radius: var(--radius);
@@ -191,26 +250,70 @@
       align-items: center;
       gap: 16px;
     }
+
     .stat-icon {
-      width: 48px; height: 48px;
+      width: 48px;
+      height: 48px;
       border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
     }
-    .si-blue   { background:#dbeafe; color:#2563eb; }
-    .si-purple { background:#ede9fe; color:#7c3aed; }
-    .si-green  { background:#dcfce7; color:#16a34a; }
-    .si-orange { background:#ffedd5; color:#ea580c; }
-    .stat-val { font-size:26px; font-weight:800; color:#1e3a5f; line-height:1; }
-    .stat-lbl { font-size:12px; color:#64748b; margin-top:4px; }
+
+    .si-blue {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+
+    .si-purple {
+      background: #ede9fe;
+      color: #7c3aed;
+    }
+
+    .si-green {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .si-orange {
+      background: #ffedd5;
+      color: #ea580c;
+    }
+
+    .stat-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: #1e3a5f;
+      line-height: 1;
+    }
+
+    .stat-lbl {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 4px;
+    }
 
     /* ── Section header ── */
     .section-header {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 24px;
     }
-    .section-title { font-size:22px; font-weight:700; color:#1e3a5f; }
-    .section-sub   { font-size:13px; color:#4b6789; margin-top:3px; }
+
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1e3a5f;
+    }
+
+    .section-sub {
+      font-size: 13px;
+      color: #4b6789;
+      margin-top: 3px;
+    }
 
     /* ── Card grid ── */
     .card-grid {
@@ -218,68 +321,160 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 22px;
     }
+
     .ds-card {
       background: var(--card-bg);
       border-radius: var(--radius);
       box-shadow: var(--card-shadow);
       padding: 26px 24px 20px;
-      display: flex; flex-direction: column; gap: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
       transition: transform .18s, box-shadow .18s;
       cursor: pointer;
       min-height: 200px;
     }
+
     .ds-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(0,0,0,.17);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .17);
     }
+
     .card-head {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
+
     .card-icon {
-      width: 46px; height: 46px; border-radius: 13px;
-      display: flex; align-items: center; justify-content: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 22px;
     }
-    .ci-indigo  { background:#e0e7ff; color:#4338ca; }
-    .ci-sky     { background:#e0f2fe; color:#0284c7; }
-    .ci-emerald { background:#d1fae5; color:#059669; }
-    .ci-rose    { background:#ffe4e6; color:#e11d48; }
-    .ci-amber   { background:#fef3c7; color:#d97706; }
-    .ci-violet  { background:#ede9fe; color:#7c3aed; }
+
+    .ci-indigo {
+      background: #e0e7ff;
+      color: #4338ca;
+    }
+
+    .ci-sky {
+      background: #e0f2fe;
+      color: #0284c7;
+    }
+
+    .ci-emerald {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    .ci-rose {
+      background: #ffe4e6;
+      color: #e11d48;
+    }
+
+    .ci-amber {
+      background: #fef3c7;
+      color: #d97706;
+    }
+
+    .ci-violet {
+      background: #ede9fe;
+      color: #7c3aed;
+    }
 
     .card-badge {
-      font-size:11px; font-weight:600;
-      padding:3px 10px; border-radius:20px;
-      background:#f1f5f9; color:#475569;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: #f1f5f9;
+      color: #475569;
     }
-    .card-title { font-size:16px; font-weight:700; color:#1e3a5f; }
-    .card-desc  { font-size:13px; color:#64748b; flex:1; line-height:1.55; }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e3a5f;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: #64748b;
+      flex: 1;
+      line-height: 1.55;
+    }
+
     .card-footer {
-      display:flex; align-items:center; justify-content:space-between;
-      border-top:1px solid #f1f5f9; padding-top:12px; margin-top:auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 12px;
+      margin-top: auto;
     }
+
     .card-action {
-      font-size:13px; font-weight:600; color:var(--accent);
-      text-decoration:none; display:flex; align-items:center; gap:4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
-    .card-action:hover { color:#1558d6; }
-    .card-meta { font-size:12px; color:#94a3b8; }
+
+    .card-action:hover {
+      color: #1558d6;
+    }
+
+    .card-meta {
+      font-size: 12px;
+      color: #94a3b8;
+    }
 
     /* ── Responsive ── */
     @media (max-width:960px) {
-      .card-grid  { grid-template-columns: repeat(2,1fr); }
-      .stat-strip { grid-template-columns: repeat(2,1fr); }
-      .deco-bockin, .deco-centre { display:none; }
+      .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stat-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .deco-bockin,
+      .deco-centre {
+        display: none;
+      }
     }
+
     @media (max-width:560px) {
-      .card-grid  { grid-template-columns: 1fr; }
-      .stat-strip { grid-template-columns: 1fr; }
-      .ds-nav     { padding:0 12px; gap:2px; }
-      .nav-btn    { padding:8px 12px; font-size:13px; }
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .ds-nav {
+        padding: 0 12px;
+        gap: 2px;
+      }
+
+      .nav-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+      }
     }
   </style>
   {% block extra_head %}{% endblock %}
 </head>
+
 <body>
   {% set active_page = active_page|default('accueil') %}
   {% set notif_count = notif_count|default(0) %}
@@ -292,11 +487,14 @@
     </a>
     <div class="ds-nav-links">
       <a href="/dashboard/admin" class="nav-btn{% if active_page == 'accueil' %} active{% endif %}">Accueil</a>
-      <a href="/admin/utilisateur" class="nav-btn{% if active_page == 'utilisateurs' %} active{% endif %}">Utilisateurs</a>
+      <a href="/admin/utilisateur"
+        class="nav-btn{% if active_page == 'utilisateurs' %} active{% endif %}">Utilisateurs</a>
       <a href="/admin/education" class="nav-btn{% if active_page == 'education' %} active{% endif %}">Education</a>
       <a href="/admin/test" class="nav-btn{% if active_page == 'test' %} active{% endif %}">Test</a>
       <a href="/admin/notifications" class="notif-link" title="Notifications">
-        <span class="notif-icon">🔔</span>
+        <span class="notif-icon">
+          <img src="/static/image/notifi3.png" alt="Notifications" width="40" height="35">
+        </span>
         <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
       </a>
       <a href="/logout" class="nav-btn nav-btn-accent">Déconnexion</a>
@@ -306,9 +504,9 @@
   <!-- ── CONTENU (remplacé par chaque page enfant) ── -->
   {% block content %}
   <!-- Décorations fixes (page d'accueil uniquement) -->
-  <img class="deco-points"  src="../static/image/points.png"          alt="" aria-hidden="true">
-  <img class="deco-centre"  src="../static/image/molecule_centre.png" alt="" aria-hidden="true">
-  <img class="deco-bockin"  src="../static/image/bockin.png"          alt="" aria-hidden="true">
+  <img class="deco-points" src="../static/image/points.png" alt="" aria-hidden="true">
+  <img class="deco-centre" src="../static/image/molecule_centre.png" alt="" aria-hidden="true">
+  <img class="deco-bockin" src="../static/image/bockin.png" alt="" aria-hidden="true">
 
   <main class="ds-page">
 
@@ -361,7 +559,8 @@
           <span class="card-badge">Gestion</span>
         </div>
         <div class="card-title">Utilisateurs</div>
-        <div class="card-desc">Gérez les comptes élèves, enseignants et administrateurs. Activez, suspendez ou supprimez des profils.</div>
+        <div class="card-desc">Gérez les comptes élèves, enseignants et administrateurs. Activez, suspendez ou supprimez
+          des profils.</div>
         <div class="card-footer">
           <a href="/admin/utilisateur" class="card-action">Voir tout <i class="bi bi-arrow-right"></i></a>
           <span class="card-meta">1 248 comptes</span>
@@ -374,7 +573,8 @@
           <span class="card-badge">Contenu</span>
         </div>
         <div class="card-title">Cours & Modules</div>
-        <div class="card-desc">Créez et organisez les cours, leçons et modules éducatifs disponibles sur la plateforme.</div>
+        <div class="card-desc">Créez et organisez les cours, leçons et modules éducatifs disponibles sur la plateforme.
+        </div>
         <div class="card-footer">
           <a href="/admin/education" class="card-action">Gérer <i class="bi bi-arrow-right"></i></a>
           <span class="card-meta">87 cours</span>
@@ -387,7 +587,8 @@
           <span class="card-badge">Éducation</span>
         </div>
         <div class="card-title">Certifications</div>
-        <div class="card-desc">Suivez les certifications obtenues, générez des attestations et configurez les critères de validation.</div>
+        <div class="card-desc">Suivez les certifications obtenues, générez des attestations et configurez les critères
+          de validation.</div>
         <div class="card-footer">
           <a href="#" class="card-action">Consulter <i class="bi bi-arrow-right"></i></a>
           <span class="card-meta">342 délivrées</span>
@@ -400,7 +601,8 @@
           <span class="card-badge">Analyses</span>
         </div>
         <div class="card-title">Statistiques</div>
-        <div class="card-desc">Analysez l'engagement des apprenants, le taux de complétion et les performances globales par période.</div>
+        <div class="card-desc">Analysez l'engagement des apprenants, le taux de complétion et les performances globales
+          par période.</div>
         <div class="card-footer">
           <a href="#" class="card-action">Analyser <i class="bi bi-arrow-right"></i></a>
           <span class="card-meta">Mis à jour aujourd'hui</span>
@@ -413,7 +615,8 @@
           <span class="card-badge">Communication</span>
         </div>
         <div class="card-title">Messages</div>
-        <div class="card-desc">Consultez et répondez aux messages des utilisateurs. Envoyez des annonces à toute la communauté.</div>
+        <div class="card-desc">Consultez et répondez aux messages des utilisateurs. Envoyez des annonces à toute la
+          communauté.</div>
         <div class="card-footer">
           <a href="#" class="card-action">Ouvrir <i class="bi bi-arrow-right"></i></a>
           <span class="card-meta">12 non lus</span>
@@ -426,7 +629,8 @@
           <span class="card-badge">Système</span>
         </div>
         <div class="card-title">Paramètres</div>
-        <div class="card-desc">Configurez les options de la plateforme, les rôles, les permissions et les intégrations tierces.</div>
+        <div class="card-desc">Configurez les options de la plateforme, les rôles, les permissions et les intégrations
+          tierces.</div>
         <div class="card-footer">
           <a href="#" class="card-action">Configurer <i class="bi bi-arrow-right"></i></a>
           <span class="card-meta">Système v2.4.1</span>
@@ -451,9 +655,9 @@
       }, 28);
     }
     window.addEventListener('DOMContentLoaded', () => {
-      animCount('s-users',    1248);
-      animCount('s-cours',      87);
-      animCount('s-certif',    342);
+      animCount('s-users', 1248);
+      animCount('s-cours', 87);
+      animCount('s-certif', 342);
       animCount('s-sessions', 4600);
     });
   </script>
@@ -465,4 +669,5 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
   {% block extra_js %}{% endblock %}
 </body>
+
 </html>

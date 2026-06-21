@@ -4,19 +4,25 @@
 {% block title %}Digiscool - Education{% endblock %}
 
 {% block extra_head %}
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<style>
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #BED6F3;
-      min-height: 100vh;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-    }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #BED6F3;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
 
-    /* ══════════════════════════════ NAVBAR ══════════════════════════════ 
+  /* ══════════════════════════════ NAVBAR ══════════════════════════════ 
     .ds-nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
       justify-content:space-between;padding:.85rem 2.5rem;
       border-bottom:1px solid rgba(255,255,255,.326);background:rgb(4,6,60);backdrop-filter:blur(12px)}
@@ -50,64 +56,78 @@
     .notif-link.has-alert{box-shadow:0 0 0 2px rgba(220,38,38,.5)}
    */
 
-    /* ══════════════════════════════ PAGE BODY ══════════════════════════════ */
-    .page-body {
-      background-image: url('/static/components/Rectangle 18.png');
-      background-size: 100% 100%;
-      flex: 1;
-      padding: 32px 40px 48px;
-      display: flex; flex-direction: column; align-items: center;
-      gap: 24px; margin-top: 25px;
-      min-height: calc(100vh - 157px);
-    }
+  /* ══════════════════════════════ PAGE BODY ══════════════════════════════ */
+  .page-body {
+    background-image: url('/static/components/Rectangle 18.png');
+    background-size: 100% 100%;
+    flex: 1;
+    padding: 32px 40px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    margin-top: 25px;
+    min-height: calc(100vh - 133px);
+  }
 
-    /* ══════════════════════════════ SEARCH ROW ══════════════════════════════ */
-    .search-wrap {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 600px;
-      height: 45px;
-      background-image: url('/static/components/Rectangle 24.png');
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      border-radius: 0 0 10px 10px;
-      margin-top: -48px;
-      gap: 10px;
-    }
+  /* ══════════════════════════════ SEARCH ROW ══════════════════════════════ */
+  .search-wrap {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 600px;
+    height: 45px;
+    background-image: url('/static/components/Rectangle 24.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border-radius: 0 0 10px 10px;
+    margin-top: -48px;
+    gap: 10px;
+  }
 
-    .search-case {
-      position: relative;
-      width: 400px;
-      height: 30px;
-      background-image: url('/static/components/Rectangle 27.png');
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      border-radius: 8px;
-      display: flex; align-items: center;
-      padding-left: 40px;
-    }
+  .search-case {
+    position: relative;
+    width: 400px;
+    height: 30px;
+    background-image: url('/static/components/Rectangle 27.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding-left: 40px;
+  }
 
-    .search-icon {
-      position: absolute;
-      left: 14px;
-      display: flex; align-items: center;
-      height: 100%;
-      pointer-events: none;
-    }
-    .search-icon svg { width: 18px; height: 18px; stroke: #666; fill: none; stroke-width: 2; }
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    pointer-events: none;
+  }
 
-    .search-wrap input {
-      flex: 1;
-      height: 30px;
-      border: none; outline: none;
-      background: transparent;
-      font-size: 0.9rem; color: #555;
-    }
+  .search-icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: #666;
+    fill: none;
+    stroke-width: 2;
+  }
 
-    /* ══════════════════════════════ TRIER PAR ══════════════════════════════ */
-   .btn-trier {
+  .search-wrap input {
+    flex: 1;
+    height: 30px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.9rem;
+    color: #555;
+  }
+
+  /* ══════════════════════════════ TRIER PAR ══════════════════════════════ */
+  .btn-trier {
     width: 139px;
     height: 28px;
     background-image: url('/static/components/TRIER_PAR.png');
@@ -125,241 +145,823 @@
     border: 1px blue solid;
   }
 
- .sort-select {
-   flex: 1;
-   border: none;
-   outline: none;
-   background: transparent;
-   font-size: 0.82rem;
-   font-weight: 600;
-   color: #111;
-   cursor: pointer;
-   appearance: none;
-   -webkit-appearance: none;
-   -moz-appearance: none;
- }
+  .sort-select {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #111;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
 
-.sort-select option {
-   background: #fff;
-   color: #111;
-   font-size: 0.9rem;
-}
+  .sort-select option {
+    background: #fff;
+    color: #111;
+    font-size: 0.9rem;
+  }
 
-.arrow-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  pointer-events: none;
-}
-.arrow-icon svg {
-  width: 16px;
-  height: 16px;
-  fill: #111;
-  display: block;
-}
+  .arrow-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
 
-    /* ══════════════════════════════ TABLE HEADER ══════════════════════════════ */
-    .table-header {
-      width: 100%;
-      height: 50px;
-      background: rgba(180,200,225,0.45);
-      border-bottom: 2px solid #4a72b0;
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
+  .arrow-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: #111;
+    display: block;
+  }
+
+  /* ══════════════════════════════ TABLE HEADER ══════════════════════════════ */
+  .table-header {
+    width: 100%;
+    height: 50px;
+    background: rgba(180, 200, 225, 0.45);
+    border-bottom: 2px solid #4a72b0;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+  }
+
+  .th-num {
+    width: 72px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .th-vid {
+    width: 115px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .th-titre {
+    width: 265px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .th-cours {
+    width: 205px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .th-exo {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .th-num img,
+  .th-vid img,
+  .th-titre img {
+    display: block;
+  }
+
+  .lbl {
+    color: #2a4fb5;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  /* ══════════════════════════════ TABLE ROWS ══════════════════════════════ */
+  .table-rows {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .row-item {
+    width: 100%;
+    height: 92px;
+    display: block;
+    border: none;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    transition: filter 0.15s;
+  }
+
+  .row-item:hover {
+    filter: brightness(0.95);
+  }
+
+  .row-item img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: fill;
+  }
+
+
+  /* ══════════════════════════════ TABLE CARD ══════════════════════════════ */
+  .table-card {
+    width: 100%;
+    background-image: url('/static/components/Rectangle 29.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border-radius: 12px;
+    overflow: hidden;
+    padding-bottom: 12px;
+  }
+
+  /* ══════════════════════════════ AJOUTER BUTTON ══════════════════════════════ */
+  .btn-ajouter {
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 52px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  /* ══════════════════════════════ TABLE (cours) ══════════════════════════════ */
+  :root {
+    --navy: rgb(4, 6, 60);
+    --blue: #2563eb;
+    --green: #16a34a;
+    --red: #dc2626;
+    --card: #fff;
+    --text: #1a1a2e;
+    --muted: #64748b;
+  }
+
+  .table-wrap {
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, .08);
+    overflow: hidden;
+    width: 100%
+  }
+
+  .table-wrap table {
+    width: 100%;
+    border-collapse: collapse
+  }
+
+  .table-wrap thead tr {
+    background: #e8eef8
+  }
+
+  .table-wrap thead th {
+    padding: 1rem 1.2rem;
+    font-size: .82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--blue);
+    text-align: left
+  }
+
+  .table-wrap tbody tr {
+    border-top: 1px solid #f1f5f9;
+    transition: background .15s
+  }
+
+  .table-wrap tbody tr:hover {
+    background: #f0f6ff
+  }
+
+  .table-wrap tbody td {
+    padding: .9rem 1.2rem;
+    vertical-align: middle
+  }
+
+  .num-cell {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text);
+    width: 60px
+  }
+
+  .play-btn {
+    width: 60px;
+    height: 44px;
+    border: 3px solid var(--navy);
+    border-radius: 8px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all .2s;
+    flex-shrink: 0
+  }
+
+  .play-btn:hover {
+    background: var(--navy)
+  }
+
+  .play-btn:hover .play-arrow {
+    border-left-color: #fff
+  }
+
+  .play-btn.no-video {
+    border-color: #cbd5e1;
+    cursor: default;
+    opacity: .4
+  }
+
+  .play-arrow {
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 16px solid var(--navy);
+    margin-left: 4px
+  }
+
+  .title-cell .main-title {
+    font-weight: 700;
+    font-size: .95rem;
+    color: var(--text)
+  }
+
+  .title-cell .sub-title {
+    font-size: .82rem;
+    color: var(--muted);
+    margin-top: .1rem
+  }
+
+  .bullet {
+    display: inline-block;
+    margin-right: .3rem;
+    color: var(--text)
+  }
+
+  .doc-badge {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    font-weight: 600;
+    font-size: .88rem;
+    cursor: pointer;
+    transition: opacity .2s
+  }
+
+  .doc-badge:hover {
+    opacity: .75
+  }
+
+  .doc-badge.has {
+    color: var(--green)
+  }
+
+  .doc-badge.missing {
+    color: var(--muted);
+    cursor: default
+  }
+
+  .check-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    border: 2px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .75rem;
+    flex-shrink: 0
+  }
+
+  .check-icon.ok {
+    background: rgba(22, 163, 74, .12)
+  }
+
+  .check-icon.no {
+    background: rgba(220, 38, 38, .08);
+    color: var(--red)
+  }
+
+  .action-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: .3rem;
+    font-size: 1.1rem;
+    border-radius: 6px;
+    transition: background .15s
+  }
+
+  .action-icon:hover {
+    background: #f1f5f9
+  }
+
+  .action-icon.edit {
+    color: var(--blue)
+  }
+
+  .action-icon.del {
+    color: var(--red)
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #e2e8f0;
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin .7s linear infinite
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg)
     }
-    .th-num   { width: 72px;  flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
-    .th-vid   { width: 115px; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
-    .th-titre { width: 265px; flex-shrink: 0; display:flex; align-items:center; }
-    .th-cours { width: 205px; flex-shrink: 0; display:flex; align-items:center; }
-    .th-exo   { flex: 1;      display:flex; align-items:center; }
-    .th-num img, .th-vid img, .th-titre img { display:block; }
-    .lbl { color: #2a4fb5; font-weight: 700; font-size: 1rem; }
+  }
 
-    /* ══════════════════════════════ TABLE ROWS ══════════════════════════════ */
-    .table-rows { display: flex; flex-direction: column; }
-    .row-item {
-      width: 100%; height: 92px;
-      display: block; border: none; padding: 0;
-      background: transparent; cursor: pointer;
-      transition: filter 0.15s;
+  /* ── MODAL overlay ── */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
+    z-index: 500;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 2rem 1rem
+  }
+
+  .modal-bg.open {
+    display: flex
+  }
+
+  .modal-box {
+    background: #fff;
+    border-radius: 18px;
+    padding: 2rem;
+    width: min(680px, 96vw);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+    margin: auto
+  }
+
+  .modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.4rem
+  }
+
+  .modal-head h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text)
+  }
+
+  .modal-head-actions {
+    display: flex;
+    align-items: center;
+    gap: .6rem
+  }
+
+  .modal-action {
+    background: rgba(37, 99, 235, .1);
+    border: none;
+    color: var(--blue);
+    padding: .45rem .7rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: .85rem
+  }
+
+  .modal-action:hover {
+    background: rgba(37, 99, 235, .18)
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--muted)
+  }
+
+  .form-label {
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--muted);
+    display: block;
+    margin-bottom: .3rem
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    width: 100%;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: .5rem .85rem;
+    font-size: .9rem;
+    outline: none;
+    font-family: inherit;
+    transition: border-color .2s;
+    background: #fff
+  }
+
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    border-color: var(--blue)
+  }
+
+  .form-textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.5
+  }
+
+  .form-group {
+    margin-bottom: 1rem
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .7rem;
+    margin-top: 1.4rem
+  }
+
+  .btn-cancel {
+    background: #f1f5f9;
+    border: none;
+    border-radius: 8px;
+    padding: .55rem 1.2rem;
+    font-size: .9rem;
+    cursor: pointer;
+    color: var(--muted);
+    font-family: inherit
+  }
+
+  .btn-save {
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: .55rem 1.5rem;
+    font-size: .9rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit
+  }
+
+  .btn-save:hover {
+    background: #1d4ed8
+  }
+
+  /* tabs inside modal */
+  .tab-row {
+    display: flex;
+    gap: 0;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1rem
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: .5rem;
+    font-size: .82rem;
+    font-weight: 600;
+    border: none;
+    background: #f8fafc;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .2s;
+    border-right: 1px solid #e2e8f0
+  }
+
+  .tab-btn:last-child {
+    border-right: none
+  }
+
+  .tab-btn.active {
+    background: var(--blue);
+    color: #fff
+  }
+
+  .tab-content {
+    display: none
+  }
+
+  .tab-content.active {
+    display: block
+  }
+
+  /* QCM builder */
+  .qcm-question {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: .9rem;
+    margin-bottom: .8rem;
+    border: 1px solid #e2e8f0
+  }
+
+  .qcm-question-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .5rem
+  }
+
+  .qcm-q-input {
+    font-weight: 600;
+    font-size: .9rem;
+    border: none;
+    background: transparent;
+    outline: none;
+    width: calc(100% - 30px);
+    font-family: inherit
+  }
+
+  .qcm-options {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+    margin-bottom: .5rem
+  }
+
+  .qcm-option-row {
+    display: flex;
+    align-items: center;
+    gap: .5rem
+  }
+
+  .qcm-option-row input[type=radio] {
+    flex-shrink: 0
+  }
+
+  .qcm-opt-input {
+    flex: 1;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: .3rem .6rem;
+    font-size: .85rem;
+    font-family: inherit;
+    outline: none
+  }
+
+  .btn-add-qcm {
+    font-size: .8rem;
+    color: var(--blue);
+    background: none;
+    border: 1px solid var(--blue);
+    border-radius: 6px;
+    padding: .25rem .7rem;
+    cursor: pointer;
+    font-family: inherit
+  }
+
+  .btn-del-q {
+    background: none;
+    border: none;
+    color: var(--red);
+    cursor: pointer;
+    font-size: .95rem
+  }
+
+  /* doc viewer modal */
+  #doc-modal .modal-box {
+    width: min(860px, 96vw)
+  }
+
+  .doc-viewer-content {
+    min-height: 300px;
+    max-height: 60vh;
+    overflow-y: auto;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1.2rem;
+    background: #fafbff;
+    font-size: .93rem;
+    line-height: 1.7;
+    white-space: pre-wrap
+  }
+
+  .doc-viewer-content iframe {
+    width: 100%;
+    height: 55vh;
+    border: none
+  }
+
+  .qcm-viewer-item {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: .9rem;
+    margin-bottom: .8rem
+  }
+
+  .qcm-viewer-item h4 {
+    font-size: .9rem;
+    font-weight: 700;
+    margin-bottom: .6rem;
+    color: var(--text)
+  }
+
+  .qcm-viewer-item label {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .88rem;
+    margin-bottom: .35rem;
+    cursor: pointer
+  }
+
+  /* delete confirm mini modal */
+  #del-confirm {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 600;
+    align-items: center;
+    justify-content: center
+  }
+
+  #del-confirm.open {
+    display: flex
+  }
+
+  #del-confirm .box {
+    background: #fff;
+    border-radius: 14px;
+    padding: 2rem;
+    width: min(380px, 90vw);
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, .2)
+  }
+
+  #del-confirm h3 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: .6rem;
+    color: var(--text)
+  }
+
+  #del-confirm p {
+    font-size: .9rem;
+    color: var(--muted);
+    margin-bottom: 1.2rem
+  }
+
+  #del-confirm .actions {
+    display: flex;
+    gap: .7rem;
+    justify-content: center
+  }
+
+  #del-confirm .btn-del-confirm {
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: .55rem 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit
+  }
+
+  #del-confirm .btn-cancel {
+    background: #f1f5f9;
+    border: none;
+    border-radius: 8px;
+    padding: .55rem 1.3rem;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--muted)
+  }
+
+  /* toast */
+  #toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    z-index: 9999;
+    background: #1e293b;
+    color: #fff;
+    padding: .7rem 1.5rem;
+    border-radius: 10px;
+    font-size: .88rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .25);
+    opacity: 0;
+    transition: all .3s;
+    pointer-events: none;
+    white-space: nowrap
+  }
+
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0)
+  }
+
+  #toast.ok {
+    border-left: 4px solid var(--green)
+  }
+
+  #toast.err {
+    border-left: 4px solid var(--red)
+  }
+
+  /* FAB */
+  .fab {
+    position: fixed;
+    bottom: 2.5rem;
+    right: 2.5rem;
+    width: 58px;
+    height: 58px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(37, 99, 235, .4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .2s, box-shadow .2s;
+    z-index: 50
+  }
+
+  .fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 10px 32px rgba(37, 99, 235, .5)
+  }
+
+  /*boutton supprimer dans modifier */
+  .cm-current-file {
+    display: none;
+    margin-top: .5rem;
+    font-size: .8rem;
+    color: var(--muted);
+    gap: .55rem;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .cm-current-file span {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: calc(100% - 28px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cm-current-remove-btn {
+    background: url("/static/image/ico_delete.png") no-repeat center;
+    background-size: 16px 16px;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  @media(max-width:768px) {
+    .form-row {
+      grid-template-columns: 1fr
     }
-    .row-item:hover { filter: brightness(0.95); }
-    .row-item img { width: 100%; height: 100%; display: block; object-fit: fill; }
 
-
-    /* ══════════════════════════════ TABLE CARD ══════════════════════════════ */
-    .table-card {
-      width: 100%;
-      background-image: url('/static/components/Rectangle 29.png');
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      border-radius: 12px;
-      overflow: hidden;
-      padding-bottom: 12px;
+    .num-cell {
+      display: none
     }
-
-    /* ══════════════════════════════ AJOUTER BUTTON ══════════════════════════════ */
-    .btn-ajouter {
-      background: #1976d2; color: #fff;
-      border: none; border-radius: 10px;
-      padding: 13px 52px;
-      font-size: 1.05rem; font-weight: 700;
-      cursor: pointer; margin-top: 8px;
-    }
-
-    /* ══════════════════════════════ TABLE (cours) ══════════════════════════════ */
-    :root{
-      --navy:rgb(4,6,60); --blue:#2563eb; --green:#16a34a;
-      --red:#dc2626; --card:#fff; --text:#1a1a2e; --muted:#64748b;
-    }
-    .table-wrap{background:var(--card);border-radius:16px;
-      box-shadow:0 4px 24px rgba(0,0,0,.08);overflow:hidden;width:100%}
-    .table-wrap table{width:100%;border-collapse:collapse}
-    .table-wrap thead tr{background:#e8eef8}
-    .table-wrap thead th{padding:1rem 1.2rem;font-size:.82rem;font-weight:700;
-      text-transform:uppercase;letter-spacing:.08em;color:var(--blue);text-align:left}
-    .table-wrap tbody tr{border-top:1px solid #f1f5f9;transition:background .15s}
-    .table-wrap tbody tr:hover{background:#f0f6ff}
-    .table-wrap tbody td{padding:.9rem 1.2rem;vertical-align:middle}
-
-    .num-cell{font-size:1.6rem;font-weight:800;color:var(--text);width:60px}
-
-    .play-btn{width:60px;height:44px;border:3px solid var(--navy);border-radius:8px;
-      background:#fff;display:flex;align-items:center;justify-content:center;
-      cursor:pointer;transition:all .2s;flex-shrink:0}
-    .play-btn:hover{background:var(--navy)}
-    .play-btn:hover .play-arrow{border-left-color:#fff}
-    .play-btn.no-video{border-color:#cbd5e1;cursor:default;opacity:.4}
-    .play-arrow{width:0;height:0;border-top:10px solid transparent;
-      border-bottom:10px solid transparent;border-left:16px solid var(--navy);
-      margin-left:4px}
-
-    .title-cell .main-title{font-weight:700;font-size:.95rem;color:var(--text)}
-    .title-cell .sub-title{font-size:.82rem;color:var(--muted);margin-top:.1rem}
-    .bullet{display:inline-block;margin-right:.3rem;color:var(--text)}
-
-    .doc-badge{display:flex;align-items:center;gap:.4rem;font-weight:600;
-      font-size:.88rem;cursor:pointer;transition:opacity .2s}
-    .doc-badge:hover{opacity:.75}
-    .doc-badge.has{color:var(--green)}
-    .doc-badge.missing{color:var(--muted);cursor:default}
-    .check-icon{width:22px;height:22px;border-radius:4px;border:2px solid currentColor;
-      display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0}
-    .check-icon.ok{background:rgba(22,163,74,.12)}
-    .check-icon.no{background:rgba(220,38,38,.08);color:var(--red)}
-
-    .action-icon{background:none;border:none;cursor:pointer;padding:.3rem;
-      font-size:1.1rem;border-radius:6px;transition:background .15s}
-    .action-icon:hover{background:#f1f5f9}
-    .action-icon.edit{color:var(--blue)}
-    .action-icon.del{color:var(--red)}
-
-    .spinner{display:inline-block;width:20px;height:20px;border:3px solid #e2e8f0;
-      border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    /* ── MODAL overlay ── */
-    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
-      z-index:500;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem}
-    .modal-bg.open{display:flex}
-    .modal-box{background:#fff;border-radius:18px;padding:2rem;
-      width:min(680px,96vw);box-shadow:0 20px 60px rgba(0,0,0,.2);margin:auto}
-    .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.4rem}
-    .modal-head h3{font-size:1.2rem;font-weight:800;color:var(--text)}
-    .modal-head-actions{display:flex;align-items:center;gap:.6rem}
-    .modal-action{background:rgba(37,99,235,.1);border:none;color:var(--blue);padding:.45rem .7rem;border-radius:10px;cursor:pointer;font-size:.85rem}
-    .modal-action:hover{background:rgba(37,99,235,.18)}
-    .modal-close{background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted)}
-    .form-label{font-size:.8rem;font-weight:700;color:var(--muted);display:block;margin-bottom:.3rem}
-    .form-input,.form-select,.form-textarea{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;
-      padding:.5rem .85rem;font-size:.9rem;outline:none;font-family:inherit;
-      transition:border-color .2s;background:#fff}
-    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--blue)}
-    .form-textarea{min-height:120px;resize:vertical;line-height:1.5}
-    .form-group{margin-bottom:1rem}
-    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-    .modal-actions{display:flex;justify-content:flex-end;gap:.7rem;margin-top:1.4rem}
-    .btn-cancel{background:#f1f5f9;border:none;border-radius:8px;padding:.55rem 1.2rem;
-      font-size:.9rem;cursor:pointer;color:var(--muted);font-family:inherit}
-    .btn-save{background:var(--blue);color:#fff;border:none;border-radius:8px;
-      padding:.55rem 1.5rem;font-size:.9rem;font-weight:700;cursor:pointer;font-family:inherit}
-    .btn-save:hover{background:#1d4ed8}
-
-    /* tabs inside modal */
-    .tab-row{display:flex;gap:0;border:1.5px solid #e2e8f0;border-radius:10px;
-      overflow:hidden;margin-bottom:1rem}
-    .tab-btn{flex:1;padding:.5rem;font-size:.82rem;font-weight:600;border:none;
-      background:#f8fafc;color:var(--muted);cursor:pointer;font-family:inherit;
-      transition:all .2s;border-right:1px solid #e2e8f0}
-    .tab-btn:last-child{border-right:none}
-    .tab-btn.active{background:var(--blue);color:#fff}
-    .tab-content{display:none}
-    .tab-content.active{display:block}
-
-    /* QCM builder */
-    .qcm-question{background:#f8fafc;border-radius:10px;padding:.9rem;margin-bottom:.8rem;
-      border:1px solid #e2e8f0}
-    .qcm-question-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
-    .qcm-q-input{font-weight:600;font-size:.9rem;border:none;background:transparent;
-      outline:none;width:calc(100% - 30px);font-family:inherit}
-    .qcm-options{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.5rem}
-    .qcm-option-row{display:flex;align-items:center;gap:.5rem}
-    .qcm-option-row input[type=radio]{flex-shrink:0}
-    .qcm-opt-input{flex:1;border:1px solid #e2e8f0;border-radius:6px;padding:.3rem .6rem;
-      font-size:.85rem;font-family:inherit;outline:none}
-    .btn-add-qcm{font-size:.8rem;color:var(--blue);background:none;border:1px solid var(--blue);
-      border-radius:6px;padding:.25rem .7rem;cursor:pointer;font-family:inherit}
-    .btn-del-q{background:none;border:none;color:var(--red);cursor:pointer;font-size:.95rem}
-
-    /* doc viewer modal */
-    #doc-modal .modal-box{width:min(860px,96vw)}
-    .doc-viewer-content{min-height:300px;max-height:60vh;overflow-y:auto;
-      border:1.5px solid #e2e8f0;border-radius:10px;padding:1.2rem;
-      background:#fafbff;font-size:.93rem;line-height:1.7;white-space:pre-wrap}
-    .doc-viewer-content iframe{width:100%;height:55vh;border:none}
-    .qcm-viewer-item{background:#f8fafc;border-radius:10px;padding:.9rem;margin-bottom:.8rem}
-    .qcm-viewer-item h4{font-size:.9rem;font-weight:700;margin-bottom:.6rem;color:var(--text)}
-    .qcm-viewer-item label{display:flex;align-items:center;gap:.5rem;
-      font-size:.88rem;margin-bottom:.35rem;cursor:pointer}
-
-    /* delete confirm mini modal */
-    #del-confirm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);
-      z-index:600;align-items:center;justify-content:center}
-    #del-confirm.open{display:flex}
-    #del-confirm .box{background:#fff;border-radius:14px;padding:2rem;
-      width:min(380px,90vw);text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.2)}
-    #del-confirm h3{font-size:1.1rem;font-weight:800;margin-bottom:.6rem;color:var(--text)}
-    #del-confirm p{font-size:.9rem;color:var(--muted);margin-bottom:1.2rem}
-    #del-confirm .actions{display:flex;gap:.7rem;justify-content:center}
-    #del-confirm .btn-del-confirm{background:var(--red);color:#fff;border:none;
-      border-radius:8px;padding:.55rem 1.3rem;font-weight:700;cursor:pointer;font-family:inherit}
-    #del-confirm .btn-cancel{background:#f1f5f9;border:none;border-radius:8px;
-      padding:.55rem 1.3rem;cursor:pointer;font-family:inherit;color:var(--muted)}
-
-    /* toast */
-    #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(10px);
-      z-index:9999;background:#1e293b;color:#fff;padding:.7rem 1.5rem;border-radius:10px;
-      font-size:.88rem;box-shadow:0 4px 20px rgba(0,0,0,.25);
-      opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
-    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-    #toast.ok{border-left:4px solid var(--green)}
-    #toast.err{border-left:4px solid var(--red)}
-
-    /* FAB */
-    .fab{position:fixed;bottom:2.5rem;right:2.5rem;width:58px;height:58px;
-      background:var(--blue);color:#fff;border:none;border-radius:14px;
-      font-size:1.8rem;cursor:pointer;box-shadow:0 6px 24px rgba(37,99,235,.4);
-      display:flex;align-items:center;justify-content:center;
-      transition:transform .2s,box-shadow .2s;z-index:50}
-    .fab:hover{transform:scale(1.08);box-shadow:0 10px 32px rgba(37,99,235,.5)}
-
-    @media(max-width:768px){
-      .form-row{grid-template-columns:1fr}
-      .num-cell{display:none}
-    }
-  </style>
+  }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -368,27 +970,30 @@
 
   <!-- Search row -->
   <div class="search-wrap">
-    <div class="search-case"> 
+    <div class="search-case">
       <span class="search-icon">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
       </span>
-      <input type="text" id="search-box" placeholder="Recherche ....."/>
-    </div> 
+      <input type="text" id="search-box" placeholder="Recherche ....." />
+    </div>
 
     <!-- Bouton Trier -->
     <div class="btn-trier">
-  <select class="sort-select" id="sort-select" onchange="loadCours()">
-    <option value="id">Trier par N°</option>
-    <option value="titre">Trier par Titre</option>
-    <option value="matiere">Trier par Matière</option>
-    <option value="created_at">Trier par Date</option>
-  </select>
-  <span class="arrow-icon">
-    <svg viewBox="0 0 24 24">
-      <path d="M7 10l5 5 5-5z"/>
-    </svg>
-  </span>
-</div>
+      <select class="sort-select" id="sort-select" onchange="loadCours()">
+        <option value="id">Trier par N°</option>
+        <option value="titre">Trier par Titre</option>
+        <option value="matiere">Trier par Matière</option>
+        <option value="created_at">Trier par Date</option>
+      </select>
+      <span class="arrow-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M7 10l5 5 5-5z" />
+        </svg>
+      </span>
+    </div>
 
   </div> <!-- fin .search-wrap -->
 
@@ -407,9 +1012,11 @@
           </tr>
         </thead>
         <tbody id="cours-tbody">
-          <tr><td colspan="6" style="text-align:center;padding:2rem">
-            <span class="spinner"></span>
-          </td></tr>
+          <tr>
+            <td colspan="6" style="text-align:center;padding:2rem">
+              <span class="spinner"></span>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -432,11 +1039,11 @@
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Titre *</label>
-        <input id="cm-titre" class="form-input" placeholder="ex: MOLECULE"/>
+        <input id="cm-titre" class="form-input" placeholder="ex: MOLECULE" />
       </div>
       <div class="form-group">
         <label class="form-label">Matière / Catégorie *</label>
-        <input id="cm-matiere" class="form-input" placeholder="ex: Reaction physique"/>
+        <input id="cm-matiere" class="form-input" placeholder="ex: Reaction physique" />
       </div>
     </div>
     <div class="form-group">
@@ -450,20 +1057,19 @@
       <div class="form-row">
         <div>
           <label class="form-label">Fichier vidéo (upload)</label>
-          <input id="cm-video-file" type="file" class="form-input" accept="video/*"/>
+          <input id="cm-video-file" type="file" class="form-input" accept="video/*" onchange="refreshCurrentInfo('video')" />
           <div style="font-size:.75rem;color:var(--muted);margin-top:.2rem">mp4, webm, ogg, mov, avi — max 500 MB</div>
         </div>
         <div>
           <label class="form-label">— ou URL externe (YouTube/Vimeo…)</label>
-          <input id="cm-video-url" class="form-input" placeholder="https://youtube.com/embed/…"/>
+          <input id="cm-video-url" class="form-input" placeholder="https://youtube.com/embed/…" oninput="refreshCurrentInfo('video')" />
         </div>
       </div>
-      <div id="cm-video-current" style="display:none;margin-top:.5rem;font-size:.8rem;color:var(--muted);gap:.55rem;align-items:center;">
+      <div id="cm-video-current" class="cm-current-file">
         <span id="cm-video-current-name"></span>
-        <button id="cm-video-current-remove" type="button" onclick="markRemoveCurrentFile('video')"
-                style="border:none;background:none;color:#dc2626;cursor:pointer;font-size:.85rem;padding:0;display:none;">
-          Supprimer
-        </button>
+        <button id="cm-video-current-remove" class="cm-current-remove-btn" type="button"
+          onclick="markRemoveCurrentFile('video')"></button>
+
       </div>
     </div>
 
@@ -476,17 +1082,16 @@
         <button class="tab-btn" data-tab="cours-qcm" onclick="switchTab(this,'cours')">QCM</button>
       </div>
       <div id="cours-fichier" class="tab-content active">
-        <input id="cm-cours-file" type="file" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.png,.jpg"/>
-        <div id="cm-cours-current" style="display:none;margin-top:.4rem;font-size:.8rem;color:var(--muted);gap:.55rem;align-items:center;">
+        <input id="cm-cours-file" type="file" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.png,.jpg" onchange="refreshCurrentInfo('cours')" />
+        <div id="cm-cours-current" class="cm-current-file">
           <span id="cm-cours-current-name"></span>
-          <button id="cm-cours-current-remove" type="button" onclick="markRemoveCurrentFile('cours')"
-                  style="border:none;background:none;color:#dc2626;cursor:pointer;font-size:.85rem;padding:0;display:none;">
-            Supprimer
-          </button>
+          <button id="cm-cours-current-remove" class="cm-current-remove-btn" type="button"
+            onclick="markRemoveCurrentFile('cours')"></button>
+
         </div>
       </div>
       <div id="cours-texte" class="tab-content">
-        <textarea id="cm-cours-texte" class="form-textarea" placeholder="Écrivez le cours ici…"></textarea>
+        <textarea id="cm-cours-texte" class="form-textarea" placeholder="Écrivez le cours ici…" oninput="refreshCurrentInfo('cours')"></textarea>
       </div>
       <div id="cours-qcm" class="tab-content">
         <div id="qcm-cours-list"></div>
@@ -499,25 +1104,87 @@
       <label class="form-label" style="color:var(--red)">📝 DOCUMENT-EXERCICE</label>
       <div class="tab-row">
         <button class="tab-btn active" data-tab="exo-fichier" onclick="switchTab(this,'exo')">Fichier</button>
-        <button class="tab-btn"        data-tab="exo-texte"   onclick="switchTab(this,'exo')">Texte / Note</button>
-        <button class="tab-btn"        data-tab="exo-qcm"     onclick="switchTab(this,'exo')">QCM</button>
+        <button class="tab-btn" data-tab="exo-texte" onclick="switchTab(this,'exo')">Texte / Note</button>
+        <button class="tab-btn" data-tab="exo-qcm" onclick="switchTab(this,'exo')">QCM</button>
       </div>
       <div id="exo-fichier" class="tab-content active">
-        <input id="cm-exo-file" type="file" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.png,.jpg"/>
-        <div id="cm-exo-current" style="display:none;margin-top:.4rem;font-size:.8rem;color:var(--muted);gap:.55rem;">
+        <input id="cm-exo-file" type="file" class="form-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.png,.jpg" onchange="refreshCurrentInfo('exo')" />
+        <div id="cm-exo-current" class="cm-current-file">
           <span id="cm-exo-current-name"></span>
-          <button id="cm-exo-current-remove" type="button" onclick="markRemoveCurrentFile('exo')"
-                  style="border:none;background:none;color:#dc2626;cursor:pointer;font-size:.85rem;padding:0;">
-            Supprimer
-          </button>
+
+          <button id="cm-exo-current-remove" class="cm-current-remove-btn" type="button"
+            onclick="markRemoveCurrentFile('exo')"></button>
+
         </div>
       </div>
       <div id="exo-texte" class="tab-content">
-        <textarea id="cm-exo-texte" class="form-textarea" placeholder="Écrivez l'exercice ici…"></textarea>
+        <textarea id="cm-exo-texte" class="form-textarea" placeholder="Écrivez l'exercice ici…" oninput="refreshCurrentInfo('exo')"></textarea>
       </div>
       <div id="exo-qcm" class="tab-content">
         <div id="qcm-exo-list"></div>
         <button class="btn-add-qcm" onclick="addQcmQuestion('exo')">+ Ajouter une question</button>
+      </div>
+    </div>
+
+    <!-- Document TEST/EXAMEN -->
+    <div style="background:#fef5e7;border-radius:10px;padding:1rem;margin-bottom:.8rem">
+      <label class="form-label" style="color:#d89e00">📋 TEST/EXAMEN</label>
+      
+      <!-- Row: Type Selector + Import Button + Time Input -->
+      <div style="display:flex;gap:1rem;margin-bottom:1rem;align-items:flex-start">
+        <!-- Type Selector Dropdown -->
+        <div style="flex:1;min-width:150px">
+          <select id="cm-test-type" class="form-input" onchange="handleTestTypeChange()">
+            <option value="">-- Sélectionner --</option>
+            <option value="fichier">Fichier</option>
+            <option value="texte">Texte</option>
+            <option value="qcm">QCM</option>
+          </select>
+        </div>
+
+        <!-- Import File Button (Hidden by default) -->
+        <div id="cm-test-import-btn-wrapper" style="display:none;flex:0 0 auto">
+          <input id="cm-test-file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.png,.jpg" 
+                 style="display:none" onchange="handleTestFileChange()" />
+          <button type="button" class="form-input" onclick="document.getElementById('cm-test-file').click()" 
+                  style="background:#e8e8e8;border:1px solid #999;border-radius:6px;padding:.45rem 1rem;cursor:pointer;white-space:nowrap;font-size:.95rem">
+            Importer fichier...
+          </button>
+        </div>
+
+        <!-- Time Input -->
+        <div style="flex:0 0 120px">
+          <input id="cm-test-time" type="text" class="form-input" placeholder="00:00" 
+                 pattern="\d{2}:\d{2}" maxlength="5" />
+        </div>
+      </div>
+
+      <!-- Content Display Area -->
+      <div style="border:2px solid #d89e00;border-radius:8px;background:#fffbf0;min-height:250px;padding:1rem;display:flex;flex-direction:column">
+        <!-- File Display -->
+        <div id="cm-test-file-display" style="display:none;flex:1;overflow:auto">
+          <div style="font-size:.9rem;color:var(--muted);margin-bottom:.5rem">
+            <strong>Fichier sélectionné:</strong> <span id="cm-test-file-name"></span>
+          </div>
+          <div id="cm-test-file-preview" style="border:1px solid #ddd;border-radius:6px;padding:.5rem;background:#fff;min-height:200px;overflow:auto"></div>
+        </div>
+
+        <!-- Text Display -->
+        <div id="cm-test-text-display" style="display:none;flex:1;overflow:auto">
+          <textarea id="cm-test-texte" class="form-textarea" placeholder="Saisir le contenu du test ici…" 
+                    style="width:100%;height:100%;min-height:200px;border:none;background:transparent;resize:none"></textarea>
+        </div>
+
+        <!-- QCM Display -->
+        <div id="cm-test-qcm-display" style="display:none;flex:1;overflow:auto">
+          <div id="qcm-test-list" style="margin-bottom:1rem"></div>
+          <button type="button" class="btn-add-qcm" onclick="addQcmQuestion('test')">+ Ajouter une question</button>
+        </div>
+
+        <!-- Empty State -->
+        <div id="cm-test-empty-state" style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.95rem">
+          Sélectionnez un type pour commencer
+        </div>
       </div>
     </div>
 
@@ -566,126 +1233,243 @@
 
 {% block extra_js %}
 <script>
-/* ═══════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════ */
-let allCours    = [];
-let currentCours = null;
-let editingId   = null;
-let deletingId  = null;
-let removedVideoFile = false;
-let removedCoursFile = false;
-let removedExoFile = false;
-let coursTabs   = { cours: 'fichier', exo: 'fichier' };
-let qcmData     = { cours: [], exo: [] };
-let docZoom = 1;
+  /* ═══════════════════════════════════════════════
+     STATE
+  ═══════════════════════════════════════════════ */
+  let allCours = [];
+  let currentCours = null;
+  let editingId = null;
+  let deletingId = null;
+  let removedVideoFile = false;
+  let removedCoursFile = false;
+  let removedExoFile = false;
+  let coursTabs = { cours: 'fichier', exo: 'fichier' };
+  let qcmData = { cours: [], exo: [], test: [] };
+  let currentVideoFileName = '';
+  let currentCoursFileName = '';
+  let currentExoFileName = '';
+  let testData = { type: '', filename: '', time: '00:00' };
+  let docZoom = 1;
 
-function hasJsonItems(value) {
-  if (!value) return false;
-  try {
-    const arr = JSON.parse(value);
-    return Array.isArray(arr) && arr.length > 0;
-  } catch (e) {
+  function hasJsonItems(value) {
+    if (!value) return false;
+    try {
+      const arr = JSON.parse(value);
+      return Array.isArray(arr) && arr.length > 0;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function hasQcmData(group) {
+    if (!Array.isArray(qcmData[group])) return false;
+    return qcmData[group].some(q => {
+      if ((q.question || '').trim()) return true;
+      return Array.isArray(q.options) && q.options.some(opt => (opt || '').trim());
+    });
+  }
+
+  function refreshCurrentInfo(type) {
+    const wrapper = document.getElementById(
+      type === 'cours' ? 'cm-cours-current' : type === 'exo' ? 'cm-exo-current' : 'cm-video-current'
+    );
+    const nameEl = document.getElementById(
+      type === 'cours' ? 'cm-cours-current-name' : type === 'exo' ? 'cm-exo-current-name' : 'cm-video-current-name'
+    );
+    const removeBtn = document.getElementById(
+      type === 'cours' ? 'cm-cours-current-remove' : type === 'exo' ? 'cm-exo-current-remove' : 'cm-video-current-remove'
+    );
+    if (!wrapper || !nameEl || !removeBtn) return;
+
+    let hasInfo = false;
+    let label = '';
+    if (type === 'video') {
+      const file = document.getElementById('cm-video-file').files[0];
+      const url = document.getElementById('cm-video-url').value.trim();
+      if (file) {
+        hasInfo = true;
+        label = 'Vidéo sélectionnée : ' + file.name;
+      } else if (url) {
+        hasInfo = true;
+        label = 'URL vidéo active';
+      } else if (currentVideoFileName) {
+        hasInfo = true;
+        label = 'Vidéo actuelle : ' + currentVideoFileName;
+      }
+    } else if (type === 'cours') {
+      const file = document.getElementById('cm-cours-file').files[0];
+      const text = document.getElementById('cm-cours-texte').value.trim();
+      const qcm = hasQcmData('cours');
+      if (file) {
+        hasInfo = true;
+        label = 'Cours sélectionné : ' + file.name;
+      } else if (text) {
+        hasInfo = true;
+        label = 'Texte de cours actif';
+      } else if (qcm) {
+        hasInfo = true;
+        label = `QCM de cours actif (${qcmData.cours.length} questions)`;
+      } else if (currentCoursFileName) {
+        hasInfo = true;
+        label = 'Cours actuel : ' + currentCoursFileName;
+      }
+    } else {
+      const file = document.getElementById('cm-exo-file').files[0];
+      const text = document.getElementById('cm-exo-texte').value.trim();
+      const qcm = hasQcmData('exo');
+      if (file) {
+        hasInfo = true;
+        label = 'Exercice sélectionné : ' + file.name;
+      } else if (text) {
+        hasInfo = true;
+        label = 'Texte d\'exercice actif';
+      } else if (qcm) {
+        hasInfo = true;
+        label = `QCM d'exercice actif (${qcmData.exo.length} questions)`;
+      } else if (currentExoFileName) {
+        hasInfo = true;
+        label = 'Exercice actuel : ' + currentExoFileName;
+      }
+    }
+
+    if (!hasInfo) {
+      wrapper.style.display = 'none';
+      removeBtn.style.display = 'none';
+      return;
+    }
+    wrapper.style.display = 'flex';
+    wrapper.style.alignItems = 'center';
+    nameEl.textContent = label;
+    removeBtn.style.display = 'inline-flex';
+  }
+
+  function hasContent(c, type) {
+    const t = type === 'cours' ? c.cours_type : c.exercice_type;
+    const file = type === 'cours' ? c.cours_fichier : c.exercice_fichier;
+    const text = type === 'cours' ? c.cours_texte : c.exercice_texte;
+    const qcm = type === 'cours' ? c.cours_qcm : c.exercice_qcm;
+    if (file) return true;
+    if (t === 'texte') return !!(text || '').trim();
+    if (t === 'qcm') return hasJsonItems(qcm);
     return false;
   }
-}
 
-function hasContent(c, type) {
-  const t = type === 'cours' ? c.cours_type : c.exercice_type;
-  const file = type === 'cours' ? c.cours_fichier : c.exercice_fichier;
-  const text = type === 'cours' ? c.cours_texte : c.exercice_texte;
-  const qcm = type === 'cours' ? c.cours_qcm : c.exercice_qcm;
-  if (file) return true;
-  if (t === 'texte') return !!(text || '').trim();
-  if (t === 'qcm') return hasJsonItems(qcm);
-  return false;
-}
-
-function markRemoveCurrentFile(type) {
-  if (type === 'video') {
-    removedVideoFile = true;
-    document.getElementById('cm-video-current-name').textContent = 'Vidéo actuelle supprimée. Enregistrez pour valider.';
-    document.getElementById('cm-video-current-remove').style.display = 'none';
-  } else if (type === 'cours') {
-    removedCoursFile = true;
-    document.getElementById('cm-cours-current-name').textContent = 'Cours actuel supprimé. Enregistrez pour valider.';
-    document.getElementById('cm-cours-current-remove').style.display = 'none';
-  } else {
-    removedExoFile = true;
-    document.getElementById('cm-exo-current-name').textContent = 'Exercice actuel supprimé. Enregistrez pour valider.';
-    document.getElementById('cm-exo-current-remove').style.display = 'none';
+  function markRemoveCurrentFile(type) {
+    if (type === 'video') {
+      removedVideoFile = true;
+      currentVideoFileName = '';
+      const fileInput = document.getElementById('cm-video-file');
+      if (fileInput) fileInput.value = '';
+      document.getElementById('cm-video-url').value = '';
+      document.getElementById('cm-video-current-name').textContent = 'Vidéo actuelle supprimée. Enregistrez pour valider.';
+      document.getElementById('cm-video-current-remove').style.display = 'none';
+      refreshCurrentInfo('video');
+    } else if (type === 'cours') {
+      removedCoursFile = true;
+      currentCoursFileName = '';
+      const fileInput = document.getElementById('cm-cours-file');
+      if (fileInput) fileInput.value = '';
+      document.getElementById('cm-cours-texte').value = '';
+      qcmData.cours = [];
+      renderQcm('cours');
+      document.getElementById('cm-cours-current-name').textContent = 'Cours actuel supprimé. Enregistrez pour valider.';
+      document.getElementById('cm-cours-current-remove').style.display = 'none';
+      refreshCurrentInfo('cours');
+    } else {
+      removedExoFile = true;
+      currentExoFileName = '';
+      const fileInput = document.getElementById('cm-exo-file');
+      if (fileInput) fileInput.value = '';
+      document.getElementById('cm-exo-texte').value = '';
+      qcmData.exo = [];
+      renderQcm('exo');
+      document.getElementById('cm-exo-current-name').textContent = 'Exercice actuel supprimé. Enregistrez pour valider.';
+      document.getElementById('cm-exo-current-remove').style.display = 'none';
+      refreshCurrentInfo('exo');
+    }
   }
-}
 
-function setCurrentFileInfo(type, filename) {
-  const wrapper = document.getElementById(
-    type === 'cours' ? 'cm-cours-current' : type === 'exo' ? 'cm-exo-current' : 'cm-video-current'
-  );
-  const nameEl = document.getElementById(
-    type === 'cours' ? 'cm-cours-current-name' : type === 'exo' ? 'cm-exo-current-name' : 'cm-video-current-name'
-  );
-  const removeBtn = document.getElementById(
-    type === 'cours' ? 'cm-cours-current-remove' : type === 'exo' ? 'cm-exo-current-remove' : 'cm-video-current-remove'
-  );
-  if (!filename) {
-    wrapper.style.display = 'none';
-    return;
+  function setCurrentFileInfo(type, filename) {
+    const wrapper = document.getElementById(
+      type === 'cours' ? 'cm-cours-current' : type === 'exo' ? 'cm-exo-current' : 'cm-video-current'
+    );
+    const nameEl = document.getElementById(
+      type === 'cours' ? 'cm-cours-current-name' : type === 'exo' ? 'cm-exo-current-name' : 'cm-video-current-name'
+    );
+    const removeBtn = document.getElementById(
+      type === 'cours' ? 'cm-cours-current-remove' : type === 'exo' ? 'cm-exo-current-remove' : 'cm-video-current-remove'
+    );
+    if (!filename) {
+      if (type === 'cours') currentCoursFileName = '';
+      else if (type === 'exo') currentExoFileName = '';
+      else currentVideoFileName = '';
+      wrapper.style.display = 'none';
+      return;
+    }
+    if (type === 'cours') currentCoursFileName = filename;
+    else if (type === 'exo') currentExoFileName = filename;
+    else currentVideoFileName = filename;
+    wrapper.style.display = 'flex';
+    wrapper.style.alignItems = 'center';
+    if (type === 'cours') {
+      nameEl.textContent = 'Cours actuel : ' + filename;
+    } else if (type === 'exo') {
+      nameEl.textContent = 'Exercice actuel : ' + filename;
+    } else {
+      nameEl.textContent = 'Vidéo actuelle : ' + filename;
+    }
+    removeBtn.style.display = 'inline-flex';
   }
-  wrapper.style.display = 'flex';
-  wrapper.style.alignItems = 'center';
-  nameEl.textContent = (type === 'cours' ? 'Cours actuel : ' : 'Exercice actuel : ') + filename;
-  removeBtn.style.display = 'inline';
-}
 
-/* ═══════════════════════════════════════════════
-   LOAD
-═══════════════════════════════════════════════ */
-async function loadCours() {
-  const q    = document.getElementById('search-box') ? document.getElementById('search-box').value.trim() : '';
-  const sort = document.getElementById('sort-select').value;
-  try {
-    const params = new URLSearchParams({ sort });
-    if (q) params.set('q', q);
-    const r = await fetch('/api/cours?' + params);
-    if (!r.ok) throw new Error('Erreur serveur');
-    allCours = await r.json();
-    renderTable();
-  } catch(e) { toast(e.message,'err'); }
-}
+  /* ═══════════════════════════════════════════════
+     LOAD
+  ═══════════════════════════════════════════════ */
+  async function loadCours() {
+    const q = document.getElementById('search-box') ? document.getElementById('search-box').value.trim() : '';
+    const sort = document.getElementById('sort-select').value;
+    try {
+      const params = new URLSearchParams({ sort });
+      if (q) params.set('q', q);
+      const r = await fetch('/api/cours?' + params);
+      if (!r.ok) throw new Error('Erreur serveur');
+      allCours = await r.json();
+      renderTable();
+    } catch (e) { toast(e.message, 'err'); }
+  }
 
-/* ═══════════════════════════════════════════════
-   RENDER TABLE
-═══════════════════════════════════════════════ */
-function renderTable() {
-  const tbody = document.getElementById('cours-tbody');
-  if (!allCours.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2.5rem;color:var(--muted)">
+  /* ═══════════════════════════════════════════════
+     RENDER TABLE
+  ═══════════════════════════════════════════════ */
+  function renderTable() {
+    const tbody = document.getElementById('cours-tbody');
+    if (!allCours.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2.5rem;color:var(--muted)">
       Aucun cours. Cliquez sur ＋ pour ajouter.</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = allCours.map((c, i) => {
-    const hasCours = hasContent(c, 'cours');
-    const hasExo   = hasContent(c, 'exercice');
-    const hasVideo = !!(c.video_filename || c.video_url);
+      return;
+    }
+    tbody.innerHTML = allCours.map((c, i) => {
+      const hasCours = hasContent(c, 'cours');
+      const hasExo = hasContent(c, 'exercice');
+      const hasVideo = !!(c.video_filename || c.video_url);
 
-    const docCoursHtml = hasCours
-      ? `<div class="doc-badge has" onclick="openDoc(${c.id},'cours')">
+      const docCoursHtml = hasCours
+        ? `<div class="doc-badge has" onclick="openDoc(${c.id},'cours')">
            <div class="check-icon ok">✓</div> Voir
          </div>`
-      : `<div class="doc-badge missing">
+        : `<div class="doc-badge missing">
            <div class="check-icon no">✕</div> Vide
          </div>`;
 
-    const docExoHtml = hasExo
-      ? `<div class="doc-badge has" onclick="openDoc(${c.id},'exercice')">
+      const docExoHtml = hasExo
+        ? `<div class="doc-badge has" onclick="openDoc(${c.id},'exercice')">
            <div class="check-icon ok">✓</div> Voir
          </div>`
-      : `<div class="doc-badge missing">
+        : `<div class="doc-badge missing">
            <div class="check-icon no">✕</div> Vide
          </div>`;
 
-    return `<tr>
-      <td class="num-cell">${i+1}</td>
+      return `<tr>
+      <td class="num-cell">${i + 1}</td>
       <td>
         <div class="play-btn ${hasVideo ? '' : 'no-video'}"
              onclick="${hasVideo ? `playVideo(${c.id})` : ''}">
@@ -698,349 +1482,454 @@ function renderTable() {
       </td>
       <td>${docCoursHtml}</td>
       <td>${docExoHtml}</td>
-      <td style="text-align:right">
-        <button class="action-icon edit" title="Modifier" onclick="openEdit(allCours.find(x=>x.id===${c.id}))">
-          ✏️
-        </button>
-        <button class="action-icon del" title="Supprimer" onclick="confirmDelete(${c.id})">
-          🗑️
-        </button>
-      </td>
+     <td style="text-align:right">
+  <button class="action-icon edit" title="Modifier" 
+          onclick="openEdit(allCours.find(x=>x.id===${c.id}))">
+    <img src="/static/image/ico_modifier.png" alt="Modifier" width="25" height="25">
+  </button>
+
+  <button class="action-icon del" title="Supprimer" 
+          onclick="confirmDelete(${c.id}))">
+    <img src="/static/image/ico_delete.png" alt="Supprimer" width="18" height="18">
+  </button>
+</td>
+
     </tr>`;
-  }).join('');
-}
-
-/* ═══════════════════════════════════════════════
-   PLAY VIDEO
-═══════════════════════════════════════════════ */
-function playVideo(id) {
-  const c = allCours.find(x => x.id === id);
-  if (!c) return;
-  currentCours = c;
-  let src = c.video_url || (c.video_filename ? `/uploads/videos/${c.video_filename}` : '');
-  if (c.video_url) src = src.replace('watch?v=','embed/').replace('youtu.be/','youtube.com/embed/');
-  // Redirect to dedicated video page to display the selected course video
-  window.location.href = '/admin/video/' + id;
-}
-
-/* ═══════════════════════════════════════════════
-   DOC VIEWER MODAL
-═══════════════════════════════════════════════ */
-async function openDoc(id, type) {
-  const c = allCours.find(x => x.id === id);
-  if (!c) return;
-  const isExo  = type === 'exercice';
-  const prefix = isExo ? 'exercice' : 'cours';
-  const label  = isExo ? 'Document-Exercice' : 'Document-Cours';
-
-  document.getElementById('dm-title').textContent = `${c.titre} — ${label}`;
-  const content = document.getElementById('dm-content');
-  content.innerHTML = '<span class="spinner"></span>';
-  document.getElementById('doc-modal').classList.add('open');
-  const docBox = document.querySelector('#doc-modal .modal-box');
-  if (docBox) {
-    docZoom = 1;
-    docBox.style.transform = 'scale(1)';
+    }).join('');
   }
 
-  const docType    = isExo ? c.exercice_type    : c.cours_type;
-  const docFichier = isExo ? c.exercice_fichier : c.cours_fichier;
-  const docTexte   = isExo ? c.exercice_texte   : c.cours_texte;
-  const docQcm     = isExo ? c.exercice_qcm     : c.cours_qcm;
+  /* ═══════════════════════════════════════════════
+     PLAY VIDEO
+  ═══════════════════════════════════════════════ */
+  function playVideo(id) {
+    const c = allCours.find(x => x.id === id);
+    if (!c) return;
+    currentCours = c;
+    let src = c.video_url || (c.video_filename ? `/uploads/videos/${c.video_filename}` : '');
+    if (c.video_url) src = src.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
+    // Redirect to dedicated video page to display the selected course video
+    window.location.href = '/admin/video/' + id;
+  }
 
-  if (docType === 'fichier' && docFichier) {
-    const url = `/uploads/${prefix === 'cours' ? 'cours' : 'exercices'}/${encodeURIComponent(docFichier)}`;
-    const ext = docFichier.split('.').pop().toLowerCase();
-    if (ext === 'pdf') {
-      content.innerHTML = `<iframe src="${url}" style="width:100%;height:58vh;border:none;border-radius:6px"></iframe>`;
-    } else if (['png','jpg','jpeg'].includes(ext)) {
-      content.innerHTML = `<img src="${url}" style="max-width:100%;border-radius:8px"/>`;
-    } else {
-      content.innerHTML = `<p>Fichier : <a href="${url}" target="_blank" style="color:var(--blue)">${escHtml(docFichier)}</a></p>`;
+  /* ═══════════════════════════════════════════════
+     DOC VIEWER MODAL
+  ═══════════════════════════════════════════════ */
+  async function openDoc(id, type) {
+    const c = allCours.find(x => x.id === id);
+    if (!c) return;
+    const isExo = type === 'exercice';
+    const prefix = isExo ? 'exercice' : 'cours';
+    const label = isExo ? 'Document-Exercice' : 'Document-Cours';
+
+    document.getElementById('dm-title').textContent = `${c.titre} — ${label}`;
+    const content = document.getElementById('dm-content');
+    content.innerHTML = '<span class="spinner"></span>';
+    document.getElementById('doc-modal').classList.add('open');
+    const docBox = document.querySelector('#doc-modal .modal-box');
+    if (docBox) {
+      docZoom = 1;
+      docBox.style.transform = 'scale(1)';
     }
-  } else if (docType === 'texte' && docTexte) {
-    content.innerHTML = `<pre style="white-space:pre-wrap;font-family:inherit">${escHtml(docTexte)}</pre>`;
-  } else if (docType === 'qcm' && docQcm) {
-    let qs = [];
-    try { qs = JSON.parse(docQcm); } catch(e) { qs = []; }
-    if (qs.length) {
-      content.innerHTML = qs.map((q,i) => `
+
+    const docType = isExo ? c.exercice_type : c.cours_type;
+    const docFichier = isExo ? c.exercice_fichier : c.cours_fichier;
+    const docTexte = isExo ? c.exercice_texte : c.cours_texte;
+    const docQcm = isExo ? c.exercice_qcm : c.cours_qcm;
+
+    if (docType === 'fichier' && docFichier) {
+      const url = `/uploads/${prefix === 'cours' ? 'cours' : 'exercices'}/${encodeURIComponent(docFichier)}`;
+      const ext = docFichier.split('.').pop().toLowerCase();
+      if (ext === 'pdf') {
+        content.innerHTML = `<iframe src="${url}" style="width:100%;height:58vh;border:none;border-radius:6px"></iframe>`;
+      } else if (['png', 'jpg', 'jpeg'].includes(ext)) {
+        content.innerHTML = `<img src="${url}" style="max-width:100%;border-radius:8px"/>`;
+      } else {
+        content.innerHTML = `<p>Fichier : <a href="${url}" target="_blank" style="color:var(--blue)">${escHtml(docFichier)}</a></p>`;
+      }
+    } else if (docType === 'texte' && docTexte) {
+      content.innerHTML = `<pre style="white-space:pre-wrap;font-family:inherit">${escHtml(docTexte)}</pre>`;
+    } else if (docType === 'qcm' && docQcm) {
+      let qs = [];
+      try { qs = JSON.parse(docQcm); } catch (e) { qs = []; }
+      if (qs.length) {
+        content.innerHTML = qs.map((q, i) => `
         <div class="qcm-viewer-item">
-          <h4>${i+1}. ${escHtml(q.question||'')}</h4>
-          ${(q.options||[]).map((o,j) => `
+          <h4>${i + 1}. ${escHtml(q.question || '')}</h4>
+          ${(q.options || []).map((o, j) => `
             <label>
               <input type="radio" name="q${id}_${i}" value="${j}"/>
               ${escHtml(o)}
             </label>`).join('')}
         </div>`).join('');
+      } else {
+        content.textContent = 'QCM vide.';
+      }
     } else {
-      content.textContent = 'QCM vide.';
+      content.textContent = 'Aucun contenu disponible.';
     }
-  } else {
-    content.textContent = 'Aucun contenu disponible.';
   }
-}
 
-function closeDocModal() {
-  document.getElementById('doc-modal').classList.remove('open');
-  const box = document.querySelector('#doc-modal .modal-box');
-  if (box) {
-    box.style.transform = 'scale(1)';
-    docZoom = 1;
+  function closeDocModal() {
+    document.getElementById('doc-modal').classList.remove('open');
+    const box = document.querySelector('#doc-modal .modal-box');
+    if (box) {
+      box.style.transform = 'scale(1)';
+      docZoom = 1;
+    }
   }
-}
 
-function zoomDoc(factor) {
-  docZoom = Math.max(0.8, Math.min(1.8, docZoom * factor));
-  const box = document.querySelector('#doc-modal .modal-box');
-  if (box) {
-    box.style.transform = `scale(${docZoom})`;
-    box.style.transformOrigin = 'top center';
+  function zoomDoc(factor) {
+    docZoom = Math.max(0.8, Math.min(1.8, docZoom * factor));
+    const box = document.querySelector('#doc-modal .modal-box');
+    if (box) {
+      box.style.transform = `scale(${docZoom})`;
+      box.style.transformOrigin = 'top center';
+    }
   }
-}
 
-/* ═══════════════════════════════════════════════
-   MODAL COURS : OPEN / CLOSE
-═══════════════════════════════════════════════ */
-function openAdd() {
-  editingId = null;
-  document.getElementById('cm-title').textContent = 'Nouveau cours';
-  clearCourseForm();
-  document.getElementById('cours-modal').classList.add('open');
-}
+  /* ═══════════════════════════════════════════════
+     MODAL COURS : OPEN / CLOSE
+  ═══════════════════════════════════════════════ */
+  function openAdd() {
+    editingId = null;
+    document.getElementById('cm-title').textContent = 'Nouveau cours';
+    clearCourseForm();
+    document.getElementById('cours-modal').classList.add('open');
+  }
 
-function openEdit(c) {
-  if (!c) return;
-  editingId = c.id;
-  document.getElementById('cm-title').textContent = 'Modifier le cours';
-  clearCourseForm();
+  function openEdit(c) {
+    if (!c) return;
+    editingId = c.id;
+    document.getElementById('cm-title').textContent = 'Modifier le cours';
+    clearCourseForm();
 
-  document.getElementById('cm-titre').value   = c.titre   || '';
-  document.getElementById('cm-matiere').value = c.matiere || '';
-  document.getElementById('cm-desc').value    = c.description || '';
-  document.getElementById('cm-video-url').value = c.video_url || '';
+    document.getElementById('cm-titre').value = c.titre || '';
+    document.getElementById('cm-matiere').value = c.matiere || '';
+    document.getElementById('cm-desc').value = c.description || '';
+    document.getElementById('cm-video-url').value = c.video_url || '';
 
-  removedVideoFile = false;
-  removedCoursFile = false;
-  removedExoFile = false;
-  setCurrentFileInfo('video', c.video_filename);
-  setCurrentFileInfo('cours', c.cours_fichier);
-  setCurrentFileInfo('exo', c.exercice_fichier);
+    removedVideoFile = false;
+    removedCoursFile = false;
+    removedExoFile = false;
+    setCurrentFileInfo('video', c.video_filename);
+    setCurrentFileInfo('cours', c.cours_fichier);
+    setCurrentFileInfo('exo', c.exercice_fichier);
 
-  try { qcmData.cours = JSON.parse(c.cours_qcm || '[]'); }    catch(e){ qcmData.cours=[]; }
-  try { qcmData.exo   = JSON.parse(c.exercice_qcm || '[]'); } catch(e){ qcmData.exo=[]; }
-  renderQcm('cours');
-  renderQcm('exo');
+    try { qcmData.cours = JSON.parse(c.cours_qcm || '[]'); } catch (e) { qcmData.cours = []; }
+    try { qcmData.exo = JSON.parse(c.exercice_qcm || '[]'); } catch (e) { qcmData.exo = []; }
+    renderQcm('cours');
+    renderQcm('exo');
 
-  document.getElementById('cours-modal').classList.add('open');
-}
+    document.getElementById('cours-modal').classList.add('open');
+  }
 
-function closeCourseModal() {
-  document.getElementById('cours-modal').classList.remove('open');
-}
+  function closeCourseModal() {
+    document.getElementById('cours-modal').classList.remove('open');
+  }
 
-function clearCourseForm() {
-  ['cm-titre','cm-matiere','cm-desc','cm-video-url','cm-cours-texte','cm-exo-texte'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
-  ['cm-video-file','cm-cours-file','cm-exo-file'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
-  ['cm-video-current','cm-cours-current','cm-exo-current'].forEach(id => {
-    const el = document.getElementById(id);
-    el.style.display = 'none';
-  });
-  removedVideoFile = false;
-  removedCoursFile = false;
-  removedExoFile = false;
-  document.getElementById('cm-video-current-name').textContent = '';
-  document.getElementById('cm-cours-current-name').textContent = '';
-  document.getElementById('cm-exo-current-name').textContent = '';
-  qcmData = { cours: [], exo: [] };
-  renderQcm('cours');
-  renderQcm('exo');
-  activateTabById('cours','fichier');
-  activateTabById('exo','fichier');
-}
+  function clearCourseForm() {
+    ['cm-titre', 'cm-matiere', 'cm-desc', 'cm-video-url', 'cm-cours-texte', 'cm-exo-texte'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    ['cm-video-file', 'cm-cours-file', 'cm-exo-file'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    ['cm-video-current', 'cm-cours-current', 'cm-exo-current'].forEach(id => {
+      const el = document.getElementById(id);
+      el.style.display = 'none';
+    });
+    removedVideoFile = false;
+    removedCoursFile = false;
+    removedExoFile = false;
+    currentVideoFileName = '';
+    currentCoursFileName = '';
+    currentExoFileName = '';
+    document.getElementById('cm-video-current-name').textContent = '';
+    document.getElementById('cm-cours-current-name').textContent = '';
+    document.getElementById('cm-exo-current-name').textContent = '';
+    qcmData = { cours: [], exo: [], test: [] };
+    renderQcm('cours');
+    renderQcm('exo');
+    renderQcm('test');
+    activateTabById('cours', 'fichier');
+    activateTabById('exo', 'fichier');
+    
+    // Reset test section
+    document.getElementById('cm-test-type').value = '';
+    document.getElementById('cm-test-file').value = '';
+    document.getElementById('cm-test-texte').value = '';
+    document.getElementById('cm-test-time').value = '00:00';
+    testData = { type: '', filename: '', time: '00:00' };
+    updateTestDisplay();
+  }
 
-/* ═══════════════════════════════════════════════
-   TABS
-═══════════════════════════════════════════════ */
-function switchTab(btn, group) {
-  const tabId = btn.dataset.tab;
-  const tabRow = btn.closest('.tab-row');
-  tabRow.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  /* ═══════════════════════════════════════════════
+     TABS
+  ═══════════════════════════════════════════════ */
+  function switchTab(btn, group) {
+    const tabId = btn.dataset.tab;
+    const tabRow = btn.closest('.tab-row');
+    tabRow.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 
-  const parent = tabRow.parentElement;
-  parent.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  parent.querySelector('#' + tabId).classList.add('active');
+    const parent = tabRow.parentElement;
+    parent.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    parent.querySelector('#' + tabId).classList.add('active');
 
-  coursTabs[group] = tabId.includes('fichier') ? 'fichier' : tabId.includes('texte') ? 'texte' : 'qcm';
-}
+    coursTabs[group] = tabId.includes('fichier') ? 'fichier' : tabId.includes('texte') ? 'texte' : 'qcm';
+  }
 
-function activateTabById(group, type) {
-  const tabId = (group === 'cours' ? 'cours-' : 'exo-') + type;
-  const btn   = document.querySelector(`[data-tab="${tabId}"]`);
-  if (btn) switchTab(btn, group);
-}
+  function activateTabById(group, type) {
+    const tabId = (group === 'cours' ? 'cours-' : 'exo-') + type;
+    const btn = document.querySelector(`[data-tab="${tabId}"]`);
+    if (btn) switchTab(btn, group);
+  }
 
-/* ═══════════════════════════════════════════════
-   QCM BUILDER
-═══════════════════════════════════════════════ */
-function addQcmQuestion(group) {
-  qcmData[group].push({ question: '', options: ['','','',''], correct: 0 });
-  renderQcm(group);
-}
+  /* ═══════════════════════════════════════════════
+     TEST MANAGEMENT
+  ═══════════════════════════════════════════════ */
+  function handleTestTypeChange() {
+    const type = document.getElementById('cm-test-type').value;
+    testData.type = type;
+    
+    // Show/hide import button
+    const importBtnWrapper = document.getElementById('cm-test-import-btn-wrapper');
+    if (type === 'fichier') {
+      importBtnWrapper.style.display = 'flex';
+    } else {
+      importBtnWrapper.style.display = 'none';
+    }
+    
+    updateTestDisplay();
+  }
 
-function renderQcm(group) {
-  const listId = `qcm-${group}-list`;
-  const el = document.getElementById(listId);
-  if (!el) return;
-  el.innerHTML = qcmData[group].map((q, qi) => `
+  function handleTestFileChange() {
+    const fileInput = document.getElementById('cm-test-file');
+    const file = fileInput.files[0];
+    if (!file) return;
+    
+    testData.filename = file.name;
+    const ext = file.name.split('.').pop().toLowerCase();
+    const preview = document.getElementById('cm-test-file-preview');
+    
+    // Handle different file types
+    if (ext === 'pdf') {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.innerHTML = `<embed src="${e.target.result}" type="application/pdf" width="100%" height="100%"/>`;
+      };
+      reader.readAsDataURL(file);
+    } else if (['png', 'jpg', 'jpeg'].includes(ext)) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.innerHTML = `<img src="${e.target.result}" style="max-width:100%;max-height:100%;object-fit:contain;"/>`;
+      };
+      reader.readAsDataURL(file);
+    } else if (ext === 'txt') {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.innerHTML = `<pre style="white-space:pre-wrap;font-family:monospace;font-size:.9rem">${escHtml(e.target.result)}</pre>`;
+      };
+      reader.readAsText(file);
+    } else {
+      preview.innerHTML = `<p style="color:var(--muted)">Fichier : <strong>${escHtml(file.name)}</strong><br/>Type de fichier non prévisualisé</p>`;
+    }
+    
+    updateTestDisplay();
+  }
+
+  function updateTestDisplay() {
+    const type = document.getElementById('cm-test-type').value;
+    const fileDisplay = document.getElementById('cm-test-file-display');
+    const textDisplay = document.getElementById('cm-test-text-display');
+    const qcmDisplay = document.getElementById('cm-test-qcm-display');
+    const emptyState = document.getElementById('cm-test-empty-state');
+    
+    // Hide all displays
+    fileDisplay.style.display = 'none';
+    textDisplay.style.display = 'none';
+    qcmDisplay.style.display = 'none';
+    emptyState.style.display = 'flex';
+    
+    // Show appropriate display
+    if (type === 'fichier' && testData.filename) {
+      document.getElementById('cm-test-file-name').textContent = testData.filename;
+      fileDisplay.style.display = 'flex';
+      emptyState.style.display = 'none';
+    } else if (type === 'texte') {
+      textDisplay.style.display = 'flex';
+      emptyState.style.display = 'none';
+    } else if (type === 'qcm') {
+      qcmDisplay.style.display = 'flex';
+      emptyState.style.display = 'none';
+    }
+  }
+
+  /* ═══════════════════════════════════════════════
+     QCM BUILDER
+  ═══════════════════════════════════════════════ */
+  function addQcmQuestion(group) {
+    qcmData[group].push({ question: '', options: ['', '', '', ''], correct: 0 });
+    renderQcm(group);
+  }
+
+  function renderQcm(group) {
+    const listId = `qcm-${group}-list`;
+    const el = document.getElementById(listId);
+    if (!el) return;
+    el.innerHTML = qcmData[group].map((q, qi) => `
     <div class="qcm-question">
       <div class="qcm-question-head">
         <input class="qcm-q-input" value="${escHtml(q.question)}"
-               placeholder="Question ${qi+1}…"
-               oninput="qcmData['${group}'][${qi}].question=this.value"/>
+               placeholder="Question ${qi + 1}…"
+               oninput="qcmData['${group}'][${qi}].question=this.value; refreshCurrentInfo('${group}')"/>
         <button class="btn-del-q" onclick="delQcmQ('${group}',${qi})">✕</button>
       </div>
       <div class="qcm-options">
-        ${q.options.map((o,oi) => `
+        ${q.options.map((o, oi) => `
           <div class="qcm-option-row">
-            <input type="radio" name="qcm-${group}-${qi}" ${q.correct===oi?'checked':''}
-                   onchange="qcmData['${group}'][${qi}].correct=${oi}"/>
-            <input class="qcm-opt-input" value="${escHtml(o)}" placeholder="Option ${oi+1}"
-                   oninput="qcmData['${group}'][${qi}].options[${oi}]=this.value"/>
+            <input type="radio" name="qcm-${group}-${qi}" ${q.correct === oi ? 'checked' : ''}
+                   onchange="qcmData['${group}'][${qi}].correct=${oi}; refreshCurrentInfo('${group}')"/>
+            <input class="qcm-opt-input" value="${escHtml(o)}" placeholder="Option ${oi + 1}"
+                   oninput="qcmData['${group}'][${qi}].options[${oi}]=this.value; refreshCurrentInfo('${group}')"/>
           </div>`).join('')}
       </div>
       <button class="btn-add-qcm" onclick="addOption('${group}',${qi})">+ Option</button>
     </div>`).join('');
-}
-
-function delQcmQ(group, qi) {
-  qcmData[group].splice(qi, 1);
-  renderQcm(group);
-}
-
-function addOption(group, qi) {
-  qcmData[group][qi].options.push('');
-  renderQcm(group);
-}
-
-/* ═══════════════════════════════════════════════
-   SAVE COURS
-═══════════════════════════════════════════════ */
-async function saveCours() {
-  const titre   = document.getElementById('cm-titre').value.trim();
-  const matiere = document.getElementById('cm-matiere').value.trim();
-  if (!titre) { toast('Le titre est obligatoire.','err'); return; }
-
-  document.getElementById('save-spinner').style.display = 'inline-block';
-  document.getElementById('save-label').textContent = 'Enregistrement…';
-
-  const fd = new FormData();
-  fd.append('titre',       titre);
-  fd.append('matiere',     matiere);
-  fd.append('description', document.getElementById('cm-desc').value.trim());
-  fd.append('video_url',   document.getElementById('cm-video-url').value.trim());
-
-  const vf = document.getElementById('cm-video-file').files[0];
-  if (vf) fd.append('video_file', vf);
-
-  const ct = coursTabs.cours || 'fichier';
-  fd.append('cours_type',  ct);
-  if (ct === 'fichier') {
-    const cf = document.getElementById('cm-cours-file').files[0];
-    if (cf) fd.append('cours_fichier', cf);
-  } else if (ct === 'texte') {
-    fd.append('cours_texte', document.getElementById('cm-cours-texte').value);
-  } else if (ct === 'qcm') {
-    fd.append('cours_qcm', JSON.stringify(qcmData.cours));
+    refreshCurrentInfo(group);
   }
 
-  const et = coursTabs.exo || 'fichier';
-  fd.append('exercice_type', et);
-  if (et === 'fichier') {
-    const ef = document.getElementById('cm-exo-file').files[0];
-    if (ef) fd.append('exercice_fichier', ef);
-  } else if (et === 'texte') {
-    fd.append('exercice_texte', document.getElementById('cm-exo-texte').value);
-  } else if (et === 'qcm') {
-    fd.append('exercice_qcm', JSON.stringify(qcmData.exo));
+  function delQcmQ(group, qi) {
+    qcmData[group].splice(qi, 1);
+    renderQcm(group);
   }
 
-  if (editingId) {
-    if (removedVideoFile) fd.append('remove_video_file', '1');
-    if (removedCoursFile) fd.append('remove_cours_file', '1');
-    if (removedExoFile) fd.append('remove_exercice_file', '1');
+  function addOption(group, qi) {
+    qcmData[group][qi].options.push('');
+    renderQcm(group);
   }
-  try {
-    const method = editingId ? 'PUT' : 'POST';
-    const url    = editingId ? `/api/cours/${editingId}` : '/api/cours';
-    const res    = await fetch(url, { method, body: fd });
-    const data   = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Erreur serveur');
+
+  /* ═══════════════════════════════════════════════
+     SAVE COURS
+  ═══════════════════════════════════════════════ */
+  async function saveCours() {
+    const titre = document.getElementById('cm-titre').value.trim();
+    const matiere = document.getElementById('cm-matiere').value.trim();
+    if (!titre) { toast('Le titre est obligatoire.', 'err'); return; }
+
+    document.getElementById('save-spinner').style.display = 'inline-block';
+    document.getElementById('save-label').textContent = 'Enregistrement…';
+
+    const fd = new FormData();
+    fd.append('titre', titre);
+    fd.append('matiere', matiere);
+    fd.append('description', document.getElementById('cm-desc').value.trim());
+    fd.append('video_url', document.getElementById('cm-video-url').value.trim());
+
+    const vf = document.getElementById('cm-video-file').files[0];
+    if (vf) fd.append('video_file', vf);
+
+    const ct = coursTabs.cours || 'fichier';
+    fd.append('cours_type', ct);
+    if (ct === 'fichier') {
+      const cf = document.getElementById('cm-cours-file').files[0];
+      if (cf) fd.append('cours_fichier', cf);
+    } else if (ct === 'texte') {
+      fd.append('cours_texte', document.getElementById('cm-cours-texte').value);
+    } else if (ct === 'qcm') {
+      fd.append('cours_qcm', JSON.stringify(qcmData.cours));
+    }
+
+    const et = coursTabs.exo || 'fichier';
+    fd.append('exercice_type', et);
+    if (et === 'fichier') {
+      const ef = document.getElementById('cm-exo-file').files[0];
+      if (ef) fd.append('exercice_fichier', ef);
+    } else if (et === 'texte') {
+      fd.append('exercice_texte', document.getElementById('cm-exo-texte').value);
+    } else if (et === 'qcm') {
+      fd.append('exercice_qcm', JSON.stringify(qcmData.exo));
+    }
 
     if (editingId) {
-      const idx = allCours.findIndex(x => x.id === editingId);
-      if (idx !== -1) allCours[idx] = data;
-    } else {
-      allCours.push(data);
+      if (removedVideoFile) fd.append('remove_video_file', '1');
+      if (removedCoursFile) fd.append('remove_cours_file', '1');
+      if (removedExoFile) fd.append('remove_exercice_file', '1');
     }
-    closeCourseModal();
-    renderTable();
-    toast(editingId ? '✏️ Cours mis à jour !' : '✅ Cours créé !','ok');
-    if (currentCours && currentCours.id === editingId) currentCours = data;
-  } catch(e) {
-    toast(e.message,'err');
-  } finally {
-    document.getElementById('save-spinner').style.display = 'none';
-    document.getElementById('save-label').textContent = 'Enregistrer';
+    try {
+      const method = editingId ? 'PUT' : 'POST';
+      const url = editingId ? `/api/cours/${editingId}` : '/api/cours';
+      const res = await fetch(url, { method, body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur serveur');
+
+      if (editingId) {
+        const idx = allCours.findIndex(x => x.id === editingId);
+        if (idx !== -1) allCours[idx] = data;
+      } else {
+        allCours.push(data);
+      }
+      closeCourseModal();
+      renderTable();
+      toast(
+        editingId
+          ? '<img src="/static/image/ico_modifier.png" width="25" height="25"> Cours mis à jour !'
+          : '✅ Cours créé !',
+        'ok'
+      );
+      if (currentCours && currentCours.id === editingId) currentCours = data;
+    } catch (e) {
+      toast(e.message, 'err');
+    } finally {
+      document.getElementById('save-spinner').style.display = 'none';
+      document.getElementById('save-label').textContent = 'Enregistrer';
+    }
   }
-}
 
-/* ═══════════════════════════════════════════════
-   DELETE
-═══════════════════════════════════════════════ */
-function confirmDelete(id) {
-  deletingId = id;
-  document.getElementById('del-confirm').classList.add('open');
-}
-function closeDelConfirm() {
-  document.getElementById('del-confirm').classList.remove('open');
-  deletingId = null;
-}
-async function doDelete() {
-  if (!deletingId) return;
-  try {
-    const res = await fetch(`/api/cours/${deletingId}`, { method:'DELETE' });
-    if (!res.ok) { const d=await res.json(); throw new Error(d.error||'Erreur'); }
-    allCours = allCours.filter(x => x.id !== deletingId);
-    renderTable();
-    closeDelConfirm();
-    toast('🗑️ Cours supprimé.','ok');
-  } catch(e) { toast(e.message,'err'); }
-}
+  /* ═══════════════════════════════════════════════
+     DELETE
+  ═══════════════════════════════════════════════ */
+  function confirmDelete(id) {
+    deletingId = id;
+    document.getElementById('del-confirm').classList.add('open');
+  }
+  function closeDelConfirm() {
+    document.getElementById('del-confirm').classList.remove('open');
+    deletingId = null;
+  }
+  async function doDelete() {
+    if (!deletingId) return;
+    try {
+      const res = await fetch(`/api/cours/${deletingId}`, { method: 'DELETE' });
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Erreur'); }
+      allCours = allCours.filter(x => x.id !== deletingId);
+      renderTable();
+      closeDelConfirm();
+      toast(
+        '<img src="/static/image/ico_delete.png" width="16" height="16"> Cours supprimé.',
+        'ok'
+      );
+    } catch (e) { toast(e.message, 'err'); }
+  }
 
-/* ═══════════════════════════════════════════════
-   UTILS
-═══════════════════════════════════════════════ */
-let _tt;
-function toast(msg, type='ok') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'show ' + type;
-  clearTimeout(_tt);
-  _tt = setTimeout(() => el.className = '', 3200);
-}
-function escHtml(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+  /* ═══════════════════════════════════════════════
+     UTILS
+  ═══════════════════════════════════════════════ */
+  let _tt;
+  function toast(msg, type = 'ok') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'show ' + type;
+    clearTimeout(_tt);
+    _tt = setTimeout(() => el.className = '', 3200);
+  }
+  function escHtml(s) {
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
 
-document.getElementById('search-box') && document.getElementById('search-box').addEventListener('input', loadCours);
+  document.getElementById('search-box') && document.getElementById('search-box').addEventListener('input', loadCours);
 
-/* INIT */
-document.addEventListener('DOMContentLoaded', loadCours);
+  /* INIT */
+  document.addEventListener('DOMContentLoaded', loadCours);
 </script>
 {% endblock %}
