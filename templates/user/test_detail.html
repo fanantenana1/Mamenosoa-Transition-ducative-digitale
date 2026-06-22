@@ -1,0 +1,119 @@
+{% extends "user/dashboard.html" %}
+
+{% block title %}Digiscool - Détail du test{% endblock %}
+
+{% block active_page %}test{% endblock %}
+
+{% block extra_head %}
+<style>
+    .detail-page {
+        background-image: url('/static/components/Rectangle 18.png');
+        background-size: 100% 100%;
+        min-height: calc(100vh - 66px);
+        padding: 32px 40px 48px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+        margin-top: 25px;
+    }
+    .detail-card {
+        width: 100%;
+        max-width: 980px;
+        background: #fff;
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 14px 35px rgba(0,0,0,.08);
+        border: 1px solid #d1d9e6;
+    }
+    .detail-card h2 {
+        margin: 0 0 16px;
+        font-size: 1.45rem;
+        color: #1a1a2e;
+    }
+    .detail-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 20px;
+        color: #53617a;
+    }
+    .detail-meta span {
+        background: #eef3fb;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+    }
+    .detail-text,
+    .detail-qcm {
+        margin-top: 18px;
+        line-height: 1.7;
+        color: #334155;
+    }
+    .detail-qcm-item {
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 16px;
+        background: #f8fafc;
+    }
+    .detail-qcm-item h3 {
+        margin: 0 0 10px;
+        font-size: 1rem;
+    }
+    .detail-qcm-item ul {
+        padding-left: 18px;
+        margin: 0;
+    }
+    .detail-link {
+        display: inline-block;
+        margin-top: 18px;
+        font-weight: 700;
+        color: #1a6bff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <div class="detail-card">
+        <h2>{{ test.titre }}</h2>
+        <div class="detail-meta">
+            <span>Type : {{ test.type|capitalize }}</span>
+            <span>Contenu : {{ test.content_type|capitalize }}</span>
+            <span>Début : {{ test.start_at or '—' }}</span>
+            <span>Fin : {{ test.end_at or '—' }}</span>
+        </div>
+
+        {% if test.content_type == 'fichier' and test.fichier %}
+            {% if test.fichier.startswith('http') %}
+                <p class="detail-text">Fichier distant disponible : <a class="detail-link" href="{{ test.fichier }}" target="_blank">Ouvrir le fichier</a></p>
+            {% else %}
+                <p class="detail-text">Fichier disponible : <a class="detail-link" href="/uploads/tests/{{ test.fichier }}" target="_blank">Télécharger</a></p>
+            {% endif %}
+        {% elif test.content_type == 'texte' %}
+            <div class="detail-text">{{ test.texte or 'Aucun texte fourni.' }}</div>
+        {% elif test.content_type == 'qcm' %}
+            <div class="detail-qcm">
+                {% if test.qcm and test.qcm|length > 0 %}
+                    {% for item in test.qcm %}
+                        <div class="detail-qcm-item">
+                            <h3>Question {{ loop.index }} : {{ item.question }}</h3>
+                            <ul>
+                                {% for option in item.options %}
+                                    <li>{{ option }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Aucun QCM sauvegardé.</p>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="detail-text">Aucun contenu disponible pour ce test.</div>
+        {% endif %}
+        <a class="detail-link" href="{{ url_for('user_test') }}">Retour à la liste des tests</a>
+    </div>
+</div>
+{% endblock %}

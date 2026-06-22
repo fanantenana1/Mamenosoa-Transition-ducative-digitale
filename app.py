@@ -11,6 +11,7 @@ from functools import wraps
 import os
 import sqlite3
 import time
+import json
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, static_folder='static', template_folder='templates')
@@ -22,6 +23,9 @@ UPLOAD_VIDEOS = os.path.join(BASE_DIR, 'uploads', 'videos')
 UPLOAD_DOCS = os.path.join(BASE_DIR, 'uploads', 'documents')
 UPLOAD_COURS = os.path.join(BASE_DIR, 'uploads', 'cours')
 UPLOAD_EXOS = os.path.join(BASE_DIR, 'uploads', 'exercices')
+UPLOAD_TESTS_EXERCICE = os.path.join(BASE_DIR, 'uploads', 'tests', 'exercices')
+UPLOAD_TESTS_EXAMEN = os.path.join(BASE_DIR, 'uploads', 'tests', 'examens')
+UPLOAD_REPONSES = os.path.join(BASE_DIR, 'uploads', 'reponses')
 
 ALLOWED_VIDEO = {'mp4', 'webm', 'ogg', 'mov', 'avi'}
 ALLOWED_DOC = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'zip', 'png', 'jpg', 'jpeg'}
@@ -31,6 +35,14 @@ os.makedirs(UPLOAD_VIDEOS, exist_ok=True)
 os.makedirs(UPLOAD_DOCS, exist_ok=True)
 os.makedirs(UPLOAD_COURS, exist_ok=True)
 os.makedirs(UPLOAD_EXOS, exist_ok=True)
+os.makedirs(UPLOAD_TESTS_EXERCICE, exist_ok=True)
+os.makedirs(UPLOAD_TESTS_EXAMEN, exist_ok=True)
+os.makedirs(UPLOAD_REPONSES, exist_ok=True)
+
+
+def upload_dir_for_categorie(categorie):
+    """Retourne le dossier d'upload selon la categorie (exercice/examen)."""
+    return UPLOAD_TESTS_EXAMEN if categorie == 'examen' else UPLOAD_TESTS_EXERCICE
 
 
 def get_db():
@@ -59,6 +71,8 @@ def init_db():
                 etablissement TEXT DEFAULT '',
                 filiere TEXT DEFAULT '',
                 lien_etablissement TEXT DEFAULT '',
+                matricule TEXT DEFAULT '',
+                phone TEXT DEFAULT '',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         ''')
@@ -75,6 +89,8 @@ def init_db():
             ('etablissement', "TEXT DEFAULT ''"),
             ('filiere', "TEXT DEFAULT ''"),
             ('lien_etablissement', "TEXT DEFAULT ''"),
+            ('matricule', "TEXT DEFAULT ''"),
+            ('phone', "TEXT DEFAULT ''"),
         ]:
             if col not in user_columns:
                 db.execute(f'ALTER TABLE users ADD COLUMN {col} {col_def}')
@@ -118,23 +134,81 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
                 message TEXT NOT NULL,
+                target_url TEXT DEFAULT '',
                 is_read INTEGER NOT NULL DEFAULT 0,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(user_id) REFERENCES users(id)
             )
         ''')
+        notification_columns = [row[1] for row in db.execute("PRAGMA table_info(notifications)").fetchall()]
+        for col, col_def in [
+            ('user_id', "INTEGER NOT NULL"),
+            ('message', "TEXT NOT NULL"),
+            ('target_url', "TEXT DEFAULT ''"),
+            ('is_read', "INTEGER NOT NULL DEFAULT 0"),
+            ('created_at', "DATETIME DEFAULT CURRENT_TIMESTAMP"),
+        ]:
+            if col not in notification_columns:
+                db.execute(f'ALTER TABLE notifications ADD COLUMN {col} {col_def}')
         db.execute('''
             CREATE TABLE IF NOT EXISTS commentaires (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                cours_id INTEGER NOT NULL,
-                texte TEXT NOT NULL,
-                note INTEGER NOT NULL DEFAULT 0,
+                categorie TEXT NOT NULL DEFAULT 'exercice',
+                content_type TEXT NOT NULL DEFAULT 'fichier',
+                titre TEXT DEFAULT '',
+                fichier_nom TEXT DEFAULT '',
+                fichier_url TEXT DEFAULT '',
+                contenu_texte TEXT DEFAULT '',
+                contenu_qcm TEXT DEFAULT '[]',
+                date_debut TEXT DEFAULT '',
+                heure_debut TEXT DEFAULT '',
+                date_fin TEXT DEFAULT '',
+                heure_fin TEXT DEFAULT '',
+                created_by INTEGER,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(user_id) REFERENCES users(id),
-                FOREIGN KEY(cours_id) REFERENCES cours(id)
+                FOREIGN KEY(created_by) REFERENCES users(id)
             )
         ''')
+        tests_columns = [row[1] for row in db.execute("PRAGMA table_info(tests)").fetchall()]
+        for col, col_def in [
+            ('categorie', "TEXT NOT NULL DEFAULT 'exercice'"),
+            ('content_type', "TEXT NOT NULL DEFAULT 'fichier'"),
+            ('titre', "TEXT DEFAULT ''"),
+            ('fichier_nom', "TEXT DEFAULT ''"),
+            ('fichier_url', "TEXT DEFAULT ''"),
+            ('contenu_texte', "TEXT DEFAULT ''"),
+            ('contenu_qcm', "TEXT DEFAULT '[]'"),
+            ('date_debut', "TEXT DEFAULT ''"),
+            ('heure_debut', "TEXT DEFAULT ''"),
+            ('date_fin', "TEXT DEFAULT ''"),
+            ('heure_fin', "TEXT DEFAULT ''"),
+            ('created_by', "INTEGER"),
+            ('created_at', "DATETIME DEFAULT CURRENT_TIMESTAMP"),
+        ]:
+            if col not in tests_columns:
+                db.execute(f'ALTER TABLE tests ADD COLUMN {col} {col_def}')
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS test_resultats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                test_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                reponses TEXT DEFAULT '[]',
+                fichier_reponse TEXT DEFAULT '',
+                note REAL,
+                submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(test_id) REFERENCES tests(id),
+                FOREIGN KEY(user_id) REFERENCES users(id)
+            )
+        ''')
+        resultats_columns = [row[1] for row in db.execute("PRAGMA table_info(test_resultats)").fetchall()]
+        for col, col_def in [
+            ('reponses', "TEXT DEFAULT '[]'"),
+            ('fichier_reponse', "TEXT DEFAULT ''"),
+            ('note', "REAL"),
+            ('submitted_at', "DATETIME DEFAULT CURRENT_TIMESTAMP"),
+        ]:
+            if col not in resultats_columns:
+                db.execute(f'ALTER TABLE test_resultats ADD COLUMN {col} {col_def}')
         if not db.execute('SELECT 1 FROM users WHERE email=?', ('admin@digiscool.mg',)).fetchone():
             db.execute(
                 'INSERT INTO users(nom,prenom,name,email,password_hash,role,statut) VALUES(?,?,?,?,?,?,?)',
@@ -201,6 +275,24 @@ def serialize_cours(row):
         'exercice_fichier': row['exercice_fichier'],
         'exercice_texte': row['exercice_texte'],
         'exercice_qcm': row['exercice_qcm'],
+        'created_at': row['created_at'],
+    }
+
+
+def serialize_test(row):
+    return {
+        'id': row['id'],
+        'categorie': row['categorie'],
+        'content_type': row['content_type'],
+        'titre': row['titre'],
+        'fichier_nom': row['fichier_nom'],
+        'fichier_url': row['fichier_url'],
+        'contenu_texte': row['contenu_texte'],
+        'contenu_qcm': row['contenu_qcm'],
+        'date_debut': row['date_debut'],
+        'heure_debut': row['heure_debut'],
+        'date_fin': row['date_fin'],
+        'heure_fin': row['heure_fin'],
         'created_at': row['created_at'],
     }
 
@@ -391,6 +483,285 @@ def api_delete_cours(cours_id):
     return jsonify({'ok': True})
 
 
+@app.route('/api/tests', methods=['GET'])
+@login_required
+def api_get_tests():
+    """Liste des tests (exercices/examens) - utilisee par user/test_user.html et admin/test.html."""
+    categorie = request.args.get('categorie', '').strip()
+    query = 'SELECT * FROM tests'
+    params = []
+    if categorie in ('exercice', 'examen'):
+        query += ' WHERE categorie = ?'
+        params.append(categorie)
+    query += ' ORDER BY created_at DESC'
+    with get_db() as db:
+        rows = db.execute(query, params).fetchall()
+    return jsonify([serialize_test(row) for row in rows])
+
+
+@app.route('/api/tests/<int:test_id>', methods=['GET'])
+@login_required
+def api_get_test(test_id):
+    with get_db() as db:
+        row = db.execute('SELECT * FROM tests WHERE id = ?', (test_id,)).fetchone()
+    if not row:
+        return jsonify({'error': 'Test introuvable.'}), 404
+    return jsonify(serialize_test(row))
+
+
+@app.route('/api/tests', methods=['POST'])
+@login_required
+@admin_required
+def api_create_test():
+    """Insertion d'un test par l'admin : stocke le fichier sur disque (si fourni)
+    et les metadonnees/texte/QCM dans la base de donnees."""
+    categorie = request.form.get('categorie', 'exercice').strip()
+    if categorie not in ('exercice', 'examen'):
+        categorie = 'exercice'
+    content_type = request.form.get('content_type', 'fichier').strip()
+    if content_type not in ('fichier', 'texte', 'qcm'):
+        content_type = 'fichier'
+
+    titre = request.form.get('titre', '').strip()
+    date_debut = request.form.get('date_debut', '').strip()
+    heure_debut = request.form.get('heure_debut', '').strip()
+    date_fin = request.form.get('date_fin', '').strip()
+    heure_fin = request.form.get('heure_fin', '').strip()
+
+    fichier_nom = ''
+    fichier_url = ''
+    contenu_texte = ''
+    contenu_qcm = '[]'
+
+    try:
+        if content_type == 'fichier':
+            fichier_url = request.form.get('fichier_url', '').strip()
+            if 'fichier' in request.files and request.files['fichier'].filename:
+                fichier_nom = save_uploaded_file(
+                    request.files['fichier'], upload_dir_for_categorie(categorie), ALLOWED_DOC
+                )
+        elif content_type == 'texte':
+            contenu_texte = request.form.get('contenu_texte', '').strip()
+        elif content_type == 'qcm':
+            contenu_qcm = request.form.get('contenu_qcm', '[]')
+    except ValueError as exc:
+        return jsonify({'error': str(exc)}), 400
+
+    if content_type == 'fichier' and not fichier_nom and not fichier_url:
+        return jsonify({'error': 'Veuillez importer un fichier ou fournir une URL.'}), 400
+    if content_type == 'texte' and not contenu_texte:
+        return jsonify({'error': 'Le texte est requis.'}), 400
+    if content_type == 'qcm' and contenu_qcm in ('[]', ''):
+        return jsonify({'error': 'Au moins une question QCM est requise.'}), 400
+
+    with get_db() as db:
+        cur = db.execute(
+            '''INSERT INTO tests (categorie, content_type, titre, fichier_nom, fichier_url,
+                contenu_texte, contenu_qcm, date_debut, heure_debut, date_fin, heure_fin, created_by)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            (categorie, content_type, titre, fichier_nom, fichier_url,
+             contenu_texte, contenu_qcm, date_debut, heure_debut, date_fin, heure_fin,
+             session['user_id'])
+        )
+        new_id = cur.lastrowid
+        # Notifie tous les utilisateurs (hors admins) qu'un nouveau test est disponible
+        label = 'examen' if categorie == 'examen' else 'exercice'
+        users = db.execute("SELECT id FROM users WHERE role != 'admin'").fetchall()
+        for u in users:
+            db.execute(
+                'INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?, ?)',
+                (u['id'], f"Nouveau {label} disponible : {titre or 'Sans titre'}", f"/user/test?focus_test_id={new_id}")
+            )
+        db.commit()
+        test = db.execute('SELECT * FROM tests WHERE id = ?', (new_id,)).fetchone()
+    return jsonify(serialize_test(test))
+
+
+@app.route('/api/tests/<int:test_id>', methods=['PUT'])
+@login_required
+@admin_required
+def api_update_test(test_id):
+    """Modification d'un test existant (fichier/texte/QCM) par l'admin.
+    Réutilise la même logique de validation que la création."""
+    with get_db() as db:
+        existing = db.execute('SELECT * FROM tests WHERE id = ?', (test_id,)).fetchone()
+        if not existing:
+            return jsonify({'error': 'Test introuvable.'}), 404
+
+        categorie = request.form.get('categorie', existing['categorie']).strip()
+        if categorie not in ('exercice', 'examen'):
+            categorie = existing['categorie']
+        content_type = request.form.get('content_type', existing['content_type']).strip()
+        if content_type not in ('fichier', 'texte', 'qcm'):
+            content_type = existing['content_type']
+
+        titre = request.form.get('titre', existing['titre'] or '').strip()
+        date_debut = request.form.get('date_debut', existing['date_debut'] or '').strip()
+        heure_debut = request.form.get('heure_debut', existing['heure_debut'] or '').strip()
+        date_fin = request.form.get('date_fin', existing['date_fin'] or '').strip()
+        heure_fin = request.form.get('heure_fin', existing['heure_fin'] or '').strip()
+
+        fichier_nom = existing['fichier_nom'] or ''
+        fichier_url = existing['fichier_url'] or ''
+        contenu_texte = existing['contenu_texte'] or ''
+        contenu_qcm = existing['contenu_qcm'] or '[]'
+
+        try:
+            if content_type == 'fichier':
+                new_url = request.form.get('fichier_url', '').strip()
+                if 'fichier' in request.files and request.files['fichier'].filename:
+                    # Nouveau fichier local importé : remplace l'ancien
+                    if existing['fichier_nom']:
+                        remove_file(os.path.join(upload_dir_for_categorie(existing['categorie']), existing['fichier_nom']))
+                    fichier_nom = save_uploaded_file(
+                        request.files['fichier'], upload_dir_for_categorie(categorie), ALLOWED_DOC
+                    )
+                    fichier_url = ''
+                elif new_url:
+                    fichier_url = new_url
+                    if existing['fichier_nom']:
+                        remove_file(os.path.join(upload_dir_for_categorie(existing['categorie']), existing['fichier_nom']))
+                    fichier_nom = ''
+                contenu_texte = ''
+                contenu_qcm = '[]'
+            elif content_type == 'texte':
+                contenu_texte = request.form.get('contenu_texte', '').strip()
+                fichier_nom = ''
+                fichier_url = ''
+                contenu_qcm = '[]'
+            elif content_type == 'qcm':
+                contenu_qcm = request.form.get('contenu_qcm', '[]')
+                fichier_nom = ''
+                fichier_url = ''
+                contenu_texte = ''
+        except ValueError as exc:
+            return jsonify({'error': str(exc)}), 400
+
+        if content_type == 'fichier' and not fichier_nom and not fichier_url:
+            return jsonify({'error': 'Veuillez importer un fichier ou fournir une URL.'}), 400
+        if content_type == 'texte' and not contenu_texte:
+            return jsonify({'error': 'Le texte est requis.'}), 400
+        if content_type == 'qcm' and contenu_qcm in ('[]', ''):
+            return jsonify({'error': 'Au moins une question QCM est requise.'}), 400
+
+        db.execute(
+            '''UPDATE tests SET categorie=?, content_type=?, titre=?, fichier_nom=?, fichier_url=?,
+               contenu_texte=?, contenu_qcm=?, date_debut=?, heure_debut=?, date_fin=?, heure_fin=?
+               WHERE id=?''',
+            (categorie, content_type, titre, fichier_nom, fichier_url,
+             contenu_texte, contenu_qcm, date_debut, heure_debut, date_fin, heure_fin, test_id)
+        )
+        db.commit()
+        test = db.execute('SELECT * FROM tests WHERE id = ?', (test_id,)).fetchone()
+    return jsonify(serialize_test(test))
+
+
+@app.route('/api/tests/<int:test_id>', methods=['DELETE'])
+@login_required
+@admin_required
+def api_delete_test(test_id):
+    with get_db() as db:
+        existing = db.execute('SELECT * FROM tests WHERE id = ?', (test_id,)).fetchone()
+        if not existing:
+            return jsonify({'error': 'Test introuvable.'}), 404
+        if existing['fichier_nom']:
+            remove_file(os.path.join(upload_dir_for_categorie(existing['categorie']), existing['fichier_nom']))
+        db.execute('DELETE FROM tests WHERE id = ?', (test_id,))
+        db.commit()
+    return jsonify({'ok': True})
+
+
+@app.route('/api/tests/bulk_delete', methods=['POST'])
+@login_required
+@admin_required
+def api_bulk_delete_tests():
+    """Supprime plusieurs tests en une seule requete (ids en JSON)."""
+    data = request.get_json(silent=True) or {}
+    ids = data.get('ids', [])
+    if not ids or not isinstance(ids, list):
+        return jsonify({'error': "Liste d'ids requise."}), 400
+    deleted = 0
+    with get_db() as db:
+        for test_id in ids:
+            try:
+                test_id = int(test_id)
+            except (TypeError, ValueError):
+                continue
+            existing = db.execute('SELECT * FROM tests WHERE id = ?', (test_id,)).fetchone()
+            if not existing:
+                continue
+            if existing['fichier_nom']:
+                remove_file(os.path.join(upload_dir_for_categorie(existing['categorie']), existing['fichier_nom']))
+            db.execute('DELETE FROM tests WHERE id = ?', (test_id,))
+            deleted += 1
+        db.commit()
+    return jsonify({'ok': True, 'deleted': deleted})
+
+
+@app.route('/api/tests/<int:test_id>/resultats', methods=['POST'])
+@login_required
+def api_submit_test_resultat(test_id):
+    """Soumission de la reponse d'un utilisateur (QCM -> JSON, fichier -> upload).
+    Notifie les administrateurs avec le nom de l'utilisateur et la date/heure d'envoi."""
+    import json as _json
+    with get_db() as db:
+        test = db.execute('SELECT * FROM tests WHERE id = ?', (test_id,)).fetchone()
+        if not test:
+            return jsonify({'error': 'Test introuvable.'}), 404
+
+        reponses_json = '[]'
+        fichier_reponse = ''
+
+        is_multipart = bool(request.files) or request.content_type and 'multipart/form-data' in request.content_type
+        if is_multipart:
+            if 'fichier_reponse' in request.files and request.files['fichier_reponse'].filename:
+                try:
+                    fichier_reponse = save_uploaded_file(request.files['fichier_reponse'], UPLOAD_REPONSES, ALLOWED_DOC)
+                except ValueError as exc:
+                    return jsonify({'error': str(exc)}), 400
+            else:
+                return jsonify({'error': 'Aucun fichier reçu.'}), 400
+        else:
+            data = request.get_json(silent=True) or {}
+            reponses = data.get('reponses', [])
+            if not reponses:
+                return jsonify({'error': 'Aucune réponse à envoyer.'}), 400
+            reponses_json = _json.dumps(reponses)
+
+        cur = db.execute(
+            'INSERT INTO test_resultats (test_id, user_id, reponses, fichier_reponse) VALUES (?, ?, ?, ?)',
+            (test_id, session['user_id'], reponses_json, fichier_reponse)
+        )
+        result_id = cur.lastrowid
+
+        horodatage = time.strftime('%d/%m/%Y %H:%M')
+        label = 'examen' if test['categorie'] == 'examen' else 'exercice'
+        nom_user = session.get('name', 'Utilisateur')
+        message = f"{nom_user} a envoyé sa réponse pour l'{label} \"{test['titre'] or 'Sans titre'}\" le {horodatage}"
+        admins = db.execute("SELECT id FROM users WHERE role='admin'").fetchall()
+        for a in admins:
+            db.execute(
+                'INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?, ?)',
+                (a['id'], message, f"/admin/test/travaille_user?result_id={result_id}")
+            )
+
+        db.commit()
+    return jsonify({'ok': True, 'envoye_par': session.get('name'), 'date_envoi': horodatage})
+
+
+@app.route('/files/reponses/<path:filename>')
+@login_required
+@admin_required
+def file_reponse(filename):
+    return send_from_directory(UPLOAD_REPONSES, filename)
+
+
+@app.route('/files/tests/<categorie>/<path:filename>')
+@login_required
+def file_test(categorie, filename):
+    return send_from_directory(upload_dir_for_categorie(categorie), filename)
+
+
 @app.route('/uploads/videos/<path:filename>')
 @login_required
 def uploaded_video(filename):
@@ -489,21 +860,103 @@ def admin_video(cours_id):
 def admin_test():
     with get_db() as db:
         notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
-    return render_template('admin/test.html', notif_count=notif_count)
+        tests = db.execute('SELECT * FROM tests ORDER BY created_at DESC').fetchall()
+    return render_template('admin/test.html', notif_count=notif_count, tests=tests)
 @app.route('/admin/test/resultats')
 @login_required
 @admin_required
 def admin_test_resultat():
-    #with get_db() as db:
-        #notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
-    return render_template('admin/resultat.html')
+    with get_db() as db:
+        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+        query = '''
+            SELECT r.id, r.test_id, r.user_id, r.submitted_at,
+                   t.titre AS test_titre, t.categorie AS test_categorie, t.content_type,
+                   u.nom, u.prenom, u.name
+            FROM test_resultats r
+            JOIN tests t ON r.test_id = t.id
+            JOIN users u ON r.user_id = u.id
+            ORDER BY r.submitted_at DESC
+        '''
+        results = db.execute(query).fetchall()
+    return render_template('admin/resultat.html', notif_count=notif_count, results=results)
 @app.route('/admin/test/travaille_user')
 @login_required
 @admin_required
 def admin_travaille_user():
-    #with get_db() as db:
-        #notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
-    return render_template('admin/travaille_user.html')
+    result_id = request.args.get('result_id', type=int)
+    with get_db() as db:
+        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+        base_query = '''
+            SELECT r.*, t.titre AS test_titre, t.categorie AS test_categorie,
+                   t.content_type AS test_content_type, t.fichier_nom AS test_fichier_nom,
+                   t.fichier_url AS test_fichier_url, t.contenu_texte AS test_contenu_texte,
+                   t.contenu_qcm AS test_contenu_qcm, u.nom AS user_nom, u.prenom AS user_prenom,
+                   u.name AS user_name
+            FROM test_resultats r
+            JOIN tests t ON r.test_id = t.id
+            JOIN users u ON r.user_id = u.id
+        '''
+        results = db.execute(base_query + ' ORDER BY r.submitted_at DESC').fetchall()
+        selected_result = None
+        selected_reponses = []
+        if result_id:
+            selected_result = db.execute(base_query + ' WHERE r.id = ? LIMIT 1', (result_id,)).fetchone()
+            if selected_result and selected_result['reponses']:
+                try:
+                    selected_reponses = json.loads(selected_result['reponses'])
+                except ValueError:
+                    selected_reponses = []
+    return render_template(
+        'admin/travaille_user.html',
+        notif_count=notif_count,
+        results=results,
+        selected_result=selected_result,
+        selected_reponses=selected_reponses
+    )
+@app.route('/api/test_resultats/<int:result_id>/user_info')
+@login_required
+@admin_required
+def api_test_resultat_user_info(result_id):
+    """Retourne les informations de l'utilisateur lié à un résultat de test,
+    pour affichage dans la fenêtre modale déclenchée par le bouton 'i'."""
+    with get_db() as db:
+        row = db.execute(
+            '''SELECT u.* FROM test_resultats r
+               JOIN users u ON r.user_id = u.id
+               WHERE r.id = ?''',
+            (result_id,)
+        ).fetchone()
+        if not row:
+            return jsonify({'error': "Utilisateur introuvable."}), 404
+        user = dict(row)
+
+    nom = user.get('nom') or ''
+    prenom = user.get('prenom') or ''
+    full_name = (user.get('name') or f"{prenom} {nom}".strip() or '').strip()
+
+    age = None
+    dob = (user.get('dob') or '').strip()
+    if dob:
+        try:
+            from datetime import date
+            birth = date.fromisoformat(dob[:10])
+            today = date.today()
+            age = today.year - birth.year - ((today.month, today.day) < (birth.month, birth.day))
+        except ValueError:
+            age = None
+
+    return jsonify({
+        'full_name': full_name or 'N/A',
+        'classe': user.get('classe') or 'N/A',
+        'matricule': user.get('matricule') or 'N/A',
+        'age': age if age is not None else 'N/A',
+        'adresse': user.get('adresse') or 'N/A',
+        'email': user.get('email') or 'N/A',
+        'phone': user.get('phone') or 'N/A',
+        'sexe': user.get('sexe') or 'N/A',
+    })
+
+
 @app.route('/admin/utilisateur')
 @login_required
 @admin_required
@@ -590,7 +1043,8 @@ def user_commentaire(cours_id):
 def user_test():
     with get_db() as db:
         notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)).fetchone()[0]
-    return render_template('user/test_user.html', user_name=session.get('name'), notif_count=notif_count)
+        tests = db.execute('SELECT * FROM tests ORDER BY created_at DESC').fetchall()
+    return render_template('user/test_user.html', user_name=session.get('name'), notif_count=notif_count, tests=tests)
 
 @app.route('/user/notifications')
 @login_required
@@ -598,7 +1052,129 @@ def user_notifications():
     with get_db() as db:
         notifications = db.execute('SELECT * FROM notifications WHERE user_id=? ORDER BY created_at DESC', (session['user_id'],)).fetchall()
         notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)).fetchone()[0]
+        # L'utilisateur vient de consulter ses notifications : on les marque comme lues
+        # pour que le badge diminue du nombre de notifications vues.
+        db.execute('UPDATE notifications SET is_read=1 WHERE user_id=? AND is_read=0', (session['user_id'],))
+        db.commit()
     return render_template('user/notifications.html', notifications=notifications, user_name=session.get('name'), notif_count=notif_count)
+
+
+@app.route('/api/test_resultats/count')
+@login_required
+@admin_required
+def api_test_resultats_count():
+    """Polling : renvoie le nombre total de soumissions (pour détecter de nouveaux résultats)."""
+    with get_db() as db:
+        count = db.execute('SELECT COUNT(*) FROM test_resultats').fetchone()[0]
+    return jsonify({'count': count})
+
+
+@app.route('/api/test_resultats/<int:result_id>/note', methods=['POST'])
+@login_required
+@admin_required
+def api_save_note(result_id):
+    """Enregistre la note attribuée par l'admin à un résultat utilisateur."""
+    data = request.get_json(silent=True) or {}
+    note = data.get('note')
+    if note is None:
+        return jsonify({'error': 'Note manquante.'}), 400
+    with get_db() as db:
+        db.execute('UPDATE test_resultats SET note=? WHERE id=?', (note, result_id))
+        db.commit()
+    return jsonify({'ok': True, 'note': note})
+
+
+@app.route('/api/notifications/count')
+@login_required
+def api_notifications_count():
+    """Endpoint de polling : renvoie le compteur de notifications non lues.
+    Appelé toutes les 10s par le frontend pour mettre à jour le badge en temps réel."""
+    with get_db() as db:
+        if session.get('role') == 'admin':
+            count = db.execute(
+                "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
+            ).fetchone()[0]
+        else:
+            count = db.execute(
+                'SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)
+            ).fetchone()[0]
+    return jsonify({'notif_count': count})
+
+
+@app.route('/api/notifications/mark_read', methods=['POST'])
+@login_required
+def api_notifications_mark_read():
+    """Appelée au clic sur l'icône de notification : marque les notifications comme lues
+    et renvoie le nouveau compteur (pour mettre à jour le badge sans recharger la page)."""
+    data = request.get_json(silent=True) or {}
+    ids = data.get('ids')  # liste optionnelle d'ids précis à marquer comme lus
+    with get_db() as db:
+        if ids:
+            placeholders = ','.join('?' for _ in ids)
+            db.execute(
+                f'UPDATE notifications SET is_read=1 WHERE user_id=? AND id IN ({placeholders})',
+                (session['user_id'], *ids)
+            )
+        else:
+            db.execute('UPDATE notifications SET is_read=1 WHERE user_id=? AND is_read=0', (session['user_id'],))
+        db.commit()
+        notif_count = db.execute(
+            'SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)
+        ).fetchone()[0]
+    return jsonify({'ok': True, 'notif_count': notif_count})
+
+
+@app.route('/api/notifications/<int:notif_id>', methods=['DELETE'])
+@login_required
+def api_delete_notification(notif_id):
+    """Supprime une notification spécifique de l'utilisateur connecté."""
+    with get_db() as db:
+        notif = db.execute('SELECT * FROM notifications WHERE id=?', (notif_id,)).fetchone()
+        if not notif:
+            return jsonify({'error': 'Notification introuvable.'}), 404
+        # Vérifier que l'utilisateur est propriétaire de la notification ou admin
+        if session['role'] != 'admin' and notif['user_id'] != session['user_id']:
+            return jsonify({'error': 'Accès refusé.'}), 403
+        db.execute('DELETE FROM notifications WHERE id=?', (notif_id,))
+        db.commit()
+    return jsonify({'ok': True})
+
+
+@app.route('/api/notifications/<int:notif_id>/read', methods=['POST'])
+@login_required
+def api_notification_read(notif_id):
+    """Marque une notification comme lue et retourne le nouveau compteur."""
+    with get_db() as db:
+        notif = db.execute('SELECT * FROM notifications WHERE id=?', (notif_id,)).fetchone()
+        if not notif:
+            return jsonify({'error': 'Notification introuvable.'}), 404
+        # Vérifier que l'utilisateur est propriétaire ou admin
+        if session['role'] != 'admin' and notif['user_id'] != session['user_id']:
+            return jsonify({'error': 'Accès refusé.'}), 403
+        db.execute('UPDATE notifications SET is_read=1 WHERE id=?', (notif_id,))
+        db.commit()
+        # Retourner le nouveau compteur
+        notif_count = db.execute(
+            'SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)
+        ).fetchone()[0]
+    return jsonify({'ok': True, 'notif_count': notif_count})
+
+
+@app.route('/admin/notifications')
+@login_required
+@admin_required
+def admin_notifications():
+    """Affiche toutes les notifications destinées à l'admin connecté."""
+    with get_db() as db:
+        notifications = db.execute(
+            '''SELECT * FROM notifications WHERE user_id IN
+               (SELECT id FROM users WHERE role='admin') ORDER BY created_at DESC'''
+        ).fetchall()
+        notif_count = db.execute(
+            "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
+        ).fetchone()[0]
+    return render_template('admin/notifications.html', notifications=notifications, notif_count=notif_count)
+
 
 @app.route('/api/commentaires', methods=['POST'])
 @login_required

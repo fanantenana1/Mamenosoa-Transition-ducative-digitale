@@ -216,6 +216,8 @@
       font-weight: 700;
       border-radius: 999px;
       padding: 1px 6px;
+      margin-left: -17px;
+      margin-top: -15px;
     }
 
     .notif-badge.show {
@@ -493,7 +495,7 @@
       <a href="/admin/test" class="nav-btn{% if active_page == 'test' %} active{% endif %}">Test</a>
       <a href="/admin/notifications" class="notif-link" title="Notifications">
         <span class="notif-icon">
-          <img src="/static/image/notifi3.png" alt="Notifications" width="40" height="35">
+          <img src="/static/image/notifi3.png" alt="Notifications" width="35" height="35">
         </span>
         <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
       </a>
@@ -659,6 +661,95 @@
       animCount('s-cours', 87);
       animCount('s-certif', 342);
       animCount('s-sessions', 4600);
+      if (window.location.pathname === '/admin/test') {
+        const sendButton = document.querySelector('.btn-envoyer');
+        if (sendButton) {
+          sendButton.addEventListener('click', () => {
+            const contentSelect = document.getElementById('content-select');
+            const typeSelect = document.getElementById('sort-select');
+            const fileInput = document.getElementById('file-input');
+            const fileUrlInput = document.getElementById('file-url');
+            const startDate = document.getElementById('start-date');
+            const startTime = document.getElementById('start-time');
+            const endDate = document.getElementById('end-date');
+            const endTime = document.getElementById('end-time');
+            const textarea = document.querySelector('.surface-textarea');
+            const contentType = contentSelect ? contentSelect.value : '';
+            const testType = typeSelect ? typeSelect.value : '';
+            if (!testType) {
+              window.alert('Veuillez sélectionner Exercice ou Examen.');
+              return;
+            }
+            if (!contentType) {
+              window.alert('Veuillez sélectionner un contenu : Fichier, Texte ou QCM.');
+              return;
+            }
+            const formData = new FormData();
+            formData.append('test_type', testType);
+            formData.append('content_type', contentType);
+            if (startDate) formData.append('start_date', startDate.value);
+            if (startTime) formData.append('start_time', startTime.value);
+            if (endDate) formData.append('end_date', endDate.value);
+            if (endTime) formData.append('end_time', endTime.value);
+            formData.append('titre', `${testType.charAt(0).toUpperCase() + testType.slice(1)} ${contentType}`);
+            if (contentType === 'texte') {
+              if (!textarea || !textarea.value.trim()) {
+                window.alert('Veuillez saisir le texte du test.');
+                return;
+              }
+              formData.append('texte', textarea.value.trim());
+            }
+            if (contentType === 'fichier') {
+              if (fileInput && fileInput.files && fileInput.files[0]) {
+                formData.append('file', fileInput.files[0]);
+              } else if (fileUrlInput && fileUrlInput.value.trim()) {
+                formData.append('file_url', fileUrlInput.value.trim());
+              } else {
+                window.alert('Veuillez sélectionner un fichier ou indiquer une URL.');
+                return;
+              }
+            }
+            if (contentType === 'qcm') {
+              const qcm = [];
+              document.querySelectorAll('.qcm-block').forEach(block => {
+                const questionInput = block.querySelector('.qfield input[type="text"]');
+                if (!questionInput) return;
+                const question = questionInput.value.trim();
+                if (!question) return;
+                const options = [];
+                block.querySelectorAll('.answers-list .answer-row input[type="text"]').forEach(input => {
+                  const value = input.value.trim();
+                  if (value) options.push(value);
+                });
+                if (options.length > 0) {
+                  qcm.push({ question, options });
+                }
+              });
+              if (qcm.length === 0) {
+                window.alert('Veuillez ajouter au moins une question QCM.');
+                return;
+              }
+              formData.append('qcm', JSON.stringify(qcm));
+            }
+            fetch('/admin/test/envoyer', {
+              method: 'POST',
+              body: formData,
+            })
+              .then(response => response.json())
+              .then(data => {
+                if (data.ok) {
+                  window.alert('Test ajouté avec succès.');
+                  window.location.reload();
+                } else {
+                  window.alert(data.error || 'Erreur lors de l\'enregistrement.');
+                }
+              })
+              .catch(() => {
+                window.alert('Erreur réseau lors de l\'envoi du test.');
+              });
+          });
+        }
+      }
     });
   </script>
   {% endblock %}

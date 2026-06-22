@@ -1,64 +1,80 @@
-{% extends "user/dashboard.html" %}
+{% extends "admin/dashboard.html" %}
+{% set active_page = 'notifications' %}
 
 {% block title %}Digiscool - Notifications{% endblock %}
-
-{% block active_page %}{% endblock %}
 
 {% block extra_head %}
 <style>
   body { font-family: 'Segoe UI', Arial, sans-serif; background: #BED6F3; overflow-x: hidden; }
+
   .page-body {
     background-image: url('/static/components/Rectangle 18.png');
-    background-size: 100% 100%; flex:1;
+    background-size: 100% 100%; flex: 1;
     padding: 32px 40px 48px;
     display: flex; flex-direction: column; align-items: center;
     gap: 24px; margin-top: 25px;
     min-height: calc(100vh - 157px);
   }
   .notif-container {
-    width:100%; max-width:900px; background:#fff;
-    border-radius:18px; box-shadow:0 10px 35px rgba(0,0,0,.12); overflow:hidden;
+    width: 100%; max-width: 900px; background: #fff;
+    border-radius: 18px; box-shadow: 0 10px 35px rgba(0,0,0,.12); overflow: hidden;
   }
   .notif-header {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    color:#fff; padding:24px 28px; font-size:1.3rem; font-weight:700;
-    display:flex; justify-content:space-between; align-items:center;
+    background: linear-gradient(135deg, #043C70 0%, #02254a 100%);
+    color: #fff; padding: 24px 28px; font-size: 1.3rem; font-weight: 700;
+    display: flex; justify-content: space-between; align-items: center;
   }
-  .notif-header-actions { display:flex; gap:1rem; align-items:center; }
-  .notif-select-all { display:flex; align-items:center; gap:.6rem; color:#fff; cursor:pointer; font-size:.9rem; }
+  .notif-header-actions { display: flex; gap: 1rem; align-items: center; }
+  .notif-select-all {
+    display: flex; align-items: center; gap: .6rem;
+    color: #fff; cursor: pointer; font-size: .9rem;
+  }
   .notif-select-all input { width:18px; height:18px; accent-color:#fff; cursor:pointer; }
-  .notif-delete-btn { border:none; background:transparent; cursor:pointer; display:inline-flex; align-items:center; opacity:.8; transition:opacity .15s; }
-  .notif-delete-btn:hover { opacity:1; }
+  .notif-delete-btn {
+    border: none; background: transparent; cursor: pointer;
+    display: inline-flex; align-items: center; opacity: .8; transition: opacity .15s;
+  }
+  .notif-delete-btn:hover { opacity: 1; }
   .notif-delete-btn svg { width:22px; height:22px; stroke:#fff; fill:none; stroke-width:2; }
 
-  .notif-list { display:flex; flex-direction:column; }
+  .notif-list { display: flex; flex-direction: column; }
+
+  /* Chaque notification est un <a> cliquable */
   .notif-item {
-    padding:16px 28px; border-bottom:1px solid #e2e8f0;
-    display:grid; grid-template-columns:auto 1fr auto auto;
-    gap:14px; align-items:center;
-    transition:background .15s; cursor:pointer;
+    padding: 16px 28px; border-bottom: 1px solid #e2e8f0;
+    display: grid; grid-template-columns: auto 1fr auto;
+    gap: 16px; align-items: center;
+    transition: background .15s; cursor: pointer;
+    text-decoration: none; color: inherit;
   }
-  .notif-item:hover { background:#f0f6ff; }
-  .notif-item:last-child { border-bottom:none; }
-  .notif-item.unread { background:#f0f6ff; }
-  .notif-item.unread .notif-message { font-weight:700; }
+  .notif-item:hover { background: #f0f6ff; }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-item.unread { background: #f0f6ff; }
+  .notif-item.unread .notif-message { font-weight: 700; }
 
   .notif-checkbox { display:inline-flex; align-items:center; justify-content:center; }
-  .notif-checkbox input { width:18px; height:18px; accent-color:#2563eb; cursor:pointer; }
+  .notif-checkbox input { width:18px; height:18px; accent-color:#043C70; cursor:pointer; }
 
-  .notif-dot { width:10px; height:10px; border-radius:50%; background:#2563eb; flex-shrink:0; margin-top:4px; }
-  .notif-item.read .notif-dot { background:transparent; border:1.5px solid #c7d3e2; }
+  .notif-dot {
+    width: 10px; height: 10px; border-radius: 50%; background: #1a6bff;
+    position: absolute; left: -4px; top: 50%; transform: translateY(-50%);
+  }
+  .notif-content { flex:1; position: relative; padding-left: 10px; }
+  .notif-item.read .notif-dot { background: transparent; border: 1px solid #c7d3e2; }
 
-  .notif-content { flex:1; }
-  .notif-message { color:#1f2937; font-size:.97rem; line-height:1.5; margin-bottom:4px; }
+  .notif-message { color:#1f2937; font-size:.98rem; line-height:1.5; margin-bottom:4px; }
   .notif-time { color:#6b7a8d; font-size:.83rem; }
-  .notif-arrow { color:#2563eb; font-size:1.3rem; font-weight:700; }
+
+  .notif-arrow { color:#1a6bff; font-size:1.3rem; font-weight:700; }
+
   .notif-item-delete {
-    border:none; background:transparent; cursor:pointer;
-    color:#c82333; font-size:1.3rem; padding:0 4px;
-    display:inline-flex; align-items:center; opacity:.7; transition:opacity .15s;
+    border: none; background: transparent; cursor: pointer;
+    color: #c82333; font-size: 1.3rem; padding: 0 4px;
+    display: inline-flex; align-items: center; opacity: .7; transition: opacity .15s;
+    margin-left: 8px;
   }
   .notif-item-delete:hover { opacity:1; }
+
   .notif-empty { padding:48px 28px; text-align:center; color:#94a3b8; }
   .notif-empty-icon { font-size:3rem; margin-bottom:12px; }
 </style>
@@ -68,9 +84,7 @@
 <div class="page-body">
   <div class="notif-container">
     <div class="notif-header">
-      <div>Notifications
-        <span id="badge-live" style="background:#e53935;border-radius:20px;padding:2px 10px;font-size:.85rem;margin-left:8px;">{{ notif_count }}</span>
-      </div>
+      <div>Notifications <span id="badge-live" style="background:#e53935;border-radius:20px;padding:2px 10px;font-size:.85rem;margin-left:8px;">{{ notif_count }}</span></div>
       {% if notifications %}
       <div class="notif-header-actions">
         <label class="notif-select-all">
@@ -89,12 +103,12 @@
         {% for notif in notifications %}
         <div class="notif-item {% if not notif.is_read %}unread{% else %}read{% endif %}"
              id="notif-{{ notif.id }}"
-             onclick="openNotif(event, {{ notif.id }}, '{{ notif.target_url or '/user/test' }}')">
+             onclick="openNotif(event, {{ notif.id }}, '{{ notif.target_url or '/admin/test/resultats' }}')">
           <label class="notif-checkbox" onclick="event.stopPropagation()">
             <input type="checkbox" class="notif-check" value="{{ notif.id }}" onchange="updateDeleteState()">
           </label>
-          <span class="notif-dot"></span>
           <div class="notif-content">
+            <div class="notif-dot {% if notif.is_read %}read{% endif %}"></div>
             <div class="notif-message">{{ notif.message }}</div>
             <div class="notif-time">{{ notif.created_at[:16].replace('T', ' ') if notif.created_at else '' }}</div>
           </div>
@@ -116,18 +130,23 @@
 
 {% block extra_js %}
 <script>
+  /* ─────────── Marquer comme lue + rediriger ─────────── */
   async function openNotif(event, notifId, targetUrl) {
     if (event.target.closest('input[type=checkbox]') || event.target.closest('.notif-item-delete')) return;
     try {
       const res = await fetch(`/api/notifications/${notifId}/read`, { method: 'POST' });
       const data = await res.json();
+      /* Retirer la classe unread visuellement */
       const el = document.getElementById(`notif-${notifId}`);
       if (el) { el.classList.remove('unread'); el.classList.add('read'); }
+      /* Mettre à jour le badge */
       updateBadgeValue(data.notif_count);
     } catch (_) {}
-    window.location.href = targetUrl || '/user/test';
+    /* Rediriger vers la page travaille_user avec le bon result_id */
+    window.location.href = targetUrl || '/admin/test/resultats';
   }
 
+  /* ─────────── Supprimer une notification ─────────── */
   async function deleteNotification(notifId) {
     if (!confirm('Supprimer cette notification ?')) return;
     try {
@@ -140,6 +159,7 @@
     } catch (e) { console.error(e); }
   }
 
+  /* ─────────── Sélection multiple ─────────── */
   function toggleAllNotifications(source) {
     document.querySelectorAll('.notif-check').forEach(b => b.checked = source.checked);
   }
@@ -149,6 +169,7 @@
     const sa = document.getElementById('notif-select-all');
     if (sa) sa.checked = all.length > 0 && checked.length === all.length;
   }
+
   async function deleteSelectedNotifications() {
     const ids = Array.from(document.querySelectorAll('.notif-check:checked')).map(c => c.value);
     if (!ids.length) { alert('Aucune notification sélectionnée.'); return; }
@@ -160,9 +181,12 @@
     } catch (e) { console.error(e); }
   }
 
+  /* ─────────── Badge temps réel ─────────── */
   function updateBadgeValue(count) {
+    /* Badge dans cette page */
     const local = document.getElementById('badge-live');
     if (local) local.textContent = count;
+    /* Badge dans la navbar (classe commune) */
     document.querySelectorAll('.notif-badge, [data-notif-badge]').forEach(el => {
       el.textContent = count > 0 ? count : '';
       el.style.display = count > 0 ? '' : 'none';
@@ -177,15 +201,19 @@
     } catch (_) {}
   }
 
-  /* Polling : nouvelle notif → recharge */
-  let lastCount = {{ notif_count }};
-  setInterval(async () => {
+  /* Polling toutes les 8s : si une nouvelle notif arrive, recharge la liste */
+  let lastNotifCount = {{ notif_count }};
+  async function pollNotifications() {
     try {
       const res = await fetch('/api/notifications/count');
       const data = await res.json();
       updateBadgeValue(data.notif_count);
-      if (data.notif_count > lastCount) { lastCount = data.notif_count; location.reload(); }
+      if (data.notif_count > lastNotifCount) {
+        lastNotifCount = data.notif_count;
+        location.reload();    /* nouvelle notif : recharge pour l'afficher */
+      }
     } catch (_) {}
-  }, 8000);
+  }
+  setInterval(pollNotifications, 8000);
 </script>
 {% endblock %}

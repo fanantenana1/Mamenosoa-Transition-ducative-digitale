@@ -20,6 +20,7 @@
       --ds-pink: #d63af9;
       --ds-muted: #7a9be0;
       --ds-text: #c8d8ff;
+      --font-ui: 'Segoe UI', system-ui, sans-serif;
     }
 
     * {
@@ -30,7 +31,7 @@
 
     body {
       background: var(--bg-main);
-      font-family: 'Segoe UI', sans-serif;
+      font-family: var(--font-ui);
       min-height: 100vh;
       display: flex;
       flex-direction: column
@@ -38,8 +39,9 @@
 
     /* ── NAV ── */
     .ds-nav {
-      position: relative;
-      z-index: 10;
+      position: sticky;
+      top: 0;
+      z-index: 200;
       display: flex;
       align-items: center;
       justify-content: space-between;

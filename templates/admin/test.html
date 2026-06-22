@@ -343,18 +343,19 @@
   }
 
   .dt-field input {
-  border: 1px solid #4a72b0;
-  border-radius: 6px;
-  padding: 0px 8px;
-  font-family: inherit;
-  font-size: 0.85rem;
-  color: #111;
-  background: #fff;
+    border: 1px solid #4a72b0;
+    border-radius: 6px;
+    padding: 0px 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    color: #111;
+    background: #fff;
 
-  /* centrage horizontal et vertical */
-  text-align: center;
-  line-height: 1.5;   /* ajuste la hauteur pour centrer verticalement */
-}
+    /* centrage horizontal et vertical */
+    text-align: center;
+    line-height: 1.5;
+    /* ajuste la hauteur pour centrer verticalement */
+  }
 
 
   .dt-field input:focus {
@@ -382,6 +383,179 @@
     color: #9a9aa3;
     font-size: 1rem;
     margin: 0;
+  }
+
+  /* ── Liste des tests enregistrés affichée dans surface-box ── */
+  .saved-tests-list {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .saved-tests-empty {
+    color: #9a9aa3;
+    font-size: 0.95rem;
+    text-align: center;
+    padding: 30px 0;
+  }
+
+  .saved-test-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    background: #f7f9ff;
+    border: 1px solid #d7e1f2;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+
+  .saved-test-item:hover {
+    background: #eef3fc;
+    border-color: #4a72b0;
+  }
+
+  .saved-test-checkbox {
+    display: flex;
+    align-items: center;
+  }
+
+  .saved-test-checkbox input {
+    width: 18px;
+    height: 18px;
+    accent-color: #1f3561;
+    cursor: pointer;
+  }
+
+  .saved-test-details {
+    display: grid;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  .saved-test-details .saved-test-title {
+    font-size: 0.92rem;
+    color: #1f3561;
+    font-weight: 700;
+  }
+
+  .saved-test-details .saved-test-cat {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #2a4fb5;
+    background: #e3ebfa;
+    border-radius: 5px;
+    padding: 1px 8px;
+    margin-bottom: 2px;
+    width: fit-content;
+  }
+
+  .saved-test-details .meta {
+    color: #5b6c88;
+    font-size: 0.8rem;
+  }
+
+  .saved-test-edit {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a72b0;
+  }
+
+  .saved-test-edit:hover {
+    color: #1f3561;
+  }
+
+  .saved-test-edit svg {
+    width: 19px;
+    height: 19px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+  }
+
+  /* ── Détail d'un test affiché dans la modale historique ── */
+  .history-detail-view .detail-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .history-detail-view .btn-back-list {
+    background: #f1f5fb;
+    border: 1px solid #cfd8e4;
+    border-radius: 8px;
+    color: #1f3561;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .history-detail-view .btn-back-list:hover {
+    background: #e2e8f8;
+  }
+
+  .history-detail-view .detail-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0d1f47;
+  }
+
+  .history-detail-view .detail-body {
+    background: #f7f9ff;
+    border: 1px solid #d7e1f2;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  .history-detail-view .detail-qcm-q {
+    font-weight: 700;
+    color: #1f3561;
+    margin: 0.6rem 0 0.3rem;
+    font-size: 0.92rem;
+  }
+
+  .history-detail-view .detail-qcm-q:first-child {
+    margin-top: 0;
+  }
+
+  .history-detail-view .detail-qcm-a {
+    color: #334155;
+    font-size: 0.88rem;
+    padding: 4px 0 4px 14px;
+  }
+
+  .history-detail-view .detail-text {
+    white-space: pre-wrap;
+    color: #334155;
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .history-detail-view .detail-file-link {
+    color: #1a6bff;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.92rem;
+  }
+
+  .history-detail-view .detail-file-link:hover {
+    text-decoration: underline;
   }
 
   .surface-textarea {
@@ -671,6 +845,187 @@
     opacity: .85;
   }
 
+  .btn-historique {
+    background: #fff;
+    color: #1f3561;
+    border: 1px solid #1f3561;
+    border-radius: 8px;
+    padding: 0 22px;
+    height: 25px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+
+  .btn-historique:hover {
+    background: #1f3561;
+    color: #fff;
+  }
+
+  #history-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 999;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 2rem 1rem;
+  }
+
+  #history-modal.open {
+    display: flex;
+  }
+
+  #history-modal .modal-box {
+    position: relative;
+    background: #fff;
+    border-radius: 18px;
+    padding: 1.5rem;
+    width: min(760px, 96vw);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    margin: auto;
+  }
+
+  #history-modal .history-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f8;
+    margin-bottom: 0.8rem;
+    color: #1f3561;
+    font-size: 0.92rem;
+  }
+
+  #history-modal .modal-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+  }
+
+  #history-modal .modal-header h3 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0d1f47;
+  }
+
+  #history-modal .history-actions {
+    display: none;
+  }
+
+  #history-modal .history-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e2e8f8;
+    margin-bottom: 0.8rem;
+    color: #1f3561;
+    font-size: 0.92rem;
+  }
+
+  #history-modal .history-delete-selected {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #c82333;
+    font-weight: 700;
+    padding: 0.25rem 0.35rem;
+  }
+
+  #history-modal .history-delete-selected img {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+
+  #history-modal .history-list {
+    display: grid;
+    gap: 1rem;
+  }
+
+  #history-modal .history-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    background: #f7f9ff;
+    border: 1px solid #d7e1f2;
+    border-radius: 14px;
+    padding: 1rem;
+  }
+
+  #history-modal .history-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  #history-modal .history-checkbox input {
+    width: 18px;
+    height: 18px;
+    accent-color: #1f3561;
+  }
+
+  #history-modal .history-details {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  #history-modal .history-details span {
+    font-size: 0.92rem;
+    color: #1f3561;
+  }
+
+  #history-modal .history-details .meta {
+    color: #5b6c88;
+    font-size: 0.82rem;
+  }
+
+  #history-modal .history-delete {
+    background: transparent;
+    border: none;
+    color: #c82333;
+    font-size: 1.35rem;
+    cursor: pointer;
+    padding: 0.15rem;
+  }
+
+  #history-modal .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: #5b6c88;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  #history-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+  }
+
+  #history-modal .btn-cancel {
+    background: #f1f5fb;
+    border: 1px solid #cfd8e4;
+    border-radius: 9px;
+    color: #1f3561;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+  }
+
   /* Bouton Envoyer */
   .btn-envoyer {
     background: #1976d2;
@@ -703,6 +1058,60 @@
     margin-top: 8px;
   }
 
+  /* ══════════════════════════════ SELECT GROUP + DELETE TOOLBAR ══════════════════════════════ */
+  /* Colonne : select en haut, puis case+icone en dessous sur une ligne */
+  .content-select-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  /* Ligne horizontale : case à cocher + icone delete côte à côte */
+  .saved-tests-toolbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .saved-tests-select-all {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .saved-tests-select-all input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #1f3561;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  .btn-delete-selected {
+    display: none;
+    align-items: center;
+    gap: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .btn-delete-selected.visible {
+    display: flex;
+  }
+
+  .btn-delete-selected img {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+
   /* ══════════════════════════════ PAGE BODY (spécifique à cette page) ══════════════════════════════ */
   .page-body {
     background-image: url('/static/components/Rectangle 18.png');
@@ -715,6 +1124,37 @@
     gap: 24px;
     margin-top: 25px;
   }
+  /* ══ GROUP EXTERNE : ligne principale Selectionner | Importer | Historique ══ */
+  .group_externe {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;  /* aligner par le haut pour que la toolbar descende sous le select */
+    gap: 14px;
+  }
+
+  /* ══ content-select-group : colonne → select EN HAUT, toolbar EN DESSOUS ══ */
+  .content-select-group {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  /* La toolbar (case + delete) reste en ligne horizontale */
+  .saved-tests-toolbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Aligner verticalement btn-historique et import-btn avec le select */
+  .btn-historique,
+  .btn-importer {
+    margin-top: 0;
+    align-self: flex-start;
+  }
+  
 </style>
 {% endblock %}
 
@@ -745,57 +1185,109 @@
   <div class="table-card">
 
     <div class="portere">
-       <!-- Selectionner / Importer fichier / Dates -->
+      <!-- Selectionner / Importer fichier / Dates -->
       <div class="content-controls">
-        <div class="content-select-wrap">
-          <select class="select-content" id="content-select" onchange="onContentChange()">
-            <option value="" selected>Selectionner</option>
-            <option value="fichier">Fichier</option>
-            <option value="texte">Texte</option>
-            <option value="qcm">QCM</option>
-          </select>
+        <div class="group_externe">
+          <!-- Sélecteur -->
+          <div class="content-select-group" id="content-select-group">
+            <div class="content-select-wrap">
+              <select class="select-content" id="content-select"
+                onchange="editingTestId=null; document.getElementById('btn-envoyer-label').textContent='Envoyer'; onContentChange()">
+                <option value="" selected>Selectionner</option>
+                <option value="fichier">Fichier</option>
+                <option value="texte">Texte</option>
+                <option value="qcm">QCM</option>
+              </select>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="saved-tests-toolbar" id="saved-tests-toolbar">
+              <label class="saved-tests-select-all">
+                <input type="checkbox" id="saved-select-all" onchange="toggleAllSavedCheckboxes(this)">
+              </label>
+              <button type="button" class="btn-delete-selected" id="btn-delete-selected"
+                onclick="deleteSelectedSavedTests()">
+                <img src="/static/image/ico_delete.png" alt="Supprimer la sélection">
+              </button>
+            </div>
+          </div>
+
+          <!-- Import fichier -->
+          <input type="file" id="file-input" class="visually-hidden" onchange="onFileSelected()">
+          <button class="btn-importer hidden" id="import-btn" type="button"
+            onclick="document.getElementById('file-input').click()">Importer fichier...</button>
+
+          <!-- Historique -->
+          <button type="button" class="btn-historique" onclick="openHistoryModal()">Historique</button>
         </div>
-
-        <input type="file" id="file-input" class="visually-hidden" onchange="onFileSelected()">
-        <button class="btn-importer hidden" id="import-btn" type="button"
-          onclick="document.getElementById('file-input').click()">Importer fichier....</button>
-
         <div class="datetime-row" id="datetime-row">
-  <div class="dt-group">
-    <div class="dt-field">
-      <label for="start-date">Date début</label>
-      <input type="date" id="start-date">
-    </div>
-    <div class="dt-field">
-      <label for="start-time">Heure début</label>
-      <input type="time" id="start-time">
-    </div>
-  </div>
-  <div class="dt-group">
-    <div class="dt-field">
-      <label for="end-date">Date fin</label>
-      <input type="date" id="end-date">
-    </div>
-    <div class="dt-field">
-      <label for="end-time">Heure fin</label>
-      <input type="time" id="end-time">
-    </div>
-  </div>
-</div>
-
+          <div class="dt-group">
+            <div class="dt-field">
+              <label for="start-date">Date début</label>
+              <input type="date" id="start-date">
+            </div>
+            <div class="dt-field">
+              <label for="start-time">Heure début</label>
+              <input type="time" id="start-time">
+            </div>
+          </div>
+          <div class="dt-group">
+            <div class="dt-field">
+              <label for="end-date">Date fin</label>
+              <input type="date" id="end-date">
+            </div>
+            <div class="dt-field">
+              <label for="end-time">Heure fin</label>
+              <input type="time" id="end-time">
+            </div>
+          </div>
+        </div>
       </div>
       <!-- Surface -->
       <div class="surface-box">
-        <div class="exam-surface" id="exam-surface">
+        <div class="exam-surface hidden" id="exam-surface">
           <p class="surface-placeholder">Saisire les context d'examen ....</p>
         </div>
+        <div id="saved-tests-container"></div>
       </div>
 
     </div>
 
   </div>
   <!-- ════ BOUTON ENVOYER ════ -->
-  <button class="btn-envoyer">Envoyer</button>
+  <button class="btn-envoyer" id="btn-envoyer-label">Envoyer</button>
+
+  <div id="history-modal" class="modal-bg" onclick="if(event.target===this)closeHistoryModal()">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeHistoryModal()">✕</button>
+      <div class="modal-header">
+        <h3>Historique des tests</h3>
+        <span>Affiche les exercices et examens créés, importés et enregistrés dans la base de données.</span>
+      </div>
+      <div class="history-list" id="history-list">
+        <div class="history-list-header">
+          <label><input type="checkbox" id="history-select-all" onchange="toggleAllHistoryCheckboxes(this)"> Tout
+            sélectionner</label>
+          <button type="button" class="history-delete-selected" onclick="deleteSelectedHistory()"
+            title="Supprimer la sélection">
+            <img src="/static/image/ico_delete.png" alt="Supprimer la sélection">
+          </button>
+        </div>
+        <div id="history-container"></div>
+      </div>
+      <div class="history-detail-view hidden" id="history-detail-view">
+        <div class="detail-header">
+          <button type="button" class="btn-back-list" onclick="showHistoryListView()">&larr; Retour</button>
+          <span class="detail-title" id="detail-title"></span>
+        </div>
+        <div class="detail-body" id="detail-body"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeHistoryModal()">Fermer</button>
+      </div>
+    </div>
+  </div>
+
 </div><!-- fin .page-body -->
 {% endblock %}
 
@@ -812,44 +1304,69 @@
   const surface = document.getElementById('exam-surface');
 
   let qcmCount = 0;
+  let editingTestId = null; // null = création d'un nouveau test ; sinon = id du test en cours de modification
 
   function renderDefault() {
+    surface.classList.add('hidden');
     surface.innerHTML = `<p class="surface-placeholder">Saisire les context d'examen ....</p>`;
+    const savedContainer = document.getElementById('saved-tests-container');
+    if (savedContainer) savedContainer.classList.remove('hidden');
+    showToolbar();
+    loadSavedTestsList();
   }
 
-  function renderFichier() {
+  function renderFichier(test) {
+    const currentInfo = test
+      ? (test.fichier_url
+        ? `Fichier actuel (URL) : <a href="${test.fichier_url}" target="_blank">${test.fichier_url}</a>`
+        : (test.fichier_nom ? `Fichier actuel : <a href="/files/tests/${test.categorie}/${test.fichier_nom}" target="_blank">${test.fichier_nom}</a>` : 'Aucun fichier actuellement enregistré.'))
+      : '';
     surface.innerHTML = `
       <div class="file-zone">
+        ${test ? `<div class="file-current-info">${currentInfo}</div>` : ''}
         <div id="file-display" class="file-display">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          <span id="file-display-text">Aucun fichier importé.</span>
+          <span id="file-display-text">${test ? 'Importer un nouveau fichier pour remplacer l\'actuel (optionnel).' : 'Aucun fichier importé.'}</span>
         </div>
         <div class="file-url-field">
           <label for="file-url">Ou insérer une URL de fichier (internet)</label>
-          <input type="url" id="file-url" placeholder="https://exemple.com/fichier.pdf" oninput="onFileUrlInput()">
+          <input type="url" id="file-url" placeholder="https://exemple.com/fichier.pdf" value="${test && test.fichier_url ? test.fichier_url.replace(/"/g, '&quot;') : ''}" oninput="onFileUrlInput()">
         </div>
       </div>
     `;
   }
 
-  function renderTexte() {
-    surface.innerHTML = `<textarea class="surface-textarea" placeholder="Saisire les context d'examen ...."></textarea>`;
+  function renderTexte(test) {
+    const texte = test && test.contenu_texte ? test.contenu_texte.replace(/<\/textarea>/gi, '') : '';
+    surface.innerHTML = `<textarea class="surface-textarea" placeholder="Saisire les context d'examen ....">${texte}</textarea>`;
   }
 
-  function renderQcm() {
+  function renderQcm(test) {
     qcmCount = 0;
     surface.innerHTML = `
       <div class="qcm-zone" id="qcm-zone"></div>
       <button type="button" class="btn-add-question" id="add-question-btn" onclick="addQuestionBlock()" aria-label="Ajouter une question">+</button>
     `;
-    addQuestionBlock();
+    let questions = [];
+    if (test && test.contenu_qcm) {
+      try { questions = JSON.parse(test.contenu_qcm) || []; } catch (e) { questions = []; }
+    }
+    if (questions.length) {
+      questions.forEach((q) => addQuestionBlock(q));
+    } else {
+      addQuestionBlock();
+    }
   }
 
-  function addQuestionBlock() {
+  function addQuestionBlock(existing) {
     qcmCount += 1;
     const zone = document.getElementById('qcm-zone');
     if (!zone) return;
     const num = String(qcmCount).padStart(2, '0');
+    const question = existing && existing.question ? existing.question : '';
+    const reponses = existing && Array.isArray(existing.reponses) && existing.reponses.length
+      ? existing.reponses
+      : ['', '', ''];
 
     const block = document.createElement('div');
     block.className = 'qcm-block';
@@ -860,13 +1377,11 @@
       </div>
       <div class="qfield">
         <label>Question</label>
-        <input type="text" placeholder="Saisir la question">
+        <input type="text" placeholder="Saisir la question" value="${question.replace(/"/g, '&quot;')}">
       </div>
       <label>Réponses</label>
       <div class="answers-list">
-        <div class="answer-row"><span class="answer-marker">01</span><input type="text" placeholder="Réponse 1"><button type="button" class="btn-remove-answer" onclick="this.closest('.answer-row').remove()" aria-label="Supprimer cette réponse">&times;</button></div>
-        <div class="answer-row"><span class="answer-marker">02</span><input type="text" placeholder="Réponse 2"><button type="button" class="btn-remove-answer" onclick="this.closest('.answer-row').remove()" aria-label="Supprimer cette réponse">&times;</button></div>
-        <div class="answer-row"><span class="answer-marker">03</span><input type="text" placeholder="Réponse 3"><button type="button" class="btn-remove-answer" onclick="this.closest('.answer-row').remove()" aria-label="Supprimer cette réponse">&times;</button></div>
+        ${reponses.map((r, i) => `<div class="answer-row"><span class="answer-marker">${String(i + 1).padStart(2, '0')}</span><input type="text" placeholder="Réponse ${i + 1}" value="${(r || '').replace(/"/g, '&quot;')}"><button type="button" class="btn-remove-answer" onclick="this.closest('.answer-row').remove()" aria-label="Supprimer cette réponse">&times;</button></div>`).join('')}
       </div>
       <button type="button" class="btn-add-answer" onclick="addAnswerRow(this)">
         <span class="plus-circle">+</span> Ajouter une réponse
@@ -892,7 +1407,7 @@
     list.appendChild(row);
   }
 
-  function onContentChange() {
+  function onContentChange(prefillTest) {
     const choix = contentSelect.value;
 
     if (choix === '') {
@@ -905,16 +1420,20 @@
 
     // un element est selectionné -> afficher les dates/heures
     datetimeRow.classList.remove('hidden');
+    surface.classList.remove('hidden');
+    const savedContainer = document.getElementById('saved-tests-container');
+    if (savedContainer) savedContainer.classList.add('hidden');
+    hideToolbar();
 
     if (choix === 'fichier') {
       importBtn.classList.remove('hidden');
-      renderFichier();
+      renderFichier(prefillTest);
     } else if (choix === 'texte') {
       importBtn.classList.add('hidden');
-      renderTexte();
+      renderTexte(prefillTest);
     } else if (choix === 'qcm') {
       importBtn.classList.add('hidden');
-      renderQcm();
+      renderQcm(prefillTest);
     }
   }
 
@@ -950,5 +1469,462 @@
       fdText.textContent = 'Aucun fichier importé.';
     }
   }
+
+  /* ════════════════════════════════════════════════════════════════
+     LIAISON BACKEND — envoi du test (exercice/examen) vers /api/tests
+     Ajouté sans modifier le HTML/CSS/JS existant ci-dessus.
+     ════════════════════════════════════════════════════════════════ */
+
+  function showSendFeedback(message, isError) {
+    let box = document.getElementById('send-feedback-toast');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'send-feedback-toast';
+      box.style.position = 'fixed';
+      box.style.bottom = '24px';
+      box.style.left = '50%';
+      box.style.transform = 'translateX(-50%)';
+      box.style.padding = '10px 22px';
+      box.style.borderRadius = '8px';
+      box.style.fontSize = '.9rem';
+      box.style.color = '#fff';
+      box.style.zIndex = '999';
+      document.body.appendChild(box);
+    }
+    box.style.background = isError ? '#c0392b' : '#1a1a2e';
+    box.textContent = message;
+    box.style.opacity = '1';
+    clearTimeout(box._timer);
+    box._timer = setTimeout(() => { box.style.opacity = '0'; }, 3000);
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     LISTE DES TESTS ENREGISTRÉS — affichée dans surface-box
+     ════════════════════════════════════════════════════════════════ */
+
+  async function loadSavedTestsList() {
+    const container = document.getElementById('saved-tests-container');
+    if (!container) return;
+    try {
+      const res = await fetch('/api/tests');
+      if (!res.ok) {
+        container.innerHTML = '<div class="saved-tests-empty">Impossible de charger la liste des tests.</div>';
+        return;
+      }
+      const tests = await res.json();
+      renderSavedTestsList(tests);
+    } catch (err) {
+      container.innerHTML = '<div class="saved-tests-empty">Erreur réseau lors du chargement.</div>';
+    }
+  }
+
+  function renderSavedTestsList(tests) {
+    const container = document.getElementById('saved-tests-container');
+    if (!container) return;
+    if (!tests.length) {
+      container.innerHTML = '<div class="saved-tests-empty">Aucun exercice ou examen enregistré pour le moment.</div>';
+      return;
+    }
+    container.innerHTML = `<div class="saved-tests-list">${tests.map((test) => buildTestItemHtml(test, 'saved-test-item')).join('')}</div>`;
+  }
+
+  function buildTestItemHtml(test, itemClass) {
+    const titre = test.titre || 'Sans titre';
+    const type = test.content_type === 'fichier' ? 'Fichier' : test.content_type === 'texte' ? 'Texte' : 'QCM';
+    const categorie = test.categorie === 'examen' ? 'Examen' : 'Exercice';
+    const created = test.created_at ? new Date(test.created_at).toLocaleString('fr-FR') : 'Date inconnue';
+    const status = test.fichier_url ? 'Importé' : (test.fichier_nom ? 'Fichier local' : type);
+    if (itemClass === 'saved-test-item') {
+      return `
+        <div class="saved-test-item" data-id="${test.id}" onclick="openTestDetailFromList(${test.id})">
+          <span class="saved-test-checkbox" onclick="event.stopPropagation()">
+            <input type="checkbox" class="saved-test-select" value="${test.id}" onchange="updateDeleteBtnVisibility()">
+          </span>
+          <div class="saved-test-details">
+            <span class="saved-test-cat">${categorie}</span>
+            <span class="saved-test-title">${titre}</span>
+            <span class="meta">Type : ${type} · Statut : ${status} · Créé le : ${created}</span>
+          </div>
+          <button type="button" class="saved-test-edit" title="Modifier" onclick="event.stopPropagation(); editSavedTest(${test.id})">
+            <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </button>
+        </div>`;
+    }
+    return `
+      <div class="history-item" data-id="${test.id}">
+        <label class="history-checkbox" onclick="event.stopPropagation()">
+          <input type="checkbox" class="history-select" value="${test.id}">
+          <span>${categorie}</span>
+        </label>
+        <div class="history-details" onclick="openTestDetailFromHistory(${test.id})" style="cursor:pointer;">
+          <span><strong>${titre}</strong></span>
+          <span class="meta">Type : ${type} · Statut : ${status} · Créé le : ${created}</span>
+        </div>
+        <button type="button" class="history-delete" onclick="event.stopPropagation(); deleteHistoryItem(${test.id})" title="Supprimer cet historique">✕</button>
+      </div>`;
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     DÉTAIL D'UN TEST — affiché dans la modal-box "Historique des tests"
+     ════════════════════════════════════════════════════════════════ */
+
+  async function fetchTestDetail(testId) {
+    const res = await fetch(`/api/tests/${testId}`);
+    if (!res.ok) throw new Error('Test introuvable.');
+    return res.json();
+  }
+
+  /* ── Modification d'un test : réutilise directement la zone de saisie
+     (file-zone / surface-textarea / qcm-block) déjà utilisée pour la création,
+     pré-remplie avec les données existantes. ── */
+  async function editSavedTest(testId) {
+    let test;
+    try {
+      test = await fetchTestDetail(testId);
+    } catch (err) {
+      showSendFeedback('Impossible de charger ce test pour modification.', true);
+      return;
+    }
+
+    editingTestId = test.id;
+
+    // ferme la modale Historique si elle était ouverte
+    closeHistoryModal();
+
+    // pré-remplit la catégorie (exercice/examen) et les dates/heures
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) sortSelect.value = test.categorie;
+
+    document.getElementById('start-date').value = test.date_debut || '';
+    document.getElementById('start-time').value = test.heure_debut || '';
+    document.getElementById('end-date').value = test.date_fin || '';
+    document.getElementById('end-time').value = test.heure_fin || '';
+
+    // sélectionne le bon type de contenu et affiche la zone pré-remplie
+    contentSelect.value = test.content_type;
+    onContentChange(test);
+
+    const btnLabel = document.getElementById('btn-envoyer-label');
+    if (btnLabel) btnLabel.textContent = 'Enregistrer les modifications';
+
+    // scroll vers la zone d'édition pour que l'utilisateur la voie directement
+    surface.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showSendFeedback('Modifiez le contenu puis cliquez sur "Enregistrer" pour valider.', false);
+  }
+
+  function showHistoryListView() {
+    const list = document.getElementById('history-list');
+    const detail = document.getElementById('history-detail-view');
+    if (list) list.classList.remove('hidden');
+    if (detail) detail.classList.add('hidden');
+  }
+
+  function showHistoryDetailView() {
+    const list = document.getElementById('history-list');
+    const detail = document.getElementById('history-detail-view');
+    if (list) list.classList.add('hidden');
+    if (detail) detail.classList.remove('hidden');
+  }
+
+  function renderTestDetailBody(test) {
+    const titre = test.titre || 'Sans titre';
+    const categorie = test.categorie === 'examen' ? 'Examen' : 'Exercice';
+    const titleEl = document.getElementById('detail-title');
+    if (titleEl) titleEl.textContent = `${categorie} — ${titre}`;
+
+    const body = document.getElementById('detail-body');
+    if (!body) return;
+
+    if (test.content_type === 'qcm') {
+      let questions = [];
+      try { questions = JSON.parse(test.contenu_qcm || '[]'); } catch (e) { questions = []; }
+      if (!questions.length) {
+        body.innerHTML = '<div class="saved-tests-empty">Aucune question QCM enregistrée.</div>';
+        return;
+      }
+      body.innerHTML = questions.map((q, i) => `
+        <div class="detail-qcm-q">${i + 1}. ${q.question || '(question vide)'}</div>
+        ${(q.reponses || []).map((r) => `<div class="detail-qcm-a">— ${r}</div>`).join('')}
+      `).join('');
+    } else if (test.content_type === 'texte') {
+      body.innerHTML = `<div class="detail-text">${(test.contenu_texte || 'Aucun texte enregistré.').replace(/</g, '&lt;')}</div>`;
+    } else if (test.content_type === 'fichier') {
+      if (test.fichier_url) {
+        body.innerHTML = `<a class="detail-file-link" href="${test.fichier_url}" target="_blank">📥 Ouvrir le fichier (URL) : ${test.fichier_url}</a>`;
+      } else if (test.fichier_nom) {
+        body.innerHTML = `<a class="detail-file-link" href="/files/tests/${test.categorie}/${test.fichier_nom}" target="_blank">📥 Télécharger / Voir : ${test.fichier_nom}</a>`;
+      } else {
+        body.innerHTML = '<div class="saved-tests-empty">Aucun fichier enregistré.</div>';
+      }
+    } else {
+      body.innerHTML = '<div class="saved-tests-empty">Type de contenu inconnu.</div>';
+    }
+  }
+
+  async function openTestDetailFromList(testId) {
+    try {
+      const test = await fetchTestDetail(testId);
+      openHistoryModal(false);
+      renderTestDetailBody(test);
+      showHistoryDetailView();
+    } catch (err) {
+      showSendFeedback('Impossible de charger ce test.', true);
+    }
+  }
+
+  async function openTestDetailFromHistory(testId) {
+    try {
+      const test = await fetchTestDetail(testId);
+      renderTestDetailBody(test);
+      showHistoryDetailView();
+    } catch (err) {
+      showSendFeedback('Impossible de charger ce test.', true);
+    }
+  }
+
+  async function loadHistory() {
+    const categorie = document.getElementById('sort-select')?.value || '';
+    const params = categorie ? `?categorie=${encodeURIComponent(categorie)}` : '';
+    try {
+      const res = await fetch(`/api/tests${params}`);
+      if (!res.ok) {
+        showSendFeedback('Impossible de charger l\'historique.', true);
+        return;
+      }
+      const tests = await res.json();
+      renderHistoryList(tests);
+    } catch (err) {
+      showSendFeedback('Erreur réseau lors du chargement de l\'historique.', true);
+    }
+  }
+
+  function openHistoryModal(reload = true) {
+    const modal = document.getElementById('history-modal');
+    if (!modal) return;
+    modal.classList.add('open');
+    showHistoryListView();
+    const selectAll = document.getElementById('history-select-all');
+    if (selectAll) selectAll.checked = false;
+    if (reload) loadHistory();
+  }
+
+  function closeHistoryModal() {
+    const modal = document.getElementById('history-modal');
+    if (!modal) return;
+    modal.classList.remove('open');
+  }
+
+  function renderHistoryList(tests) {
+    const container = document.getElementById('history-container');
+    if (!container) return;
+    if (!tests.length) {
+      container.innerHTML = '<div class="history-empty">Aucun historique disponible.</div>';
+      return;
+    }
+    container.innerHTML = tests.map((test) => buildTestItemHtml(test, 'history-item')).join('');
+  }
+
+  function toggleAllHistoryCheckboxes(source) {
+    const checkboxes = document.querySelectorAll('.history-select');
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = source.checked;
+    });
+  }
+
+  async function deleteHistoryItem(testId) {
+    if (!confirm('Voulez-vous vraiment supprimer cet élément de l\'historique ?')) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/tests/${testId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        showSendFeedback(data.error || 'Impossible de supprimer l\'historique.', true);
+        return;
+      }
+      showSendFeedback('Historique supprimé.', false);
+      loadHistory();
+    } catch (err) {
+      showSendFeedback('Erreur réseau lors de la suppression.', true);
+    }
+  }
+
+  async function deleteSelectedHistory() {
+    const checked = Array.from(document.querySelectorAll('.history-select:checked')).map((input) => input.value);
+    if (!checked.length) {
+      showSendFeedback('Aucune ligne sélectionnée.', true);
+      return;
+    }
+    if (!confirm(`Supprimer ${checked.length} élément(s) sélectionné(s) ?`)) {
+      return;
+    }
+    try {
+      await Promise.all(checked.map((id) => fetch(`/api/tests/${id}`, { method: 'DELETE' })));
+      showSendFeedback('Éléments sélectionnés supprimés.', false);
+      loadHistory();
+    } catch (err) {
+      showSendFeedback('Erreur réseau lors de la suppression.', true);
+    }
+  }
+
+  function collectQcmPayload() {
+    const blocks = document.querySelectorAll('#qcm-zone .qcm-block');
+    const questions = [];
+    blocks.forEach((block) => {
+      const questionInput = block.querySelector('.qfield input[type="text"]');
+      const question = questionInput ? questionInput.value.trim() : '';
+      const reponses = Array.from(block.querySelectorAll('.answer-row input[type="text"]'))
+        .map((inp) => inp.value.trim())
+        .filter((val) => val !== '');
+      if (question || reponses.length) {
+        questions.push({ question, reponses });
+      }
+    });
+    return questions;
+  }
+
+  async function envoyerTest() {
+    const categorie = document.getElementById('sort-select').value;
+    const contentType = contentSelect.value;
+
+    if (!categorie) {
+      showSendFeedback('Veuillez sélectionner Exercice ou Examen.', true);
+      return;
+    }
+    if (!contentType) {
+      showSendFeedback('Veuillez sélectionner un type de contenu.', true);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('categorie', categorie);
+    formData.append('content_type', contentType);
+    formData.append('date_debut', document.getElementById('start-date')?.value || '');
+    formData.append('heure_debut', document.getElementById('start-time')?.value || '');
+    formData.append('date_fin', document.getElementById('end-date')?.value || '');
+    formData.append('heure_fin', document.getElementById('end-time')?.value || '');
+
+    if (contentType === 'fichier') {
+      const fileInput = document.getElementById('file-input');
+      const urlInput = document.getElementById('file-url');
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        formData.append('fichier', fileInput.files[0]);
+      } else if (urlInput && urlInput.value.trim()) {
+        formData.append('fichier_url', urlInput.value.trim());
+      } else if (!editingTestId) {
+        // en création, un fichier ou une URL est obligatoire
+        showSendFeedback('Veuillez importer un fichier ou saisir une URL.', true);
+        return;
+      }
+      // en édition sans nouveau fichier/URL : le backend conserve l'ancien fichier
+    } else if (contentType === 'texte') {
+      const textarea = surface.querySelector('.surface-textarea');
+      const texte = textarea ? textarea.value.trim() : '';
+      if (!texte) {
+        showSendFeedback('Veuillez saisir un texte.', true);
+        return;
+      }
+      formData.append('contenu_texte', texte);
+    } else if (contentType === 'qcm') {
+      const questions = collectQcmPayload();
+      if (!questions.length) {
+        showSendFeedback('Veuillez ajouter au moins une question.', true);
+        return;
+      }
+      formData.append('contenu_qcm', JSON.stringify(questions));
+    }
+
+    try {
+      const url = editingTestId ? `/api/tests/${editingTestId}` : '/api/tests';
+      const method = editingTestId ? 'PUT' : 'POST';
+      const res = await fetch(url, { method, body: formData });
+      const data = await res.json();
+      if (!res.ok) {
+        showSendFeedback(data.error || 'Erreur lors de l\'envoi.', true);
+        return;
+      }
+      showSendFeedback(editingTestId ? 'Test modifié avec succès !' : 'Test envoyé avec succès !', false);
+      editingTestId = null;
+      const btnLabel = document.getElementById('btn-envoyer-label');
+      if (btnLabel) btnLabel.textContent = 'Envoyer';
+      contentSelect.value = '';
+      onContentChange();
+      loadSavedTestsList();
+    } catch (err) {
+      showSendFeedback('Erreur réseau lors de l\'envoi.', true);
+    }
+  }
+
+  /* ── Toolbar : case + icone delete ── */
+  function toggleAllSavedCheckboxes(source) {
+    document.querySelectorAll('.saved-test-select').forEach((cb) => { cb.checked = source.checked; });
+    updateDeleteBtnVisibility();
+  }
+
+  function updateDeleteBtnVisibility() {
+    const checked = document.querySelectorAll('.saved-test-select:checked');
+    const btn = document.getElementById('btn-delete-selected');
+    if (!btn) return;
+    if (checked.length > 0) {
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+    // sync état "tout sélectionner"
+    const all = document.querySelectorAll('.saved-test-select');
+    const selectAll = document.getElementById('saved-select-all');
+    if (selectAll && all.length) {
+      selectAll.checked = (all.length === checked.length);
+      selectAll.indeterminate = (checked.length > 0 && checked.length < all.length);
+    }
+  }
+
+  async function deleteSelectedSavedTests() {
+    const ids = Array.from(document.querySelectorAll('.saved-test-select:checked')).map((cb) => parseInt(cb.value));
+    if (!ids.length) return;
+    if (!confirm(`Supprimer ${ids.length} élément(s) sélectionné(s) ?`)) return;
+    try {
+      const res = await fetch('/api/tests/bulk_delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showSendFeedback(data.error || 'Erreur lors de la suppression.', true);
+        return;
+      }
+      showSendFeedback(`${data.deleted} élément(s) supprimé(s).`, false);
+      const selectAll = document.getElementById('saved-select-all');
+      if (selectAll) { selectAll.checked = false; selectAll.indeterminate = false; }
+      const btn = document.getElementById('btn-delete-selected');
+      if (btn) btn.classList.remove('visible');
+      loadSavedTestsList();
+    } catch (err) {
+      showSendFeedback('Erreur réseau lors de la suppression.', true);
+    }
+  }
+
+  function showToolbar() {
+    const tb = document.getElementById('saved-tests-toolbar');
+    if (tb) tb.style.display = '';
+  }
+
+  function hideToolbar() {
+    const tb = document.getElementById('saved-tests-toolbar');
+    if (tb) tb.style.display = 'none';
+    const btn = document.getElementById('btn-delete-selected');
+    if (btn) btn.classList.remove('visible');
+    const sa = document.getElementById('saved-select-all');
+    if (sa) { sa.checked = false; sa.indeterminate = false; }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const btnEnvoyer = document.querySelector('.btn-envoyer');
+    if (btnEnvoyer) {
+      btnEnvoyer.addEventListener('click', envoyerTest);
+    }
+    loadSavedTestsList();
+  });
 </script>
 {% endblock %}

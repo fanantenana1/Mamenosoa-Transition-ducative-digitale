@@ -348,6 +348,12 @@
             background: #eaf1f9;
         }
 
+        .result-row.selected {
+            background: #dce8f5;
+            border-color: #4a72b0;
+            box-shadow: inset 0 0 0 1px rgba(26, 107, 255, 0.18);
+        }
+
         .row-checkbox {
             width: 18px;
             height: 18px;
@@ -514,7 +520,62 @@
                 </svg>
             </button>
         </div><!-- fin .search-wrap -->
+
+        <!-- ════ LISTE DES TESTS / EXERCICES ENVOYÉS PAR L'ADMINISTRATEUR ════ -->
+        <div class="table-card" id="tests-card" style="padding:20px;">
+            {% if tests %}
+                {% for t in tests %}
+                <div id="test-{{ t.id }}" class="result-row" style="flex-direction:column; align-items:flex-start; gap:8px;" data-test-id="{{ t.id }}">
+                    <div style="display:flex; justify-content:space-between; width:100%;">
+                        <span class="row-name">
+                            {{ 'Examen' if t.categorie == 'examen' else 'Exercice' }}
+                            {% if t.titre %} — {{ t.titre }}{% endif %}
+                        </span>
+                        <span class="row-date">
+                            {% if t.date_debut or t.date_fin %}
+                                Du {{ t.date_debut }} {{ t.heure_debut }} au {{ t.date_fin }} {{ t.heure_fin }}
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    {% if t.content_type == 'fichier' %}
+                        <div class="fichier-actions" data-test-id="{{ t.id }}" style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+                            {% if t.fichier_nom %}
+                            <a class="row-voir" href="{{ url_for('file_test', categorie=t.categorie, filename=t.fichier_nom) }}" download>
+                                Télécharger le fichier
+                            </a>
+                            <a class="row-voir" href="{{ url_for('file_test', categorie=t.categorie, filename=t.fichier_nom) }}" target="_blank">
+                                Voir
+                            </a>
+                            {% elif t.fichier_url %}
+                            <a class="row-voir" href="{{ t.fichier_url }}" download>Télécharger le fichier</a>
+                            <a class="row-voir" href="{{ t.fichier_url }}" target="_blank">Voir</a>
+                            {% endif %}
+
+                            <input type="file" id="reponse-file-{{ t.id }}" class="reponse-file-input" data-test-id="{{ t.id }}" style="display:none;">
+                            <button type="button" class="row-voir reponse-submit-btn" data-test-id="{{ t.id }}"
+                                    style="background:none; border:none; padding:0; cursor:pointer;">
+                                Soumettre mes réponses
+                            </button>
+                            <span class="reponse-file-name" id="reponse-file-name-{{ t.id }}" style="font-size:.85rem; color:#6b7a8d;"></span>
+                        </div>
+                    {% elif t.content_type == 'texte' %}
+                        <p style="margin:0; color:#334155;">{{ t.contenu_texte }}</p>
+                    {% elif t.content_type == 'qcm' %}
+                        <div class="qcm-display" data-test-id="{{ t.id }}" data-qcm='{{ t.contenu_qcm }}'></div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align:center; color:#6b7a8d; padding:16px;">
+                    Aucun test ou exercice n'a encore été publié par l'administrateur.
+                </p>
+            {% endif %}
+        </div>
+        <!-- ════ FIN LISTE DES TESTS ════ -->
+
         <textarea id="comment-text" class="comment-textarea" placeholder="Ecrire une commentaire ……"></textarea>
+
         <div id="toast"></div>
     </div>
 {% endblock %}
@@ -523,7 +584,7 @@
 <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const textarea = document.getElementById('comment-text');
-                const btnEnvoyer = document.querySelector('.bt_commentaire');              
+                const btnEnvoyer = document.querySelector('.bt_commentaire');
                 const toast = document.getElementById('toast');
 
                 function showToast(msg) {
@@ -532,20 +593,137 @@
                     toast.classList.add('show');
                     setTimeout(() => toast.classList.remove('show'), 2500);
                 }
-                if (btnEnvoyer) {
-                    btnEnvoyer.addEventListener('click', () => {
-                        const value = textarea.value.trim();
-                        if (!value) {
-                            textarea.focus();
-                            showToast('Veuillez écrire un commentaire avant d\'envoyer.');
-                            return;
+
+                /* ════════════════════════════════════════════════════════
+                   AFFICHAGE INTERACTIF DES QCM (lecture seule, pas de
+                   bouton de soumission individuel : tout passe par
+                   le bouton "Envoyer" du haut de page)
+                   ════════════════════════════════════════════════════════ */
+                document.querySelectorAll('.qcm-display').forEach((zone) => {
+                    let questions = [];
+                    try { questions = JSON.parse(zone.getAttribute('data-qcm') || '[]'); } catch (e) { questions = []; }
+                    questions.forEach((q, qi) => {
+                        const block = document.createElement('div');
+                        block.style.marginBottom = '12px';
+                        const title = document.createElement('p');
+                        title.style.fontWeight = '700';
+                        title.textContent = (qi + 1) + '. ' + (q.question || '');
+                        block.appendChild(title);
+                        (q.reponses || []).forEach((rep) => {
+                            const label = document.createElement('label');
+                            label.style.display = 'block';
+                            label.style.marginLeft = '12px';
+                            const input = document.createElement('input');
+                            input.type = 'radio';
+                            input.name = 'qcm-' + zone.dataset.testId + '-' + qi;
+                            input.value = rep;
+                            label.appendChild(input);
+                            label.appendChild(document.createTextNode(' ' + rep));
+                            block.appendChild(label);
+                        });
+                        zone.appendChild(block);
+                    });
+                });
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const focusTestId = urlParams.get('focus_test_id');
+                if (focusTestId) {
+                    const target = document.getElementById('test-' + focusTestId);
+                    if (target) {
+                        target.classList.add('selected');
+                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+
+                /* ════════════════════════════════════════════════════════
+                   FICHIER : "Soumettre mes réponses" ouvre le sélecteur
+                   de fichier (import du répertoire local de l'utilisateur)
+                   ════════════════════════════════════════════════════════ */
+                document.querySelectorAll('.reponse-submit-btn').forEach((btn) => {
+                    const testId = btn.dataset.testId;
+                    const fileInput = document.getElementById('reponse-file-' + testId);
+                    const fileNameEl = document.getElementById('reponse-file-name-' + testId);
+                    if (!fileInput) return;
+
+                    btn.addEventListener('click', () => fileInput.click());
+
+                    fileInput.addEventListener('change', () => {
+                        if (fileInput.files && fileInput.files[0]) {
+                            fileNameEl.textContent = 'Fichier sélectionné : ' + fileInput.files[0].name;
+                        } else {
+                            fileNameEl.textContent = '';
                         }
-                        // TODO: brancher l'envoi réel du commentaire (fetch vers l'API backend)
-                        showToast('Commentaire envoyé !');
-                        textarea.value = '';
+                    });
+                });
+
+                /* ════════════════════════════════════════════════════════
+                   BOUTON "ENVOYER" (en-tête) : envoie vers l'admin les
+                   réponses QCM cochées et les fichiers-réponses choisis,
+                   avec le nom de l'utilisateur et la date/heure d'envoi
+                   (gérés côté serveur). Conserve aussi l'envoi du
+                   commentaire libre s'il est rempli.
+                   ════════════════════════════════════════════════════════ */
+                async function envoyerReponsesTests() {
+                    const promises = [];
+                    let nbEnvois = 0;
+
+                    document.querySelectorAll('.qcm-display').forEach((zone) => {
+                        const testId = zone.dataset.testId;
+                        let questions = [];
+                        try { questions = JSON.parse(zone.getAttribute('data-qcm') || '[]'); } catch (e) { questions = []; }
+                        const reponses = questions.map((q, qi) => {
+                            const checked = zone.querySelector('input[name="qcm-' + testId + '-' + qi + '"]:checked');
+                            return { question: q.question, reponse: checked ? checked.value : null };
+                        });
+                        const aUneReponse = reponses.some((r) => r.reponse);
+                        if (aUneReponse) {
+                            nbEnvois++;
+                            promises.push(
+                                fetch('/api/tests/' + testId + '/resultats', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ reponses })
+                                })
+                            );
+                        }
+                    });
+
+                    document.querySelectorAll('.reponse-file-input').forEach((input) => {
+                        if (input.files && input.files[0]) {
+                            nbEnvois++;
+                            const testId = input.dataset.testId;
+                            const fd = new FormData();
+                            fd.append('fichier_reponse', input.files[0]);
+                            promises.push(fetch('/api/tests/' + testId + '/resultats', { method: 'POST', body: fd }));
+                        }
+                    });
+
+                    if (nbEnvois === 0) return false;
+
+                    try {
+                        const results = await Promise.all(promises);
+                        const allOk = results.every((r) => r.ok);
+                        showToast(allOk ? 'Réponses envoyées à l\'administrateur !' : 'Certaines réponses n\'ont pas pu être envoyées.');
+                    } catch (e) {
+                        showToast('Erreur réseau lors de l\'envoi des réponses.');
+                    }
+                    return true;
+                }
+
+                if (btnEnvoyer) {
+                    btnEnvoyer.addEventListener('click', async () => {
+                        const aEnvoyeDesReponses = await envoyerReponsesTests();
+
+                        const value = textarea ? textarea.value.trim() : '';
+                        if (value) {
+                            // TODO: brancher l'envoi réel du commentaire (fetch vers l'API backend)
+                            if (!aEnvoyeDesReponses) showToast('Commentaire envoyé !');
+                            textarea.value = '';
+                        } else if (!aEnvoyeDesReponses) {
+                            showToast('Rien à envoyer pour le moment.');
+                        }
                     });
                 }
-              
             });
         </script>
 {% endblock %}

@@ -1,28 +1,22 @@
 {% extends "admin/dashboard.html" %}
 {% set active_page = 'test' %}
 
-{% block title %}Digiscool - Test{% endblock %}
+{% block title %}Digiscool - Travail utilisateur{% endblock %}
 
 {% block extra_head %}
 <style>
-  body {
-    background: #BED6F3;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  body { background: #BED6F3; min-height: 100vh; overflow-x: hidden; }
 
-  /* PAGE BODY */
   .page-body {
     background-image: url('/static/components/Rectangle 18.png');
     background-size: 100% 100%;
     min-height: calc(100vh - 66px);
     padding: 32px 40px 48px;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 24px;
+    display: flex; flex-direction: column; align-items: center; gap: 24px;
     margin-top: 25px;
   }
 
-  /* SEARCH WRAP */
+  /* ── SEARCH WRAP ── */
   .search-wrap {
     position: relative;
     display: flex; justify-content: center; align-items: center;
@@ -32,171 +26,270 @@
     border-radius: 0 0 10px 10px;
     margin-top: -48px; gap: 10px; padding: 20px;
   }
-
-  /* ══════════════════════════════ BARRE RETOUR ══════════════════════════════ */
   .retour-bar {
-    background: #fefeff;
-    padding: 4px 9px;
-    display: flex;
-    justify-content: flex-start;  /* aligne le bouton à gauche */
-    align-items: center;
-    border-bottom: 1px solid #b0c4de;
-    border-radius: 5px;
+    background: #fefeff; padding: 4px 9px;
+    display: flex; align-items: center;
+    border-bottom: 1px solid #b0c4de; border-radius: 5px;
   }
-
   .btn-retour {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #1a1a2e;
-    padding: 0;
+    background: none; border: none; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.95rem; font-weight: 600; color: #1a1a2e; padding: 0;
   }
-  .btn-retour:hover { color: var(--accent); }
-  .btn-retour svg {
-    width: 20px; height: 20px;
-    stroke: currentColor; fill: none; stroke-width: 2.5;
-  }
+  .btn-retour:hover { color: #1a6bff; }
+  .btn-retour svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.5; }
 
-  /* TITRE WRAP avec avatar */
-  .titre-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    flex: 1;
+  .user-block {
+    display: flex; align-items: center; gap: 10px; flex: 1; justify-content: center;
   }
-
-  /* AVATAR UTILISATEUR */
-  .user-avatar {
-    width: 42px; height: 42px;
-    border-radius: 50%;
+  .user-avatar-circle {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: #1a6bff; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: 700; flex-shrink: 0;
     border: 2px solid #4a7fb5;
-    overflow: hidden;
-    background: #b8d0e8;
-    flex-shrink: 0;
   }
-  .user-avatar img {
-    width: 100%; height: 100%;
-    object-fit: cover; display: block;
-  }
-
   .titre-resultat {
-    background: #dce8f5;
-    border-radius: 4px;
-    padding: 5px 20px;
-    font-size: 1rem; font-weight: 700;
-    color: #1a1a2e; text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
-    min-width: 180px;
-    white-space: nowrap;
+    background: #dce8f5; border-radius: 4px; padding: 5px 20px;
+    font-size: 1rem; font-weight: 700; color: #1a1a2e;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08); min-width: 180px; text-align: center;
+  }
+  .input-note {
+    width: 90px; height: 30px; background: #fff;
+    border: 1px solid #b0c4de; border-radius: 8px;
+    padding: 0 10px; font-size: 0.9rem; color: #555; outline: none;
+  }
+  .input-note:focus { border-color: #1a6bff; }
+
+  /* ── CONTENU CARD ── */
+  .work-card {
+    width: 100%; max-width: 900px;
+    background: #fff; border-radius: 16px;
+    box-shadow: 0 10px 35px rgba(0,0,0,.10);
+    overflow: hidden;
+  }
+  .work-card-header {
+    background: linear-gradient(135deg, #043C70 0%, #1a6bff 100%);
+    color: #fff; padding: 18px 28px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .work-card-title { font-size: 1.1rem; font-weight: 700; }
+  .work-meta {
+    font-size: 0.85rem; opacity: .8; display: flex; gap: 16px; align-items: center;
+  }
+  .type-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 20px;
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+  }
+  .ct-qcm     { background: #e3f2fd; color: #1565c0; }
+  .ct-texte   { background: #f3e5f5; color: #6a1b9a; }
+  .ct-fichier { background: #fce4ec; color: #880e4f; }
+
+  .work-body { padding: 28px; }
+
+  /* QCM */
+  .qcm-block { margin-bottom: 22px; }
+  .qcm-question {
+    font-weight: 700; font-size: 1rem; color: #1a1a2e;
+    margin-bottom: 6px;
+  }
+  .qcm-answer {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px; border-radius: 8px;
+    background: #eef6ff;
+    font-size: 0.97rem; color: #1a3a5e;
+  }
+  .qcm-answer .puce {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #1a6bff; flex-shrink: 0; display: inline-block;
+  }
+  .qcm-no-answer {
+    padding: 6px 14px; border-radius: 8px;
+    background: #fff8e1; border-left: 3px solid #ffa000;
+    font-size: 0.9rem; color: #7c5e00; font-style: italic;
   }
 
-  /* INPUT NOTE */
-  #reg-note {
-    width: 90px; height: 30px;
-    background: #fff;
-    border: 1px solid #b0c4de;
-    border-radius: 8px;
-    padding: 0 10px;
-    font-size: 0.9rem; color: #555;
-    outline: none;
-    flex-shrink: 0;
-  }
-  #reg-note:focus { border-color: var(--accent); }
-
-  /* TABLE CARD */
-  .table-card {
-    width: 100%; max-width: 1100px;
-    background-image: url('components/Rectangle 29.png');
-    background-size: 100% 100%; background-repeat: no-repeat;
-    border-radius: 12px; overflow: hidden; padding-bottom: 12px;
+  /* Texte */
+  .text-display {
+    background: #f8fafc; border-radius: 10px; padding: 18px 22px;
+    color: #334155; font-size: 0.97rem; line-height: 1.7;
+    border: 1px solid #e2e8f0; white-space: pre-wrap;
   }
 
-  /* TABLE HEADER */
-  .table-header { width: 100%; height: 50px; background: rgba(180,200,225,0.45); border-bottom: 2px solid #4a72b0; display: flex; align-items: center; padding: 0 16px; }
-  .th-num   { width: 72px;  flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
-  .th-vid   { width: 115px; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
-  .th-titre { width: 265px; flex-shrink: 0; display:flex; align-items:center; }
-  .th-cours { width: 205px; flex-shrink: 0; display:flex; align-items:center; }
-  .th-exo   { flex: 1;      display:flex; align-items:center; }
-  .lbl { color: #2a4fb5; font-weight: 700; font-size: 1rem; }
+  /* Fichier */
+  .file-display {
+    display: flex; gap: 12px; align-items: center;
+    background: #f0f6ff; border-radius: 10px;
+    padding: 16px 22px; border: 1px solid #b3d0f5;
+  }
+  .file-icon { font-size: 2rem; }
+  .file-link {
+    color: #1a6bff; font-weight: 600; text-decoration: none;
+    font-size: 0.97rem;
+  }
+  .file-link:hover { text-decoration: underline; }
 
-  /* TABLE ROWS */
-  .table-rows { display: flex; flex-direction: column; }
-  .row-item { width: 100%; height: 92px; display: block; border: none; padding: 0; background: transparent; cursor: pointer; transition: filter 0.15s; }
-  .row-item:hover { filter: brightness(0.95); }
-  .row-item img { width: 100%; height: 100%; display: block; object-fit: fill; }
-
-  /* ACTIONS ROW */
-  .table-actions-row { display: flex; align-items: center; gap: 10px; padding: 10px 18px; background: #e0eaf5; border-bottom: 1px solid #c5d5e8; }
-  .action-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #1a6bff; }
-  .btn-delete { background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; }
-  .btn-delete svg { width: 20px; height: 20px; stroke: #e53935; fill: none; stroke-width: 2; }
-  .btn-delete:hover svg { stroke: #b71c1c; }
-
-  /* LIGNES RÉSULTAT */
-  .result-row { display: flex; align-items: center; gap: 14px; padding: 12px 18px; background: #f5f8fc; border-bottom: 1px solid #d0dcea; transition: background .15s; }
-  .result-row:last-child { border-bottom: none; }
-  .result-row:hover { background: #eaf1f9; }
-  .row-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #1a6bff; flex-shrink: 0; }
-  .avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid #4a7fb5; background: #b8d0e8; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
-  .avatar svg { width: 30px; height: 30px; fill: #4a7fb5; }
-  .row-name { font-weight: 700; font-size: 0.97rem; color: #1a1a2e; min-width: 140px; flex-shrink: 0; }
-  .row-date { flex: 1; font-size: 0.88rem; color: #6b7a8d; text-align: center; }
-  .row-voir { color: #1a6bff; font-size: 0.92rem; font-weight: 600; text-decoration: none; flex-shrink: 0; min-width: 70px; text-align: right; }
-  .row-voir:hover { text-decoration: underline; }
-  .btn-info { background: #1a3a5e; border: none; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
-  .btn-info:hover { background: #1a6bff; }
-
-  /* AJOUTER */
-  .btn-ajouter { background: #1976d2; color: #fff; border: none; border-radius: 10px; padding: 13px 52px; font-size: 1.05rem; font-weight: 700; cursor: pointer; margin-top: 8px; }
-  .resultat-user {
-    display: flex;
-    align-items: center;
-    gap: 10px; /* espace entre l'icône et le texte */
+  /* placeholder vide */
+  .empty-state {
+    padding: 40px; text-align: center; color: #94a3b8;
   }
 
-  .icone-user {
-    width: 32px;   /* taille de l'icône */
-    height: 32px;
+  /* note bar */
+  .note-bar {
+    display: flex; align-items: center; gap: 14px; padding: 16px 28px;
+    background: #f5f8fc; border-top: 1px solid #e3eaf4;
   }
+  .btn-note {
+    background: #1a6bff; color: #fff; border: none;
+    border-radius: 8px; padding: 8px 22px;
+    font-size: 0.95rem; font-weight: 700; cursor: pointer;
+  }
+  .btn-note:hover { background: #1558d6; }
+  .note-msg { font-size: 0.88rem; color: #2e7d32; font-weight: 600; display: none; }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- PAGE BODY -->
 <div class="page-body">
 
-  <!-- Search row -->
   <div class="search-wrap">
-
-    <!-- Retour -->
     <div class="retour-bar">
       <button class="btn-retour" onclick="history.back()">
         <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         Retour
       </button>
     </div>
-
-    <!-- Bloc résultat utilisateur -->
-    <div class="resultat-user">
-      <img src="/static/components/homme.png" alt="Icône utilisateur" class="icone-user"/>
-      <div class="titre-resultat">Nom user selectionner</div>
+    <div class="user-block">
+      <div class="user-avatar-circle">
+        {% if selected_result %}
+          {{ (selected_result.user_name or selected_result.user_prenom or 'U')[0]|upper }}
+        {% else %}?{% endif %}
+      </div>
+      <div class="titre-resultat">
+        {% if selected_result %}
+          {{ selected_result.user_name or (selected_result.user_prenom ~ ' ' ~ selected_result.user_nom) }}
+        {% else %}
+          Aucune sélection
+        {% endif %}
+      </div>
     </div>
-
-    <!-- Input note -->
-    <input type="text" id="reg-note" placeholder="Note"/>
-
-  </div><!-- fin .search-wrap -->
-
-  <!-- TABLE CARD -->
-  <div class="table-card">
+    <input type="number" class="input-note" id="note-input"
+           min="0" max="20" step="0.5" placeholder="Note /20"
+           value="{{ selected_result.note if selected_result and selected_result.note else '' }}">
   </div>
 
-</div><!-- fin .page-body -->
+  <div class="work-card">
+    {% if selected_result %}
+      <div class="work-card-header">
+        <div>
+          <div class="work-card-title">
+            {{ 'Examen' if selected_result.test_categorie == 'examen' else 'Exercice' }}
+            — {{ selected_result.test_titre or 'Sans titre' }}
+          </div>
+          <div class="work-meta">
+            <span class="type-badge ct-{{ selected_result.test_content_type }}">
+              {{ selected_result.test_content_type|upper }}
+            </span>
+            <span>Envoyé le {{ selected_result.submitted_at[:16].replace('T',' ') if selected_result.submitted_at else 'N/A' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="work-body">
+
+        {% if selected_result.test_content_type == 'qcm' %}
+          {# ── QCM : afficher question → réponse choisie ── #}
+          {% if selected_reponses %}
+            {% for item in selected_reponses %}
+            <div class="qcm-block">
+              <div class="qcm-question">{{ loop.index }}. {{ item.question }}</div>
+              {% if item.reponse %}
+                <div class="qcm-answer">
+                  <span class="puce"></span>
+                  <span>{{ item.reponse }}</span>
+                </div>
+              {% else %}
+                <div class="qcm-no-answer">⚠ Pas de réponse fournie</div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">Aucune réponse QCM enregistrée.</div>
+          {% endif %}
+
+        {% elif selected_result.test_content_type == 'texte' %}
+          {# ── TEXTE libre soumis ── #}
+          {% if selected_result.reponses and selected_result.reponses != '[]' %}
+            {# Les réponses texte sont stockées sous forme JSON [{"texte": "..."}] ou juste la string #}
+            <div class="text-display">{{ selected_result.reponses }}</div>
+          {% elif selected_result.test_contenu_texte %}
+            <div class="text-display">{{ selected_result.test_contenu_texte }}</div>
+          {% else %}
+            <div class="empty-state">Aucun texte soumis.</div>
+          {% endif %}
+
+        {% elif selected_result.test_content_type == 'fichier' %}
+          {# ── FICHIER soumis ── #}
+          {% if selected_result.fichier_reponse %}
+            <div class="file-display">
+              <span class="file-icon">📄</span>
+              <div>
+                <div style="font-weight:700; margin-bottom:6px;">Fichier soumis par l'utilisateur</div>
+                <a class="file-link" href="/files/reponses/{{ selected_result.fichier_reponse }}" target="_blank">
+                  📥 Télécharger / Voir : {{ selected_result.fichier_reponse }}
+                </a>
+              </div>
+            </div>
+          {% else %}
+            <div class="empty-state">Aucun fichier soumis.</div>
+          {% endif %}
+
+        {% else %}
+          <div class="empty-state">Type de contenu inconnu.</div>
+        {% endif %}
+
+      </div><!-- .work-body -->
+
+      <div class="note-bar">
+        <label style="font-weight:600; color:#1a1a2e;">Attribuer une note :</label>
+        <input type="number" id="note-bar-input" class="input-note"
+               min="0" max="20" step="0.5" placeholder="Note /20"
+               value="{{ selected_result.note if selected_result.note else '' }}">
+        <button class="btn-note" onclick="saveNote({{ selected_result.id }})">
+          Enregistrer la note
+        </button>
+        <span class="note-msg" id="note-msg">✔ Note enregistrée !</span>
+      </div>
+
+    {% else %}
+      <div class="empty-state" style="padding:60px;">
+        Aucun travail sélectionné.<br>
+        <a href="/admin/test/resultats" style="color:#1a6bff; font-weight:600;">
+          ← Retour à la liste des résultats
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  async function saveNote(resultId) {
+    const val = document.getElementById('note-bar-input').value;
+    if (val === '') { alert('Veuillez saisir une note.'); return; }
+    try {
+      const res = await fetch(`/api/test_resultats/${resultId}/note`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ note: parseFloat(val) })
+      });
+      if (res.ok) {
+        document.getElementById('note-msg').style.display = 'inline';
+        setTimeout(() => { document.getElementById('note-msg').style.display = 'none'; }, 2500);
+      }
+    } catch (e) { console.error(e); }
+  }
+</script>
 {% endblock %}
