@@ -408,9 +408,91 @@
             flex-wrap: wrap;
         }
 
+        .test-card-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            margin-left: auto;
+        }
+
+        .fichier-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .fichier-actions-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+            min-width: 0;
+        }
+
+        .envoyer-file-btn {
+            color: #2563eb;
+            border: none;
+            background: none;
+            font-size: .95rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+            opacity: .55;
+            transition: opacity .2s;
+        }
+
+        .envoyer-file-btn:enabled {
+            opacity: 1;
+        }
+
+        .envoyer-file-btn:hover:enabled {
+            color: #1d4ed8;
+        }
+
         .test-item-content {
             width: 100%;
             margin-top: 8px;
+        }
+
+        .test-text-response-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .test-text-response-field {
+            width: 100%;
+            min-height: 90px;
+            max-height: 320px;
+            border: 1px solid #d7e5fb;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: .95rem;
+            resize: none;
+            overflow: hidden;
+            color: #334155;
+            background: #fff;
+        }
+
+        .test-text-response-submit {
+            align-self: flex-start;
+            border: none;
+            border-radius: 999px;
+            background: #2563eb;
+            color: #fff;
+            padding: 7px 12px;
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .test-text-response-submit:hover {
+            background: #1d4ed8;
         }
 
         .test-item-content.is-collapsed {
@@ -601,39 +683,47 @@
                             {{ 'Examen' if t.categorie == 'examen' else 'Exercice' }}
                             {% if t.titre %} — {{ t.titre }}{% endif %}
                         </span>
-                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; margin-left:auto;">
-                            <span class="row-date">
-                                {% if t.date_debut or t.date_fin %}
-                                    Du {{ t.date_debut }} {{ t.heure_debut }} au {{ t.date_fin }} {{ t.heure_fin }}
-                                {% endif %}
-                            </span>
-                            <button type="button" class="test-toggle-btn" data-target="test-content-{{ t.id }}" aria-expanded="false" title="Afficher" aria-label="Afficher">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.41 7.59L4 9l8 8 8-8-1.41-1.41L12 14.17"></path></svg>
-                            </button>
+                        <div class="test-card-actions">
+                            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+                                <span class="row-date">
+                                    {% if t.date_debut or t.date_fin %}
+                                        Du {{ t.date_debut }} {{ t.heure_debut }} au {{ t.date_fin }} {{ t.heure_fin }}
+                                    {% endif %}
+                                </span>
+                                <button type="button" class="test-toggle-btn" data-target="test-content-{{ t.id }}" aria-expanded="false" title="Afficher" aria-label="Afficher">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.41 7.59L4 9l8 8 8-8-1.41-1.41L12 14.17"></path></svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div id="test-content-{{ t.id }}" class="test-item-content is-collapsed">
+                    <div id="test-content-{{ t.id }}" class="test-item-content is-collapsed" data-content-type="{{ t.content_type }}" data-test-id="{{ t.id }}">
                         {% if t.content_type == 'fichier' %}
-                            <div class="fichier-actions" data-test-id="{{ t.id }}" style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
-                                {% if t.fichier_nom %}
-                                <a class="row-voir" href="{{ url_for('file_test', categorie=t.categorie, filename=t.fichier_nom) }}" download>
-                                    Télécharger le fichier
-                                </a>
-                                <a class="row-voir" href="{{ url_for('file_test', categorie=t.categorie, filename=t.fichier_nom) }}" target="_blank">
-                                    Voir
-                                </a>
-                                {% elif t.fichier_url %}
-                                <a class="row-voir" href="{{ t.fichier_url }}" download>Télécharger le fichier</a>
-                                <a class="row-voir" href="{{ t.fichier_url }}" target="_blank">Voir</a>
-                                {% endif %}
+                            <div class="fichier-actions" data-test-id="{{ t.id }}">
+                                <div class="fichier-actions-left">
+                                    {% if t.fichier_nom %}
+                                    <a class="row-voir" href="{{ url_for('file_test', categorie=t.categorie, filename=t.fichier_nom) }}" download>
+                                        Télécharger le fichier
+                                    </a>
+                                    <a class="row-voir" href="{{ url_for('file_test', categorie=t.categorie, filename=t.fichier_nom) }}" target="_blank">
+                                        Voir
+                                    </a>
+                                    {% elif t.fichier_url %}
+                                    <a class="row-voir" href="{{ t.fichier_url }}" download>Télécharger le fichier</a>
+                                    <a class="row-voir" href="{{ t.fichier_url }}" target="_blank">Voir</a>
+                                    {% endif %}
 
-                                <input type="file" id="reponse-file-{{ t.id }}" class="reponse-file-input" data-test-id="{{ t.id }}" style="display:none;">
-                                <button type="button" class="row-voir reponse-submit-btn" data-test-id="{{ t.id }}"
-                                        style="background:none; border:none; padding:0; cursor:pointer;">
-                                    Soumettre mes réponses
+                                    <input type="file" id="reponse-file-{{ t.id }}" class="reponse-file-input" data-test-id="{{ t.id }}" style="display:none;">
+                                    <button type="button" class="row-voir reponse-submit-btn" data-test-id="{{ t.id }}"
+                                            style="background:none; border:none; padding:0; cursor:pointer;">
+                                        Soumettre mes réponses
+                                    </button>
+                                    <span class="reponse-file-name" id="reponse-file-name-{{ t.id }}" style="font-size:.85rem; color:#6b7a8d;"></span>
+                                </div>
+                                <button type="button" class="row-voir envoyer-file-btn" data-test-id="{{ t.id }}" disabled
+                                        style="background:none; border:none; padding:0; cursor:pointer; white-space:nowrap;">
+                                    Envoyer
                                 </button>
-                                <span class="reponse-file-name" id="reponse-file-name-{{ t.id }}" style="font-size:.85rem; color:#6b7a8d;"></span>
                             </div>
                         {% elif t.content_type == 'texte' %}
                             <p style="margin:0; color:#334155;">{{ t.contenu_texte }}</p>
@@ -704,17 +794,28 @@
 
                 const toggleAllBtn = document.getElementById('toggle-all-tests');
 
-                function setAllTestContentState(state) {
-                    document.querySelectorAll('.test-item-content').forEach((content) => {
-                        content.classList.toggle('is-collapsed', state === 'collapsed');
-                        content.classList.toggle('is-expanded', state === 'expanded');
-                    });
-                    document.querySelectorAll('.test-toggle-btn').forEach((btn) => {
-                        const expanded = state === 'expanded';
+                function syncTestRowState(target, expanded) {
+                    if (!target) return;
+                    target.classList.toggle('is-collapsed', !expanded);
+                    target.classList.toggle('is-expanded', expanded);
+
+                    document.querySelectorAll('.test-toggle-btn[data-target="' + target.id + '"]').forEach((btn) => {
                         btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+                        btn.title = expanded ? 'Réduire' : 'Afficher';
+                        btn.setAttribute('aria-label', expanded ? 'Réduire' : 'Afficher');
                         btn.innerHTML = expanded
                             ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.41 15.41L6 14l6-6 6 6-1.41 1.41L12 10.83"></path></svg>'
                             : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.41 7.59L4 9l8 8 8-8-1.41-1.41L12 14.17"></path></svg>';
+                    });
+
+                }
+
+                function setAllTestContentState(state) {
+                    document.querySelectorAll('.test-item-content').forEach((content) => {
+                        const expanded = state === 'expanded';
+                        content.classList.toggle('is-collapsed', !expanded);
+                        content.classList.toggle('is-expanded', expanded);
+                        syncTestRowState(content, expanded);
                     });
                     if (toggleAllBtn) {
                         toggleAllBtn.dataset.state = state;
@@ -726,19 +827,141 @@
                     }
                 }
 
+                async function submitTestResponse(btn) {
+                    const target = document.getElementById(btn.dataset.target);
+                    if (!target) return false;
+
+                    const contentType = target.dataset.contentType;
+                    const testId = target.dataset.testId;
+                    syncTestRowState(target, true);
+
+                    if (contentType === 'texte') {
+                        let wrapper = target.querySelector('.test-text-response-wrap');
+                        if (!wrapper) {
+                            wrapper = document.createElement('div');
+                            wrapper.className = 'test-text-response-wrap';
+                            const textarea = document.createElement('textarea');
+                            textarea.className = 'test-text-response-field';
+                            textarea.placeholder = 'Saisissez votre réponse ici...';
+                            textarea.style.height = 'auto';
+                            textarea.addEventListener('input', () => {
+                                textarea.style.height = 'auto';
+                                textarea.style.height = textarea.scrollHeight + 'px';
+                            });
+                            const sendBtn = document.createElement('button');
+                            sendBtn.type = 'button';
+                            sendBtn.className = 'test-text-response-submit';
+                            sendBtn.textContent = 'Envoyer';
+                            sendBtn.addEventListener('click', async () => {
+                                const value = textarea.value.trim();
+                                if (!value) {
+                                    showToast('Veuillez saisir votre réponse avant l’envoi.');
+                                    textarea.focus();
+                                    return;
+                                }
+                                try {
+                                    const res = await fetch('/api/tests/' + testId + '/resultats', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ texte_reponse: value })
+                                    });
+                                    const data = await res.json().catch(() => ({}));
+                                    if (!res.ok) {
+                                        showToast(data.error || 'Échec de l’envoi du texte.');
+                                        return;
+                                    }
+                                    textarea.value = '';
+                                    textarea.style.height = '90px';
+                                    showToast('Réponse envoyée à l’administrateur.');
+                                } catch (e) {
+                                    showToast('Erreur réseau lors de l’envoi du texte.');
+                                }
+                            });
+                            wrapper.appendChild(textarea);
+                            wrapper.appendChild(sendBtn);
+                            target.appendChild(wrapper);
+                            textarea.focus();
+                        } else {
+                            const textarea = wrapper.querySelector('textarea');
+                            if (!textarea) return false;
+                            const value = textarea.value.trim();
+                            if (!value) {
+                                showToast('Veuillez saisir votre réponse avant l’envoi.');
+                                textarea.focus();
+                                return false;
+                            }
+                            try {
+                                const res = await fetch('/api/tests/' + testId + '/resultats', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ texte_reponse: value })
+                                });
+                                const data = await res.json().catch(() => ({}));
+                                if (!res.ok) {
+                                    showToast(data.error || 'Échec de l’envoi du texte.');
+                                    return false;
+                                }
+                                textarea.value = '';
+                                textarea.style.height = '90px';
+                                showToast('Réponse envoyée à l’administrateur.');
+                            } catch (e) {
+                                showToast('Erreur réseau lors de l’envoi du texte.');
+                            }
+                        }
+                        return true;
+                    }
+
+                    if (contentType === 'qcm') {
+                        const zone = target.querySelector('.qcm-display');
+                        if (!zone) return false;
+                        let questions = [];
+                        try { questions = JSON.parse(zone.getAttribute('data-qcm') || '[]'); } catch (e) { questions = []; }
+                        const reponses = questions.map((q, qi) => {
+                            const checked = zone.querySelector('input[name="qcm-' + testId + '-' + qi + '"]:checked');
+                            return { question: q.question, reponse: checked ? checked.value : null };
+                        });
+                        const aUneReponse = reponses.some((r) => r.reponse);
+                        if (!aUneReponse) {
+                            showToast('Veuillez sélectionner au moins une réponse.');
+                            return false;
+                        }
+                        try {
+                            const res = await fetch('/api/tests/' + testId + '/resultats', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ reponses })
+                            });
+                            const data = await res.json().catch(() => ({}));
+                            if (!res.ok) {
+                                showToast(data.error || 'Échec de l’envoi du QCM.');
+                                return false;
+                            }
+                            showToast('Réponses QCM envoyées.');
+                        } catch (e) {
+                            showToast('Erreur réseau lors de l’envoi du QCM.');
+                        }
+                        return true;
+                    }
+
+                    if (contentType === 'fichier') {
+                        const fileInput = target.querySelector('.reponse-file-input');
+                        if (!fileInput) {
+                            showToast('Aucun fichier disponible pour cet exercice.');
+                            return false;
+                        }
+                        fileInput.click();
+                        return true;
+                    }
+
+                    return false;
+                }
+
                 document.querySelectorAll('.test-toggle-btn').forEach((btn) => {
                     btn.addEventListener('click', () => {
                         const target = document.getElementById(btn.dataset.target);
                         if (!target) return;
-                        const expanded = target.classList.contains('is-expanded');
-                        target.classList.toggle('is-collapsed', expanded);
-                        target.classList.toggle('is-expanded', !expanded);
-                        btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-                        btn.title = expanded ? 'Afficher' : 'Réduire';
-                        btn.setAttribute('aria-label', expanded ? 'Afficher' : 'Réduire');
-                        btn.innerHTML = expanded
-                            ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.41 7.59L4 9l8 8 8-8-1.41-1.41L12 14.17"></path></svg>'
-                            : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.41 15.41L6 14l6-6 6 6-1.41 1.41L12 10.83"></path></svg>';
+                        const expanded = !target.classList.contains('is-expanded');
+                        syncTestRowState(target, expanded);
                     });
                 });
 
@@ -774,10 +997,48 @@
                     btn.addEventListener('click', () => fileInput.click());
 
                     fileInput.addEventListener('change', () => {
+                        const envoyerBtn = document.querySelector('.envoyer-file-btn[data-test-id="' + testId + '"]');
                         if (fileInput.files && fileInput.files[0]) {
                             fileNameEl.textContent = 'Fichier sélectionné : ' + fileInput.files[0].name;
+                            if (envoyerBtn) {
+                                envoyerBtn.disabled = false;
+                            }
                         } else {
                             fileNameEl.textContent = '';
+                            if (envoyerBtn) {
+                                envoyerBtn.disabled = true;
+                            }
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.envoyer-file-btn').forEach((btn) => {
+                    btn.addEventListener('click', async () => {
+                        const testId = btn.dataset.testId;
+                        const fileInput = document.getElementById('reponse-file-' + testId);
+                        const fileNameEl = document.getElementById('reponse-file-name-' + testId);
+                        if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+                            showToast('Veuillez d’abord importer un fichier avec "Soumettre mes réponses".');
+                            return;
+                        }
+                        btn.disabled = true;
+                        const fd = new FormData();
+                        fd.append('fichier_reponse', fileInput.files[0]);
+                        try {
+                            const res = await fetch('/api/tests/' + testId + '/resultats', { method: 'POST', body: fd });
+                            const data = await res.json().catch(() => ({}));
+                            if (!res.ok) {
+                                showToast(data.error || 'Échec de l’envoi du fichier.');
+                                btn.disabled = false;
+                                return;
+                            }
+                            showToast('Fichier envoyé à l’administrateur.');
+                            fileInput.value = '';
+                            fileNameEl.textContent = '';
+                            btn.disabled = true;
+                        } catch (e) {
+                            showToast('Erreur réseau lors de l’envoi du fichier.');
+                            btn.disabled = false;
                         }
                     });
                 });

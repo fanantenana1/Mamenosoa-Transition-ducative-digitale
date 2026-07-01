@@ -95,14 +95,6 @@
     color: #1a6bff; font-size: 1.3rem; font-weight: 700; line-height: 1;
   }
 
-  .notif-item-delete {
-    flex-shrink: 0;
-    border: none; background: transparent; cursor: pointer;
-    color: #c82333; font-size: 1.1rem; padding: 4px 6px;
-    display: inline-flex; align-items: center; justify-content: center;
-    opacity: .7; transition: opacity .15s; line-height: 1; border-radius: 4px;
-  }
-  .notif-item-delete:hover { opacity: 1; background: #ffe4e6; }
 
   .notif-empty { padding: 48px 28px; text-align: center; color: #94a3b8; }
   .notif-empty-icon { font-size: 3rem; margin-bottom: 12px; }
@@ -156,10 +148,6 @@
 
           <span class="notif-arrow"
                 onclick="openNotif(event, {{ notif.id }}, '{{ notif.target_url or '/admin/test/resultats' }}')">›</span>
-
-          <button type="button" class="notif-item-delete"
-                  onclick="event.stopPropagation(); deleteNotification({{ notif.id }})"
-                  title="Supprimer">✕</button>
         </div>
         {% endfor %}
       {% else %}

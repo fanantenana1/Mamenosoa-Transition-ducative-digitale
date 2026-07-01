@@ -563,6 +563,35 @@
     function escHtml(s) {
       return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
+
+    async function refreshNotifBadge() {
+      try {
+        const res = await fetch('/api/notifications/count', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const count = Number(data.notif_count || 0);
+
+        document.querySelectorAll('.notif-badge, [data-notif-badge]').forEach((el) => {
+          el.textContent = count > 0 ? String(count) : '';
+          if (el.classList && el.classList.contains('notif-badge')) {
+            el.classList.toggle('show', count > 0);
+          } else {
+            el.style.display = count > 0 ? '' : 'none';
+          }
+        });
+      } catch (e) {
+        // Ignorer les erreurs réseau pendant le polling.
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      refreshNotifBadge();
+      window.addEventListener('focus', refreshNotifBadge);
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) refreshNotifBadge();
+      });
+      setInterval(refreshNotifBadge, 3000);
+    });
   </script>
 
   {# Bloc pour le JS propre a chaque page enfant #}

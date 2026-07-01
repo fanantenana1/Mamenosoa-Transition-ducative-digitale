@@ -344,6 +344,269 @@
     vertical-align: middle
   }
 
+  .note-cell {
+    min-width: 140px;
+  }
+
+  .note-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .45rem .7rem;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: var(--muted);
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+  }
+
+  .note-badge.has-notes {
+    background: #0e5df000;
+    color: var(--blue);
+  }
+
+  .note-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(206, 237, 245, 0.12);
+    display: inline-block;
+  }
+
+  .notes-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+  }
+
+  .notes-modal-card {
+    width: min(520px, 100%);
+    max-height: 80vh;
+    overflow: auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 16px 48px rgba(15, 23, 42, 0.2);
+  }
+
+  .notes-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .notes-modal-head h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .notes-modal-body {
+    padding: 1rem 1.2rem 1.2rem;
+  }
+
+  .note-item {
+    width: 100%;
+    text-align: left;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: .8rem .9rem;
+    background: #f8fafc;
+    cursor: pointer;
+    margin-bottom: .7rem;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  }
+
+  .note-item:hover {
+    border-color: var(--blue);
+    background: #f0f7ff;
+    transform: translateY(-1px);
+  }
+
+  .note-item-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .45rem;
+    font-size: .9rem;
+    color: var(--text);
+  }
+
+  .note-user-line {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    min-width: 0;
+  }
+
+  .note-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .82rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .note-item-meta {
+    display: flex;
+    flex-direction: column;
+    gap: .1rem;
+    min-width: 0;
+  }
+
+  .note-item-meta strong {
+    font-size: .9rem;
+    color: var(--text);
+  }
+
+  .note-item-meta span {
+    color: var(--muted);
+    font-size: .75rem;
+  }
+
+  .note-item-actions {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+  }
+
+  .note-btn {
+    border: none;
+    border-radius: 999px;
+    background: #e8f0ff;
+    color: var(--blue);
+    padding: .35rem .5rem;
+    cursor: pointer;
+    font-size: .9rem;
+  }
+
+  .note-item-text {
+    color: var(--text);
+    font-size: .92rem;
+    white-space: pre-wrap;
+    line-height: 1.45;
+  }
+
+  .note-item-reply {
+    margin-top: .45rem;
+    padding: .7rem .8rem;
+    border-radius: 12px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: .88rem;
+    white-space: pre-wrap;
+    border-left: 3px solid var(--blue);
+  }
+
+  .note-empty {
+    color: var(--muted);
+    padding: .7rem 0;
+  }
+
+  .note-detail {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+  }
+
+  .note-thread {
+    display: flex;
+    flex-direction: column;
+    gap: .7rem;
+  }
+
+  .note-bubble {
+    max-width: 88%;
+    padding: .8rem .9rem;
+    border-radius: 16px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  }
+
+  .note-bubble.user {
+    align-self: flex-start;
+    background: #f1f5f9;
+    color: var(--text);
+  }
+
+  .note-bubble.admin {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: #fff;
+  }
+
+  .note-bubble-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: .6rem;
+    margin-bottom: .35rem;
+    font-size: .76rem;
+    opacity: .85;
+  }
+
+  .note-detail-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: .5rem;
+    color: var(--muted);
+    font-size: .9rem;
+  }
+
+  .note-detail-text {
+    padding: .9rem;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: var(--text);
+    white-space: pre-wrap;
+    line-height: 1.6;
+  }
+
+  .note-back-btn {
+    align-self: flex-start;
+    border: none;
+    background: #eff6ff;
+    color: var(--blue);
+    padding: .5rem .8rem;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  .note-reply-box {
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+    padding: .8rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #f8fafc;
+  }
+
+  .note-reply-text {
+    border: 1px solid #dbeafe;
+    border-radius: 10px;
+    padding: .7rem .8rem;
+    min-height: 78px;
+    resize: vertical;
+    font: inherit;
+    color: var(--text);
+  }
+
   .num-cell {
     font-size: 1.6rem;
     font-weight: 800;
@@ -1008,17 +1271,28 @@
             <th>Titre et description</th>
             <th>Document-Cours</th>
             <th>Document-Exercice</th>
+            <th class="note-cell">Commentaires</th>
             <th style="text-align:right">Actions</th>
           </tr>
         </thead>
         <tbody id="cours-tbody">
           <tr>
-            <td colspan="6" style="text-align:center;padding:2rem">
+            <td colspan="7" style="text-align:center;padding:2rem">
               <span class="spinner"></span>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <div id="notes-modal" class="notes-modal" onclick="if(event.target===this)closeNotesModal()">
+    <div class="notes-modal-card">
+      <div class="notes-modal-head">
+        <h3 id="notes-modal-title">Commentaires</h3>
+        <button class="modal-close" type="button" onclick="closeNotesModal()">✕</button>
+      </div>
+      <div id="notes-modal-body" class="notes-modal-body"></div>
     </div>
   </div>
 
@@ -1443,7 +1717,7 @@
   function renderTable() {
     const tbody = document.getElementById('cours-tbody');
     if (!allCours.length) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2.5rem;color:var(--muted)">
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:var(--muted)">
       Aucun cours. Cliquez sur ＋ pour ajouter.</td></tr>`;
       return;
     }
@@ -1451,6 +1725,7 @@
       const hasCours = hasContent(c, 'cours');
       const hasExo = hasContent(c, 'exercice');
       const hasVideo = !!(c.video_filename || c.video_url);
+      const notes = Array.isArray(c.notes) ? c.notes : [];
 
       const docCoursHtml = hasCours
         ? `<div class="doc-badge has" onclick="openDoc(${c.id},'cours')">
@@ -1468,6 +1743,12 @@
            <div class="check-icon no">✕</div> Vide
          </div>`;
 
+      const notesHtml = notes.length
+        ? `<button type="button" class="note-badge has-notes" onclick='openNotesModal(${c.id}, ${JSON.stringify(notes)})'>
+             <span class="note-dot"></span> 💬 ${notes.length} ${notes.length > 1 ? '' : ''}
+           </button>`
+        : `<span class="note-badge">Aucune</span>`;
+
       return `<tr>
       <td class="num-cell">${i + 1}</td>
       <td>
@@ -1482,20 +1763,143 @@
       </td>
       <td>${docCoursHtml}</td>
       <td>${docExoHtml}</td>
+      <td class="note-cell">${notesHtml}</td>
      <td style="text-align:right">
   <button class="action-icon edit" title="Modifier" 
           onclick="openEdit(allCours.find(x=>x.id===${c.id}))">
     <img src="/static/image/ico_modifier.png" alt="Modifier" width="25" height="25">
   </button>
 
-  <button class="action-icon del" title="Supprimer" 
-          onclick="confirmDelete(${c.id}))">
+    <button class="action-icon del" title="Supprimer" 
+      onclick="confirmDelete(${c.id})">
     <img src="/static/image/ico_delete.png" alt="Supprimer" width="18" height="18">
   </button>
 </td>
 
     </tr>`;
     }).join('');
+  }
+
+  function openNotesModal(courseId, notes) {
+    const modal = document.getElementById('notes-modal');
+    const title = document.getElementById('notes-modal-title');
+    const body = document.getElementById('notes-modal-body');
+    const safeNotes = Array.isArray(notes) ? notes : [];
+    window.currentNotes = safeNotes;
+
+    title.textContent = safeNotes.length ? `Commentaires (${safeNotes.length})` : 'Commentaires';
+    if (!safeNotes.length) {
+      body.innerHTML = '<div class="note-empty">Aucune Commentaires enregistrée.</div>';
+      modal.style.display = 'flex';
+      return;
+    }
+
+    body.innerHTML = safeNotes.map((note) => {
+      const userName = note.user_name || 'Utilisateur';
+      const createdAt = note.created_at ? note.created_at.replace('T', ' ').slice(0, 16) : '';
+      const noteText = note.texte ? escHtml(note.texte) : 'Aucun texte';
+      const initials = (userName || 'U').split(/\s+/).slice(0, 2).map(part => part[0] || '').join('').toUpperCase() || 'U';
+      const replyText = note.reponse ? escHtml(note.reponse) : '';
+      return `
+      <div class="note-item" id="note-item-${note.id}" onclick='showNoteDetail(${JSON.stringify(note)})'>
+        <div class="note-item-head">
+          <div class="note-user-line">
+            <div class="note-avatar">${initials}</div>
+            <div class="note-item-meta">
+              <strong>${escHtml(userName)}</strong>
+              <span>${escHtml(createdAt)}</span>
+            </div>
+          </div>
+          <div class="note-item-actions">
+            <button class="note-btn" title="Répondre" onclick='event.stopPropagation(); showReplyBox(${note.id}, ${note.cours_id || 0})'>💬</button>
+            <button class="note-btn" title="Supprimer" onclick='event.stopPropagation(); deleteComment(${note.id}, ${note.cours_id || 0})'>🗑️</button>
+          </div>
+        </div>
+        <div class="note-item-text">${noteText}</div>
+        ${replyText ? `<div class="note-item-reply">${replyText}</div>` : ''}
+      </div>`;
+    }).join('');
+    modal.style.display = 'flex';
+  }
+
+  function showNoteDetail(note) {
+    const body = document.getElementById('notes-modal-body');
+    const userName = note.user_name || 'Utilisateur';
+    const createdAt = note.created_at ? note.created_at.replace('T', ' ').slice(0, 16) : '';
+    const noteText = note.texte ? escHtml(note.texte) : 'Aucun texte';
+    const adminReply = note.reponse ? `<div class="note-bubble admin"><div class="note-bubble-meta"><strong>Admin</strong><span>${escHtml(createdAt)}</span></div>${escHtml(note.reponse)}</div>` : '';
+    body.innerHTML = `
+      <div class="note-detail">
+        <button type="button" class="note-back-btn" onclick='openNotesModal(${note.cours_id || 0}, ${JSON.stringify(Array.isArray(window.currentNotes) ? window.currentNotes : [])})'>← Retour</button>
+        <div class="note-thread">
+          <div class="note-bubble user">
+            <div class="note-bubble-meta"><strong>${escHtml(userName)}</strong><span>${escHtml(createdAt)}</span></div>
+            ${noteText}
+          </div>
+          ${adminReply}
+        </div>
+        <div class="note-reply-box">
+          <textarea class="note-reply-text" placeholder="Écrire une réponse..."></textarea>
+          <div style="display:flex;gap:.5rem;margin-top:.2rem">
+            <button class="note-btn" onclick='sendReply(${note.id}, ${note.cours_id || 0})'>Envoyer</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function closeNotesModal() {
+    document.getElementById('notes-modal').style.display = 'none';
+  }
+
+  // Delete a comment (admin)
+  async function deleteComment(commentId, courseId) {
+    if (!confirm('Supprimer ce commentaire ?')) return;
+    try {
+      const res = await fetch('/api/commentaires/' + commentId, { method: 'DELETE' });
+      if (!res.ok) { const d = await res.json().catch(()=>({})); throw new Error(d.error || 'Erreur'); }
+      await loadCours();
+      const updated = allCours.find(x=>x.id===courseId);
+      openNotesModal(courseId, updated ? updated.notes : []);
+      toast('Commentaire supprimé.', 'ok');
+    } catch (e) { toast(e.message || 'Erreur', 'err'); }
+  }
+
+  // Show reply textarea below a note
+  function showReplyBox(commentId, courseId) {
+    const wrapperId = 'note-item-' + commentId;
+    const wrapper = document.getElementById(wrapperId);
+    if (!wrapper) return;
+    // if reply box exists, toggle
+    let existing = wrapper.querySelector('.note-reply-box');
+    if (existing) { existing.remove(); return; }
+    const box = document.createElement('div');
+    box.className = 'note-reply-box';
+    box.innerHTML = `
+      <textarea class="note-reply-text" placeholder="Ecrire une réponse..."></textarea>
+      <div style="display:flex;gap:.5rem;margin-top:.4rem">
+        <button class="note-btn" onclick='sendReply(${commentId}, ${courseId})'>Envoyer</button>
+        <button class="note-btn" onclick="(function(el){el.closest('.note-reply-box').remove()})(this)">Annuler</button>
+      </div>`;
+    wrapper.appendChild(box);
+  }
+
+  async function sendReply(commentId, courseId) {
+    const wrapper = document.getElementById('note-item-' + commentId);
+    if (!wrapper) return;
+    const ta = wrapper.querySelector('.note-reply-text');
+    if (!ta) return;
+    const val = ta.value.trim();
+    if (!val) { toast('Veuillez écrire une réponse.', 'err'); return; }
+    try {
+      const res = await fetch('/api/commentaires/' + commentId + '/reponse', {
+        method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ reponse: val })
+      });
+      if (!res.ok) { const d = await res.json().catch(()=>({})); throw new Error(d.error || 'Erreur'); }
+      await loadCours();
+      const updated = allCours.find(x=>x.id===courseId);
+      openNotesModal(courseId, updated ? updated.notes : []);
+      toast('Réponse envoyée.', 'ok');
+    } catch (e) { toast(e.message || 'Erreur', 'err'); }
   }
 
   /* ═══════════════════════════════════════════════
@@ -1928,8 +2332,14 @@
   }
 
   document.getElementById('search-box') && document.getElementById('search-box').addEventListener('input', loadCours);
-
   /* INIT */
-  document.addEventListener('DOMContentLoaded', loadCours);
+  document.addEventListener('DOMContentLoaded', () => {
+    loadCours();
+    // Poll every 5 seconds to keep notes and list in sync in real-time
+    setInterval(() => {
+      // Only reload if page is visible to avoid unnecessary work
+      if (document.visibilityState === 'visible') loadCours();
+    }, 5000);
+  });
 </script>
 {% endblock %}

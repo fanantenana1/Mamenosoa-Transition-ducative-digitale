@@ -591,16 +591,34 @@
                 }
 
                 if (btnEnvoyer) {
-                    btnEnvoyer.addEventListener('click', () => {
+                    const coursId = {{ cours.id }};
+                    btnEnvoyer.addEventListener('click', async () => {
                         const value = textarea.value.trim();
                         if (!value) {
                             textarea.focus();
                             showToast('Veuillez écrire un commentaire avant d\'envoyer.');
                             return;
                         }
-                        // TODO: brancher l'envoi réel du commentaire (fetch vers l'API backend)
-                        showToast('Commentaire envoyé !');
-                        textarea.value = '';
+                        try {
+                            btnEnvoyer.disabled = true;
+                            const r = await fetch('/api/commentaires', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ cours_id: coursId, texte: value, note: 0 })
+                            });
+                            if (!r.ok) {
+                                const j = await r.json().catch(()=>({}));
+                                throw new Error(j && j.error ? j.error : 'Erreur serveur');
+                            }
+                            showToast('Commentaire envoyé !');
+                            textarea.value = '';
+                            // reload comments section to reflect saved comment
+                            setTimeout(()=> location.reload(), 400);
+                        } catch (err) {
+                            showToast(err.message || 'Erreur');
+                        } finally {
+                            btnEnvoyer.disabled = false;
+                        }
                     });
                 }
 

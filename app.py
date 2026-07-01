@@ -151,7 +151,7 @@ def init_db():
             if col not in notification_columns:
                 db.execute(f'ALTER TABLE notifications ADD COLUMN {col} {col_def}')
         db.execute('''
-            CREATE TABLE IF NOT EXISTS commentaires (
+            CREATE TABLE IF NOT EXISTS tests (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 categorie TEXT NOT NULL DEFAULT 'exercice',
                 content_type TEXT NOT NULL DEFAULT 'fichier',
@@ -187,6 +187,29 @@ def init_db():
         ]:
             if col not in tests_columns:
                 db.execute(f'ALTER TABLE tests ADD COLUMN {col} {col_def}')
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS commentaires (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                cours_id INTEGER,
+                texte TEXT DEFAULT '',
+                note REAL DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(user_id) REFERENCES users(id),
+                FOREIGN KEY(cours_id) REFERENCES cours(id)
+            )
+        ''')
+        commentaire_columns = [row[1] for row in db.execute("PRAGMA table_info(commentaires)").fetchall()]
+        for col, col_def in [
+            ('user_id', "INTEGER"),
+            ('cours_id', "INTEGER"),
+            ('texte', "TEXT DEFAULT ''"),
+            ('note', "REAL DEFAULT 0"),
+            ('reponse', "TEXT DEFAULT ''"),
+            ('created_at', "DATETIME DEFAULT CURRENT_TIMESTAMP"),
+        ]:
+            if col not in commentaire_columns:
+                db.execute(f'ALTER TABLE commentaires ADD COLUMN {col} {col_def}')
         db.execute('''
             CREATE TABLE IF NOT EXISTS test_resultats (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -279,6 +302,19 @@ def serialize_cours(row):
     }
 
 
+def serialize_commentaire(row):
+    return {
+        'id': row['id'],
+        'user_id': row['user_id'],
+        'cours_id': row['cours_id'],
+        'texte': row['texte'],
+        'note': row['note'],
+        'reponse': row['reponse'] if 'reponse' in row.keys() else '',
+        'created_at': row['created_at'],
+        'user_name': row['user_name'] if 'user_name' in row.keys() else None,
+    }
+
+
 def serialize_test(row):
     return {
         'id': row['id'],
@@ -337,7 +373,20 @@ def api_get_cours():
     query += f' ORDER BY {sort} {order}'
     with get_db() as db:
         rows = db.execute(query, params).fetchall()
-    return jsonify([serialize_cours(row) for row in rows])
+        payload = []
+        for row in rows:
+            cours_data = serialize_cours(row)
+            comments = db.execute(
+                '''SELECT c.*, u.name AS user_name
+                   FROM commentaires c
+                   LEFT JOIN users u ON u.id = c.user_id
+                   WHERE c.cours_id=?
+                   ORDER BY c.created_at DESC''',
+                (row['id'],)
+            ).fetchall()
+            cours_data['notes'] = [serialize_commentaire(comment_row) for comment_row in comments]
+            payload.append(cours_data)
+    return jsonify(payload)
 
 
 @app.route('/api/cours', methods=['POST'])
@@ -723,10 +772,14 @@ def api_submit_test_resultat(test_id):
                 return jsonify({'error': 'Aucun fichier reçu.'}), 400
         else:
             data = request.get_json(silent=True) or {}
-            reponses = data.get('reponses', [])
-            if not reponses:
-                return jsonify({'error': 'Aucune réponse à envoyer.'}), 400
-            reponses_json = _json.dumps(reponses)
+            texte_reponse = data.get('texte_reponse', '')
+            if texte_reponse is not None and str(texte_reponse).strip():
+                reponses_json = _json.dumps([{'type': 'texte', 'reponse': str(texte_reponse).strip()}])
+            else:
+                reponses = data.get('reponses', [])
+                if not reponses:
+                    return jsonify({'error': 'Aucune réponse à envoyer.'}), 400
+                reponses_json = _json.dumps(reponses)
 
         cur = db.execute(
             'INSERT INTO test_resultats (test_id, user_id, reponses, fichier_reponse) VALUES (?, ?, ?, ?)',
@@ -1223,6 +1276,38 @@ def api_commentaires():
         )
         db.commit()
     return jsonify({'ok': True})
+
+
+@app.route('/api/commentaires/<int:comment_id>', methods=['DELETE'])
+@login_required
+@admin_required
+def api_delete_comment(comment_id):
+    """Permet à l'admin de supprimer un commentaire."""
+    with get_db() as db:
+        row = db.execute('SELECT * FROM commentaires WHERE id=?', (comment_id,)).fetchone()
+        if not row:
+            return jsonify({'error': 'Commentaire introuvable.'}), 404
+        db.execute('DELETE FROM commentaires WHERE id=?', (comment_id,))
+        db.commit()
+    return jsonify({'ok': True})
+
+
+@app.route('/api/commentaires/<int:comment_id>/reponse', methods=['POST'])
+@login_required
+@admin_required
+def api_reply_comment(comment_id):
+    """Enregistre la réponse d'un admin à un commentaire."""
+    data = request.get_json(silent=True) or {}
+    reponse = (data.get('reponse') or '').strip()
+    if not reponse:
+        return jsonify({'error': "Réponse vide."}), 400
+    with get_db() as db:
+        row = db.execute('SELECT * FROM commentaires WHERE id=?', (comment_id,)).fetchone()
+        if not row:
+            return jsonify({'error': 'Commentaire introuvable.'}), 404
+        db.execute('UPDATE commentaires SET reponse=? WHERE id=?', (reponse, comment_id))
+        db.commit()
+    return jsonify({'ok': True, 'reponse': reponse})
 
 @app.route('/api/login', methods=['POST'])
 def api_login():

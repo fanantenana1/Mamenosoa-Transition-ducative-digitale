@@ -756,13 +756,12 @@
     // Rafraîchir le badge de notifications sur toutes les pages admin (global)
     async function refreshNotifBadge() {
       try {
-        const res = await fetch('/api/notifications/count');
+        const res = await fetch('/api/notifications/count', { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
-        const count = data.notif_count;
-        console.log('[notif] refreshNotifBadge:', count);
-        document.querySelectorAll('.notif-badge, [data-notif-badge]').forEach(el => {
-          el.textContent = count > 0 ? count : '';
+        const count = Number(data.notif_count || 0);
+        document.querySelectorAll('.notif-badge, [data-notif-badge]').forEach((el) => {
+          el.textContent = count > 0 ? String(count) : '';
           if (el.classList && el.classList.contains('notif-badge')) {
             el.classList.toggle('show', count > 0);
           } else {
@@ -771,8 +770,14 @@
         });
       } catch (e) { /* ignore */ }
     }
-    document.addEventListener('DOMContentLoaded', refreshNotifBadge);
-    setInterval(refreshNotifBadge, 8000);
+    document.addEventListener('DOMContentLoaded', () => {
+      refreshNotifBadge();
+      window.addEventListener('focus', refreshNotifBadge);
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) refreshNotifBadge();
+      });
+      setInterval(refreshNotifBadge, 3000);
+    });
   </script>
   {% endblock %}
 
