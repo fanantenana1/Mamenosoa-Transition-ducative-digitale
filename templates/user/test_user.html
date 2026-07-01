@@ -332,7 +332,7 @@
         /* LIGNES RÉSULTAT */
         .result-row {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 14px;
             padding: 12px 18px;
             background: #f5f8fc;
@@ -360,6 +360,71 @@
             cursor: pointer;
             accent-color: #1a6bff;
             flex-shrink: 0;
+        }
+
+        .test-list-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .test-toggle-all-btn,
+        .test-toggle-btn {
+            border: 1px solid #c7dcff;
+            background: #eaf2ff;
+            color: #1a6bff;
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: .9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s, color .2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .test-toggle-all-btn:hover,
+        .test-toggle-btn:hover {
+            background: #dbeafe;
+            color: #155bb5;
+        }
+
+        .test-toggle-all-btn svg,
+        .test-toggle-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            display: block;
+        }
+
+        .test-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .test-item-content {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .test-item-content.is-collapsed {
+            display: none;
+        }
+
+        .test-item-content.is-expanded {
+            display: block;
+            animation: fadeIn .2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .avatar {
@@ -524,46 +589,58 @@
         <!-- ════ LISTE DES TESTS / EXERCICES ENVOYÉS PAR L'ADMINISTRATEUR ════ -->
         <div class="table-card" id="tests-card" style="padding:20px;">
             {% if tests %}
+                <div class="test-list-toolbar">
+                    <button type="button" class="test-toggle-all-btn" id="toggle-all-tests" data-state="collapsed" title="Afficher tout" aria-label="Afficher tout">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.41 7.59L4 9l8 8 8-8-1.41-1.41L12 14.17"></path></svg>
+                    </button>
+                </div>
                 {% for t in tests %}
                 <div id="test-{{ t.id }}" class="result-row" style="flex-direction:column; align-items:flex-start; gap:8px;" data-test-id="{{ t.id }}">
-                    <div style="display:flex; justify-content:space-between; width:100%;">
+                    <div class="test-card-header">
                         <span class="row-name">
                             {{ 'Examen' if t.categorie == 'examen' else 'Exercice' }}
                             {% if t.titre %} — {{ t.titre }}{% endif %}
                         </span>
-                        <span class="row-date">
-                            {% if t.date_debut or t.date_fin %}
-                                Du {{ t.date_debut }} {{ t.heure_debut }} au {{ t.date_fin }} {{ t.heure_fin }}
-                            {% endif %}
-                        </span>
+                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; margin-left:auto;">
+                            <span class="row-date">
+                                {% if t.date_debut or t.date_fin %}
+                                    Du {{ t.date_debut }} {{ t.heure_debut }} au {{ t.date_fin }} {{ t.heure_fin }}
+                                {% endif %}
+                            </span>
+                            <button type="button" class="test-toggle-btn" data-target="test-content-{{ t.id }}" aria-expanded="false" title="Afficher" aria-label="Afficher">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.41 7.59L4 9l8 8 8-8-1.41-1.41L12 14.17"></path></svg>
+                            </button>
+                        </div>
                     </div>
 
-                    {% if t.content_type == 'fichier' %}
-                        <div class="fichier-actions" data-test-id="{{ t.id }}" style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
-                            {% if t.fichier_nom %}
-                            <a class="row-voir" href="{{ url_for('file_test', categorie=t.categorie, filename=t.fichier_nom) }}" download>
-                                Télécharger le fichier
-                            </a>
-                            <a class="row-voir" href="{{ url_for('file_test', categorie=t.categorie, filename=t.fichier_nom) }}" target="_blank">
-                                Voir
-                            </a>
-                            {% elif t.fichier_url %}
-                            <a class="row-voir" href="{{ t.fichier_url }}" download>Télécharger le fichier</a>
-                            <a class="row-voir" href="{{ t.fichier_url }}" target="_blank">Voir</a>
-                            {% endif %}
+                    <div id="test-content-{{ t.id }}" class="test-item-content is-collapsed">
+                        {% if t.content_type == 'fichier' %}
+                            <div class="fichier-actions" data-test-id="{{ t.id }}" style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+                                {% if t.fichier_nom %}
+                                <a class="row-voir" href="{{ url_for('file_test', categorie=t.categorie, filename=t.fichier_nom) }}" download>
+                                    Télécharger le fichier
+                                </a>
+                                <a class="row-voir" href="{{ url_for('file_test', categorie=t.categorie, filename=t.fichier_nom) }}" target="_blank">
+                                    Voir
+                                </a>
+                                {% elif t.fichier_url %}
+                                <a class="row-voir" href="{{ t.fichier_url }}" download>Télécharger le fichier</a>
+                                <a class="row-voir" href="{{ t.fichier_url }}" target="_blank">Voir</a>
+                                {% endif %}
 
-                            <input type="file" id="reponse-file-{{ t.id }}" class="reponse-file-input" data-test-id="{{ t.id }}" style="display:none;">
-                            <button type="button" class="row-voir reponse-submit-btn" data-test-id="{{ t.id }}"
-                                    style="background:none; border:none; padding:0; cursor:pointer;">
-                                Soumettre mes réponses
-                            </button>
-                            <span class="reponse-file-name" id="reponse-file-name-{{ t.id }}" style="font-size:.85rem; color:#6b7a8d;"></span>
-                        </div>
-                    {% elif t.content_type == 'texte' %}
-                        <p style="margin:0; color:#334155;">{{ t.contenu_texte }}</p>
-                    {% elif t.content_type == 'qcm' %}
-                        <div class="qcm-display" data-test-id="{{ t.id }}" data-qcm='{{ t.contenu_qcm }}'></div>
-                    {% endif %}
+                                <input type="file" id="reponse-file-{{ t.id }}" class="reponse-file-input" data-test-id="{{ t.id }}" style="display:none;">
+                                <button type="button" class="row-voir reponse-submit-btn" data-test-id="{{ t.id }}"
+                                        style="background:none; border:none; padding:0; cursor:pointer;">
+                                    Soumettre mes réponses
+                                </button>
+                                <span class="reponse-file-name" id="reponse-file-name-{{ t.id }}" style="font-size:.85rem; color:#6b7a8d;"></span>
+                            </div>
+                        {% elif t.content_type == 'texte' %}
+                            <p style="margin:0; color:#334155;">{{ t.contenu_texte }}</p>
+                        {% elif t.content_type == 'qcm' %}
+                            <div class="qcm-display" data-test-id="{{ t.id }}" data-qcm='{{ t.contenu_qcm }}'></div>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endfor %}
             {% else %}
@@ -624,6 +701,55 @@
                         zone.appendChild(block);
                     });
                 });
+
+                const toggleAllBtn = document.getElementById('toggle-all-tests');
+
+                function setAllTestContentState(state) {
+                    document.querySelectorAll('.test-item-content').forEach((content) => {
+                        content.classList.toggle('is-collapsed', state === 'collapsed');
+                        content.classList.toggle('is-expanded', state === 'expanded');
+                    });
+                    document.querySelectorAll('.test-toggle-btn').forEach((btn) => {
+                        const expanded = state === 'expanded';
+                        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+                        btn.innerHTML = expanded
+                            ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.41 15.41L6 14l6-6 6 6-1.41 1.41L12 10.83"></path></svg>'
+                            : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.41 7.59L4 9l8 8 8-8-1.41-1.41L12 14.17"></path></svg>';
+                    });
+                    if (toggleAllBtn) {
+                        toggleAllBtn.dataset.state = state;
+                        toggleAllBtn.title = state === 'expanded' ? 'Réduire tout' : 'Afficher tout';
+                        toggleAllBtn.setAttribute('aria-label', state === 'expanded' ? 'Réduire tout' : 'Afficher tout');
+                        toggleAllBtn.innerHTML = state === 'expanded'
+                            ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.41 15.41L6 14l6-6 6 6-1.41 1.41L12 10.83"></path></svg>'
+                            : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.41 7.59L4 9l8 8 8-8-1.41-1.41L12 14.17"></path></svg>';
+                    }
+                }
+
+                document.querySelectorAll('.test-toggle-btn').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        const target = document.getElementById(btn.dataset.target);
+                        if (!target) return;
+                        const expanded = target.classList.contains('is-expanded');
+                        target.classList.toggle('is-collapsed', expanded);
+                        target.classList.toggle('is-expanded', !expanded);
+                        btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+                        btn.title = expanded ? 'Afficher' : 'Réduire';
+                        btn.setAttribute('aria-label', expanded ? 'Afficher' : 'Réduire');
+                        btn.innerHTML = expanded
+                            ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.41 7.59L4 9l8 8 8-8-1.41-1.41L12 14.17"></path></svg>'
+                            : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.41 15.41L6 14l6-6 6 6-1.41 1.41L12 10.83"></path></svg>';
+                    });
+                });
+
+                if (toggleAllBtn) {
+                    toggleAllBtn.addEventListener('click', () => {
+                        const nextState = toggleAllBtn.dataset.state === 'expanded' ? 'collapsed' : 'expanded';
+                        setAllTestContentState(nextState);
+                    });
+                }
+
+                setAllTestContentState('collapsed');
 
                 const urlParams = new URLSearchParams(window.location.search);
                 const focusTestId = urlParams.get('focus_test_id');
