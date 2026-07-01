@@ -1,7 +1,7 @@
-{% extends "admin/dashboard.html" %}
-{% set active_page = 'notifications' %}
+{% extends "user/dashboard.html" %}
 
 {% block title %}Digiscool - Notifications{% endblock %}
+{% block active_page %}{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -23,7 +23,7 @@
   }
 
   .notif-header {
-    background: linear-gradient(135deg, #043C70 0%, #02254a 100%);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     color: #fff; padding: 20px 24px; font-size: 1.3rem; font-weight: 700;
     display: flex; justify-content: space-between; align-items: center;
     border-radius: 18px 18px 0 0;
@@ -49,9 +49,10 @@
   .notif-delete-btn:hover { opacity: 1; }
   .notif-delete-btn svg { width: 22px; height: 22px; stroke: #fff; fill: none; stroke-width: 2; }
 
+  /* ── Liste ── */
   .notif-list { display: flex; flex-direction: column; }
 
-  /* Item : flex UNE seule ligne */
+  /* ── Item : flex UNE ligne ── */
   .notif-item {
     padding: 14px 20px;
     border-bottom: 1px solid #e2e8f0;
@@ -62,14 +63,16 @@
     transition: background .2s ease;
     cursor: pointer;
     border-left: 4px solid transparent;
+    position: relative;
   }
-  .notif-item:hover { background: #f0f6ff; border-left-color: #1a6bff; }
+  .notif-item:hover { background: #f0f6ff; border-left-color: #2563eb; }
   .notif-item:last-child { border-bottom: none; }
-  .notif-item.unread { background: #eef4ff; border-left-color: #1a6bff; }
+  .notif-item.unread { background: #eef4ff; border-left-color: #2563eb; }
   .notif-item.unread .notif-message { font-weight: 700; }
   .notif-item.read { background: #fff; border-left-color: #d1d5db; }
-  .notif-item.read:hover { border-left-color: #1a6bff; background: #f0f6ff; }
+  .notif-item.read:hover { border-left-color: #2563eb; background: #f0f6ff; }
 
+  /* Col checkbox */
   .notif-cb-wrap {
     flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
@@ -77,30 +80,36 @@
   }
   .notif-cb-wrap input[type="checkbox"] {
     width: 16px; height: 16px;
-    accent-color: #043C70; cursor: pointer; margin: 0;
+    accent-color: #2563eb; cursor: pointer; margin: 0;
   }
 
+  /* Col dot */
   .notif-dot {
     flex-shrink: 0;
-    width: 10px; height: 10px; border-radius: 50%; background: #1a6bff;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #2563eb;
   }
   .notif-item.read .notif-dot { background: transparent; border: 1.5px solid #b0bec5; }
 
+  /* Col contenu */
   .notif-content { flex: 1; min-width: 0; }
   .notif-message { color: #1f2937; font-size: .97rem; line-height: 1.4; margin-bottom: 2px; }
   .notif-time { color: #6b7a8d; font-size: .82rem; }
 
+  /* Col flèche */
   .notif-arrow {
     flex-shrink: 0;
-    color: #1a6bff; font-size: 1.3rem; font-weight: 700; line-height: 1;
+    color: #2563eb; font-size: 1.3rem; font-weight: 700; line-height: 1;
   }
 
+  /* Col bouton ✕ */
   .notif-item-delete {
     flex-shrink: 0;
     border: none; background: transparent; cursor: pointer;
     color: #c82333; font-size: 1.1rem; padding: 4px 6px;
     display: inline-flex; align-items: center; justify-content: center;
-    opacity: .7; transition: opacity .15s; line-height: 1; border-radius: 4px;
+    opacity: .7; transition: opacity .15s; line-height: 1;
+    border-radius: 4px;
   }
   .notif-item-delete:hover { opacity: 1; background: #ffe4e6; }
 
@@ -142,21 +151,26 @@
         <div class="notif-item {% if not notif.is_read %}unread{% else %}read{% endif %}"
              id="notif-{{ notif.id }}">
 
+          <!-- checkbox : stopPropagation sur le WRAPPER seulement -->
           <div class="notif-cb-wrap" onclick="event.stopPropagation()">
             <input type="checkbox" class="notif-check" value="{{ notif.id }}">
           </div>
 
+          <!-- dot lu/non-lu -->
           <span class="notif-dot"></span>
 
+          <!-- contenu cliquable -->
           <div class="notif-content"
-               onclick="openNotif(event, {{ notif.id }}, '{{ notif.target_url or '/admin/test/resultats' }}')">
-            <div class="notif-message">{{ notif.message }}</div>
+               onclick="openNotif(event, {{ notif.id }}, '{{ notif.target_url or '/user/test' }}')">
+            <div class="notif-message">{{ notif.message if notif.message else 'Aucun message disponible.' }}</div>
             <div class="notif-time">{{ notif.created_at[:16].replace('T', ' ') if notif.created_at else '' }}</div>
           </div>
 
+          <!-- flèche -->
           <span class="notif-arrow"
-                onclick="openNotif(event, {{ notif.id }}, '{{ notif.target_url or '/admin/test/resultats' }}')">›</span>
+                onclick="openNotif(event, {{ notif.id }}, '{{ notif.target_url or '/user/test' }}')">›</span>
 
+          <!-- supprimer -->
           <button type="button" class="notif-item-delete"
                   onclick="event.stopPropagation(); deleteNotification({{ notif.id }})"
                   title="Supprimer">✕</button>
@@ -176,9 +190,12 @@
 
 {% block extra_js %}
 <script>
-  /* ════ Checkbox "Tout" ════ */
+  /* ════════════════════════════════════════
+     CHECKBOX "Tout" ↔ checkboxes de la liste
+  ════════════════════════════════════════ */
   const selectAllCb = document.getElementById('notif-select-all');
 
+  /* Quand on clique sur "Tout" → cocher/décocher TOUT */
   if (selectAllCb) {
     selectAllCb.addEventListener('change', function () {
       document.querySelectorAll('.notif-check').forEach(cb => {
@@ -188,6 +205,7 @@
     });
   }
 
+  /* Quand on clique sur un item → mettre à jour "Tout" */
   document.querySelectorAll('.notif-check').forEach(cb => {
     cb.addEventListener('change', syncSelectAll);
   });
@@ -196,16 +214,22 @@
     const all     = document.querySelectorAll('.notif-check');
     const checked = document.querySelectorAll('.notif-check:checked');
     if (!selectAllCb || all.length === 0) return;
+
     if (checked.length === 0) {
-      selectAllCb.checked = false; selectAllCb.indeterminate = false;
+      selectAllCb.checked       = false;
+      selectAllCb.indeterminate = false;
     } else if (checked.length === all.length) {
-      selectAllCb.checked = true;  selectAllCb.indeterminate = false;
+      selectAllCb.checked       = true;
+      selectAllCb.indeterminate = false;
     } else {
-      selectAllCb.checked = false; selectAllCb.indeterminate = true;
+      selectAllCb.checked       = false;
+      selectAllCb.indeterminate = true;
     }
   }
 
-  /* ════ Supprimer sélection ════ */
+  /* ════════════════════════════════════════
+     Bouton poubelle (sélection)
+  ════════════════════════════════════════ */
   const btnDeleteSelected = document.getElementById('btn-delete-selected');
   if (btnDeleteSelected) {
     btnDeleteSelected.addEventListener('click', deleteSelectedNotifications);
@@ -217,14 +241,19 @@
     if (!confirm(`Supprimer ${ids.length} notification(s) ?`)) return;
     try {
       await Promise.all(ids.map(id => fetch(`/api/notifications/${id}`, { method: 'DELETE' })));
-      ids.forEach(id => { const el = document.getElementById(`notif-${id}`); if (el) el.remove(); });
+      ids.forEach(id => {
+        const el = document.getElementById(`notif-${id}`);
+        if (el) el.remove();
+      });
       if (selectAllCb) { selectAllCb.checked = false; selectAllCb.indeterminate = false; }
       checkEmptyList();
       await refreshBadge();
     } catch (e) { console.error(e); }
   }
 
-  /* ════ Supprimer UNE ════ */
+  /* ════════════════════════════════════════
+     Supprimer UNE notification
+  ════════════════════════════════════════ */
   async function deleteNotification(notifId) {
     if (!confirm('Supprimer cette notification ?')) return;
     try {
@@ -239,7 +268,9 @@
     } catch (e) { console.error(e); }
   }
 
-  /* ════ Ouvrir / marquer lu ════ */
+  /* ════════════════════════════════════════
+     Ouvrir / marquer comme lu
+  ════════════════════════════════════════ */
   async function openNotif(event, notifId, targetUrl) {
     try {
       const res  = await fetch(`/api/notifications/${notifId}/read`, { method: 'POST' });
@@ -248,10 +279,12 @@
       if (el) { el.classList.remove('unread'); el.classList.add('read'); }
       updateBadgeValue(data.notif_count);
     } catch (_) {}
-    window.location.href = targetUrl || '/admin/test/resultats';
+    window.location.href = targetUrl || '/user/test';
   }
 
-  /* ════ Liste vide ════ */
+  /* ════════════════════════════════════════
+     Liste vide → afficher message
+  ════════════════════════════════════════ */
   function checkEmptyList() {
     const list  = document.getElementById('notif-list');
     const items = list ? list.querySelectorAll('.notif-item') : [];
@@ -266,7 +299,9 @@
     }
   }
 
-  /* ════ Badge ════ */
+  /* ════════════════════════════════════════
+     Badge
+  ════════════════════════════════════════ */
   function updateBadgeValue(count) {
     const local = document.getElementById('badge-live');
     if (local) local.textContent = count;
@@ -288,17 +323,16 @@
     } catch (_) {}
   }
 
-  /* ════ Polling 8 s ════ */
-  let lastNotifCount = {{ notif_count }};
+  /* ════════════════════════════════════════
+     Polling 8 s
+  ════════════════════════════════════════ */
+  let lastCount = {{ notif_count }};
   setInterval(async () => {
     try {
       const res  = await fetch('/api/notifications/count');
       const data = await res.json();
       updateBadgeValue(data.notif_count);
-      if (data.notif_count > lastNotifCount) {
-        lastNotifCount = data.notif_count;
-        location.reload();
-      }
+      if (data.notif_count > lastCount) { lastCount = data.notif_count; location.reload(); }
     } catch (_) {}
   }, 8000);
 </script>

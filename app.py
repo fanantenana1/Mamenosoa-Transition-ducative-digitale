@@ -804,7 +804,9 @@ def dashboard_admin():
     with get_db() as db:
         users = db.execute("SELECT * FROM users WHERE role!='admin' ORDER BY created_at DESC").fetchall()
         cours = db.execute('SELECT * FROM cours ORDER BY created_at DESC').fetchall()
-        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+        notif_count = db.execute(
+            "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
+        ).fetchone()[0]
     return render_template('admin/dashboard.html', admin_name=session.get('name'), users=users, cours=cours, notif_count=notif_count)
 
 
@@ -838,7 +840,9 @@ def admin_dashboard_alias():
 def admin_education():
     with get_db() as db:
         cours = db.execute('SELECT * FROM cours ORDER BY created_at DESC').fetchall()
-        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+        notif_count = db.execute(
+            "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
+        ).fetchone()[0]
     return render_template('admin/education.html', cours=cours, notif_count=notif_count)
 
 
@@ -850,7 +854,9 @@ def admin_video(cours_id):
         cours = db.execute('SELECT * FROM cours WHERE id = ?', (cours_id,)).fetchone()
         if not cours:
             return redirect(url_for('admin_education'))
-        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+        notif_count = db.execute(
+            "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
+        ).fetchone()[0]
     return render_template('video.html', cours=cours, notif_count=notif_count)
 
 
@@ -859,7 +865,9 @@ def admin_video(cours_id):
 @admin_required
 def admin_test():
     with get_db() as db:
-        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+        notif_count = db.execute(
+            "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
+        ).fetchone()[0]
         tests = db.execute('SELECT * FROM tests ORDER BY created_at DESC').fetchall()
     return render_template('admin/test.html', notif_count=notif_count, tests=tests)
 @app.route('/admin/test/resultats')
@@ -867,7 +875,9 @@ def admin_test():
 @admin_required
 def admin_test_resultat():
     with get_db() as db:
-        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+        notif_count = db.execute(
+            "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
+        ).fetchone()[0]
         query = '''
             SELECT r.id, r.test_id, r.user_id, r.submitted_at,
                    t.titre AS test_titre, t.categorie AS test_categorie, t.content_type,
@@ -885,7 +895,9 @@ def admin_test_resultat():
 def admin_travaille_user():
     result_id = request.args.get('result_id', type=int)
     with get_db() as db:
-        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE is_read=0').fetchone()[0]
+        notif_count = db.execute(
+            "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
+        ).fetchone()[0]
         base_query = '''
             SELECT r.*, t.titre AS test_titre, t.categorie AS test_categorie,
                    t.content_type AS test_content_type, t.fichier_nom AS test_fichier_nom,
@@ -1049,13 +1061,10 @@ def user_test():
 @app.route('/user/notifications')
 @login_required
 def user_notifications():
+    """Affiche la liste des notifications de l'utilisateur (sans marquer comme lue automatiquement)."""
     with get_db() as db:
         notifications = db.execute('SELECT * FROM notifications WHERE user_id=? ORDER BY created_at DESC', (session['user_id'],)).fetchall()
         notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)).fetchone()[0]
-        # L'utilisateur vient de consulter ses notifications : on les marque comme lues
-        # pour que le badge diminue du nombre de notifications vues.
-        db.execute('UPDATE notifications SET is_read=1 WHERE user_id=? AND is_read=0', (session['user_id'],))
-        db.commit()
     return render_template('user/notifications.html', notifications=notifications, user_name=session.get('name'), notif_count=notif_count)
 
 
@@ -1174,6 +1183,28 @@ def admin_notifications():
             "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
         ).fetchone()[0]
     return render_template('admin/notifications.html', notifications=notifications, notif_count=notif_count)
+
+
+@app.route('/user/notification/<int:notif_id>')
+@login_required
+def user_notification_detail(notif_id):
+    """Affiche le détail d'une notification pour l'utilisateur."""
+    with get_db() as db:
+        notif_row = db.execute(
+            'SELECT * FROM notifications WHERE id=? AND user_id=?', (notif_id, session['user_id'])
+        ).fetchone()
+        if not notif_row:
+            return redirect(url_for('user_notifications'))
+        notif = dict(notif_row)
+        # Marquer comme lue si elle ne l'est pas
+        if not notif['is_read']:
+            db.execute('UPDATE notifications SET is_read=1 WHERE id=?', (notif_id,))
+            db.commit()
+            notif['is_read'] = 1
+        notif_count = db.execute(
+            'SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)
+        ).fetchone()[0]
+    return render_template('user/notification_detail.html', notif=notif, notif_count=notif_count)
 
 
 @app.route('/api/commentaires', methods=['POST'])

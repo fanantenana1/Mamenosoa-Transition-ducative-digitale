@@ -1,64 +1,104 @@
 {% extends "user/dashboard.html" %}
 
 {% block title %}Digiscool - Notifications{% endblock %}
-
 {% block active_page %}{% endblock %}
 
 {% block extra_head %}
 <style>
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: #BED6F3; overflow-x: hidden; }
   .page-body {
     background-image: url('/static/components/Rectangle 18.png');
-    background-size: 100% 100%; flex:1;
+    background-size: 100% 100%; flex: 1;
     padding: 32px 40px 48px;
     display: flex; flex-direction: column; align-items: center;
     gap: 24px; margin-top: 25px;
     min-height: calc(100vh - 157px);
   }
+
   .notif-container {
-    width:100%; max-width:900px; background:#fff;
-    border-radius:18px; box-shadow:0 10px 35px rgba(0,0,0,.12); overflow:hidden;
+    width: 100%; max-width: 900px; background: #fff;
+    border-radius: 18px; box-shadow: 0 10px 35px rgba(0,0,0,.12);
   }
+
+  /* ── HEADER ── */
   .notif-header {
     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-    color:#fff; padding:24px 28px; font-size:1.3rem; font-weight:700;
-    display:flex; justify-content:space-between; align-items:center;
+    color: #fff; padding: 20px 24px; font-size: 1.3rem; font-weight: 700;
+    display: flex; justify-content: space-between; align-items: center;
+    border-radius: 18px 18px 0 0;
   }
-  .notif-header-actions { display:flex; gap:1rem; align-items:center; }
-  .notif-select-all { display:flex; align-items:center; gap:.6rem; color:#fff; cursor:pointer; font-size:.9rem; }
-  .notif-select-all input { width:18px; height:18px; accent-color:#fff; cursor:pointer; }
-  .notif-delete-btn { border:none; background:transparent; cursor:pointer; display:inline-flex; align-items:center; opacity:.8; transition:opacity .15s; }
+  .notif-header-actions { display: flex; gap: 1rem; align-items: center; }
+  .notif-select-all {
+    display: flex; align-items: center; gap: .6rem;
+    color: #fff; cursor: pointer; font-size: .95rem; user-select: none;
+  }
+  .notif-select-all input { width:18px; height:18px; accent-color:#fff; cursor:pointer; margin:0; }
+  .notif-delete-btn {
+    border:none; background:transparent; cursor:pointer;
+    display:inline-flex; align-items:center; opacity:.85; padding:0; transition:opacity .15s;
+  }
   .notif-delete-btn:hover { opacity:1; }
   .notif-delete-btn svg { width:22px; height:22px; stroke:#fff; fill:none; stroke-width:2; }
 
-  .notif-list { display:flex; flex-direction:column; }
-  .notif-item {
-    padding:16px 28px; border-bottom:1px solid #e2e8f0;
-    display:grid; grid-template-columns:auto 1fr auto auto;
-    gap:14px; align-items:center;
-    transition:background .15s; cursor:pointer;
+  /* ── LISTE = TABLE pour forcer une seule ligne par notif ── */
+  table.notif-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
   }
-  .notif-item:hover { background:#f0f6ff; }
-  .notif-item:last-child { border-bottom:none; }
-  .notif-item.unread { background:#f0f6ff; }
-  .notif-item.unread .notif-message { font-weight:700; }
 
-  .notif-checkbox { display:inline-flex; align-items:center; justify-content:center; }
-  .notif-checkbox input { width:18px; height:18px; accent-color:#2563eb; cursor:pointer; }
+  table.notif-table tr.notif-row {
+    border-bottom: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: background .2s;
+    border-left: 4px solid transparent;
+  }
+  table.notif-table tr.notif-row:last-child { border-bottom: none; }
+  table.notif-table tr.notif-row:hover      { background: #f0f6ff; border-left-color: #2563eb; }
+  table.notif-table tr.notif-row.unread     { background: #eef4ff; border-left-color: #2563eb; }
+  table.notif-table tr.notif-row.read       { background: #fff;    border-left-color: #d1d5db; }
+  table.notif-table tr.notif-row.read:hover { background: #f0f6ff; border-left-color: #2563eb; }
 
-  .notif-dot { width:10px; height:10px; border-radius:50%; background:#2563eb; flex-shrink:0; margin-top:4px; }
-  .notif-item.read .notif-dot { background:transparent; border:1.5px solid #c7d3e2; }
+  /* Cellules */
+  table.notif-table td {
+    padding: 14px 6px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
 
-  .notif-content { flex:1; }
-  .notif-message { color:#1f2937; font-size:.97rem; line-height:1.5; margin-bottom:4px; }
-  .notif-time { color:#6b7a8d; font-size:.83rem; }
-  .notif-arrow { color:#2563eb; font-size:1.3rem; font-weight:700; }
+  /* Col checkbox */
+  td.td-cb   { width: 30px; padding-left: 16px; }
+  td.td-cb input[type="checkbox"] {
+    width:16px; height:16px; accent-color:#2563eb; cursor:pointer; margin:0; display:block;
+  }
+
+  /* Col dot */
+  td.td-dot  { width: 20px; }
+  .notif-dot {
+    display: inline-block;
+    width:10px; height:10px; border-radius:50%; background:#2563eb;
+  }
+  tr.notif-row.read .notif-dot { background:transparent; border:1.5px solid #b0bec5; }
+
+  /* Col contenu */
+  td.td-msg  { width: auto; white-space: normal; padding-left: 8px; padding-right: 8px; }
+  .notif-message { color:#1f2937; font-size:.97rem; line-height:1.4; margin-bottom:2px; font-weight:normal; }
+  tr.notif-row.unread .notif-message { font-weight:700; }
+  .notif-time { color:#6b7a8d; font-size:.82rem; }
+
+  /* Col flèche */
+  td.td-arrow { width: 24px; color:#2563eb; font-size:1.3rem; font-weight:700; text-align:center; }
+
+  /* Col supprimer */
+  td.td-del  { width: 36px; padding-right: 12px; }
   .notif-item-delete {
     border:none; background:transparent; cursor:pointer;
-    color:#c82333; font-size:1.3rem; padding:0 4px;
-    display:inline-flex; align-items:center; opacity:.7; transition:opacity .15s;
+    color:#c82333; font-size:1.1rem; padding:4px 6px;
+    display:inline-flex; align-items:center; opacity:.7;
+    transition:opacity .15s; border-radius:4px;
   }
-  .notif-item-delete:hover { opacity:1; }
+  .notif-item-delete:hover { opacity:1; background:#ffe4e6; }
+
+  /* Vide */
   .notif-empty { padding:48px 28px; text-align:center; color:#94a3b8; }
   .notif-empty-icon { font-size:3rem; margin-bottom:12px; }
 </style>
@@ -67,8 +107,11 @@
 {% block content %}
 <div class="page-body">
   <div class="notif-container">
+
+    <!-- HEADER -->
     <div class="notif-header">
-      <div>Notifications
+      <div>
+        Notifications
         <span id="badge-live" style="background:#e53935;border-radius:20px;padding:2px 10px;font-size:.85rem;margin-left:8px;">{{ notif_count }}</span>
       </div>
       {% if notifications %}
@@ -77,111 +120,215 @@
           <input type="checkbox" id="notif-select-all" onchange="toggleAllNotifications(this)">
           <span>Tout</span>
         </label>
-        <button type="button" class="notif-delete-btn" onclick="deleteSelectedNotifications()" title="Supprimer la sélection">
-          <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        <button type="button" class="notif-delete-btn" id="btn-delete-selected" title="Supprimer la sélection" disabled>
+          <svg viewBox="0 0 24 24">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6"/><path d="M14 11v6"/>
+            <path d="M9 6V4h6v2"/>
+          </svg>
         </button>
       </div>
       {% endif %}
     </div>
 
-    <div class="notif-list" id="notif-list">
-      {% if notifications %}
+    <!-- LISTE -->
+    {% if notifications %}
+    <table class="notif-table" id="notif-list">
+      <tbody>
         {% for notif in notifications %}
-        <div class="notif-item {% if not notif.is_read %}unread{% else %}read{% endif %}"
-             id="notif-{{ notif.id }}"
-             onclick="openNotif(event, {{ notif.id }}, '{{ notif.target_url or '/user/test' }}')">
-          <label class="notif-checkbox" onclick="event.stopPropagation()">
-            <input type="checkbox" class="notif-check" value="{{ notif.id }}" onchange="updateDeleteState()">
-          </label>
-          <span class="notif-dot"></span>
-          <div class="notif-content">
-            <div class="notif-message">{{ notif.message }}</div>
+        <tr class="notif-row {% if not notif.is_read %}unread{% else %}read{% endif %}"
+            id="notif-{{ notif.id }}">
+
+          <!-- checkbox -->
+          <td class="td-cb" onclick="event.stopPropagation()">
+            <input type="checkbox" class="notif-check" value="{{ notif.id }}" onchange="syncSelectAll()">
+          </td>
+
+          <!-- dot -->
+          <td class="td-dot">
+            <span class="notif-dot"></span>
+          </td>
+
+          <!-- message + heure -->
+          <td class="td-msg"
+              onclick="openNotif(event, {{ notif.id }}, '{{ notif.target_url or '/user/test' }}')">
+            <div class="notif-message">{{ notif.message if notif.message else 'Aucun message disponible.' }}</div>
             <div class="notif-time">{{ notif.created_at[:16].replace('T', ' ') if notif.created_at else '' }}</div>
-          </div>
-          <span class="notif-arrow">›</span>
-          <button type="button" class="notif-item-delete"
-                  onclick="event.stopPropagation(); deleteNotification({{ notif.id }})" title="Supprimer">✕</button>
-        </div>
+          </td>
+
+          <!-- flèche -->
+          <td class="td-arrow"
+              onclick="openNotif(event, {{ notif.id }}, '{{ notif.target_url or '/user/test' }}')">›</td>
+
+          <!-- supprimer -->
+          <td class="td-del">
+            <button type="button" class="notif-item-delete"
+                    onclick="event.stopPropagation(); deleteNotification({{ notif.id }})"
+                    title="Supprimer">✕</button>
+          </td>
+
+        </tr>
         {% endfor %}
-      {% else %}
-        <div class="notif-empty">
-          <div class="notif-empty-icon">📭</div>
-          <p>Aucune notification pour le moment.</p>
-        </div>
-      {% endif %}
+      </tbody>
+    </table>
+
+    {% else %}
+    <div id="notif-list">
+      <div class="notif-empty">
+        <div class="notif-empty-icon">📭</div>
+        <p>Aucune notification pour le moment.</p>
+      </div>
     </div>
+    {% endif %}
+
   </div>
 </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block extra_scripts %}
 <script>
-  async function openNotif(event, notifId, targetUrl) {
-    if (event.target.closest('input[type=checkbox]') || event.target.closest('.notif-item-delete')) return;
-    try {
-      const res = await fetch(`/api/notifications/${notifId}/read`, { method: 'POST' });
-      const data = await res.json();
+  /* ── Checkbox "Tout" ── */
+  const selectAllCb = document.getElementById('notif-select-all');
+  const btnDel = document.getElementById('btn-delete-selected');
+
+  function syncSelectAll() {
+    if (!selectAllCb) return;
+    const all = document.querySelectorAll('.notif-check');
+    const checked = document.querySelectorAll('.notif-check:checked');
+    if (all.length === 0) {
+      selectAllCb.checked = false;
+      selectAllCb.indeterminate = false;
+    } else if (checked.length === all.length) {
+      selectAllCb.checked = true;
+      selectAllCb.indeterminate = false;
+    } else if (checked.length === 0) {
+      selectAllCb.checked = false;
+      selectAllCb.indeterminate = false;
+    } else {
+      selectAllCb.checked = false;
+      selectAllCb.indeterminate = true;
+    }
+
+    if (btnDel) {
+      btnDel.disabled = checked.length === 0;
+      btnDel.style.opacity = checked.length === 0 ? '0.35' : '0.85';
+    }
+  }
+
+  function toggleAllNotifications(source) {
+    document.querySelectorAll('.notif-check').forEach(cb => {
+      cb.checked = source.checked;
+    });
+    syncSelectAll();
+  }
+
+  function initNotificationSelection() {
+    if (selectAllCb) {
+      selectAllCb.removeEventListener('change', handleSelectAllChange);
+      selectAllCb.addEventListener('change', handleSelectAllChange);
+    }
+
+    document.querySelectorAll('.notif-check').forEach(cb => {
+      cb.removeEventListener('change', syncSelectAll);
+      cb.addEventListener('change', syncSelectAll);
+    });
+
+    if (btnDel) {
+      btnDel.removeEventListener('click', deleteSelectedNotifications);
+      btnDel.addEventListener('click', deleteSelectedNotifications);
+    }
+
+    syncSelectAll();
+  }
+
+  function handleSelectAllChange() {
+    toggleAllNotifications(this);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNotificationSelection);
+  } else {
+    initNotificationSelection();
+  }
+
+  async function deleteSelectedNotifications() {
+    const ids = Array.from(document.querySelectorAll('.notif-check:checked')).map(c => c.value);
+    if (!ids.length) { alert('Aucune notification sélectionnée.'); return; }
+    if (!confirm(`Supprimer ${ids.length} notification(s) ?`)) return;
+    await Promise.all(ids.map(id => fetch(`/api/notifications/${id}`, { method: 'DELETE' })));
+    ids.forEach(id => { const el = document.getElementById(`notif-${id}`); if (el) el.remove(); });
+    if (selectAllCb) { selectAllCb.checked = false; selectAllCb.indeterminate = false; }
+    syncSelectAll();
+    checkEmptyList();
+    await refreshBadge();
+  }
+
+  /* ── Supprimer une ── */
+  async function deleteNotification(notifId) {
+    if (!confirm('Supprimer cette notification ?')) return;
+    const res = await fetch(`/api/notifications/${notifId}`, { method: 'DELETE' });
+    if (res.ok) {
       const el = document.getElementById(`notif-${notifId}`);
+      if (el) el.remove();
+      syncSelectAll();
+      checkEmptyList();
+      await refreshBadge();
+    }
+  }
+
+  /* ── Ouvrir / marquer lu ── */
+  async function openNotif(event, notifId, targetUrl) {
+    try {
+      const res  = await fetch(`/api/notifications/${notifId}/read`, { method: 'POST' });
+      const data = await res.json();
+      const el   = document.getElementById(`notif-${notifId}`);
       if (el) { el.classList.remove('unread'); el.classList.add('read'); }
       updateBadgeValue(data.notif_count);
     } catch (_) {}
     window.location.href = targetUrl || '/user/test';
   }
 
-  async function deleteNotification(notifId) {
-    if (!confirm('Supprimer cette notification ?')) return;
-    try {
-      const res = await fetch(`/api/notifications/${notifId}`, { method: 'DELETE' });
-      if (res.ok) {
-        const el = document.getElementById(`notif-${notifId}`);
-        if (el) el.remove();
-        await refreshBadge();
-      }
-    } catch (e) { console.error(e); }
+  /* ── Liste vide ── */
+  function checkEmptyList() {
+    const list  = document.getElementById('notif-list');
+    if (!list) return;
+    const rows = list.querySelectorAll('.notif-row');
+    if (rows.length === 0) {
+      /* Remplacer la table par un message */
+      const wrapper = document.createElement('div');
+      wrapper.id = 'notif-list';
+      wrapper.innerHTML = `<div class="notif-empty"><div class="notif-empty-icon">📭</div><p>Aucune notification pour le moment.</p></div>`;
+      list.replaceWith(wrapper);
+      const actions = document.querySelector('.notif-header-actions');
+      if (actions) actions.style.display = 'none';
+    }
   }
 
-  function toggleAllNotifications(source) {
-    document.querySelectorAll('.notif-check').forEach(b => b.checked = source.checked);
-  }
-  function updateDeleteState() {
-    const all = document.querySelectorAll('.notif-check');
-    const checked = document.querySelectorAll('.notif-check:checked');
-    const sa = document.getElementById('notif-select-all');
-    if (sa) sa.checked = all.length > 0 && checked.length === all.length;
-  }
-  async function deleteSelectedNotifications() {
-    const ids = Array.from(document.querySelectorAll('.notif-check:checked')).map(c => c.value);
-    if (!ids.length) { alert('Aucune notification sélectionnée.'); return; }
-    if (!confirm(`Supprimer ${ids.length} notification(s) ?`)) return;
-    try {
-      await Promise.all(ids.map(id => fetch(`/api/notifications/${id}`, { method: 'DELETE' })));
-      ids.forEach(id => { const el = document.getElementById(`notif-${id}`); if(el) el.remove(); });
-      await refreshBadge();
-    } catch (e) { console.error(e); }
-  }
-
+  /* ── Badge ── */
   function updateBadgeValue(count) {
     const local = document.getElementById('badge-live');
     if (local) local.textContent = count;
     document.querySelectorAll('.notif-badge, [data-notif-badge]').forEach(el => {
       el.textContent = count > 0 ? count : '';
-      el.style.display = count > 0 ? '' : 'none';
+      if (el.classList.contains('notif-badge')) el.classList.toggle('show', count > 0);
+      else el.style.display = count > 0 ? '' : 'none';
     });
   }
 
   async function refreshBadge() {
     try {
-      const res = await fetch('/api/notifications/count');
+      const res  = await fetch('/api/notifications/count');
       const data = await res.json();
       updateBadgeValue(data.notif_count);
     } catch (_) {}
   }
 
-  /* Polling : nouvelle notif → recharge */
+  /* ── Polling 8s ── */
   let lastCount = {{ notif_count }};
   setInterval(async () => {
     try {
-      const res = await fetch('/api/notifications/count');
+      const res  = await fetch('/api/notifications/count');
       const data = await res.json();
       updateBadgeValue(data.notif_count);
       if (data.notif_count > lastCount) { lastCount = data.notif_count; location.reload(); }

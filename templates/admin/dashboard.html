@@ -495,8 +495,8 @@
       <a href="/admin/test" class="nav-btn{% if active_page == 'test' %} active{% endif %}">Test</a>
       <a href="/admin/notifications" class="notif-link" title="Notifications">
         <span class="notif-icon">
-          <img src="/static/image/notifi3.png" alt="Notifications" width="35" height="35">
-        </span>
+            <img src="/static/image/notifi3.png" alt="Notifications" width="35" height="35">
+          </span>
         <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
       </a>
       <a href="/logout" class="nav-btn nav-btn-accent">Déconnexion</a>
@@ -680,6 +680,7 @@
               window.alert('Veuillez sélectionner Exercice ou Examen.');
               return;
             }
+            
             if (!contentType) {
               window.alert('Veuillez sélectionner un contenu : Fichier, Texte ou QCM.');
               return;
@@ -751,6 +752,27 @@
         }
       }
     });
+
+    // Rafraîchir le badge de notifications sur toutes les pages admin (global)
+    async function refreshNotifBadge() {
+      try {
+        const res = await fetch('/api/notifications/count');
+        if (!res.ok) return;
+        const data = await res.json();
+        const count = data.notif_count;
+        console.log('[notif] refreshNotifBadge:', count);
+        document.querySelectorAll('.notif-badge, [data-notif-badge]').forEach(el => {
+          el.textContent = count > 0 ? count : '';
+          if (el.classList && el.classList.contains('notif-badge')) {
+            el.classList.toggle('show', count > 0);
+          } else {
+            el.style.display = count > 0 ? '' : 'none';
+          }
+        });
+      } catch (e) { /* ignore */ }
+    }
+    document.addEventListener('DOMContentLoaded', refreshNotifBadge);
+    setInterval(refreshNotifBadge, 8000);
   </script>
   {% endblock %}
 

@@ -1,0 +1,159 @@
+{% extends "user/dashboard.html" %}
+
+{% block title %}Digiscool - Détail Notification{% endblock %}
+
+{% block active_page %}{% endblock %}
+
+{% block extra_head %}
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #BED6F3; overflow-x: hidden; }
+  .page-body {
+    background-image: url('/static/components/Rectangle 18.png');
+    background-size: 100% 100%; flex:1;
+    padding: 32px 40px 48px;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 24px; margin-top: 25px;
+    min-height: calc(100vh - 157px);
+  }
+  .notif-detail-container {
+    width:100%; max-width:900px; background:#fff;
+    border-radius:18px; box-shadow:0 10px 35px rgba(0,0,0,.12); overflow:hidden;
+  }
+  .notif-detail-header {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color:#fff; padding:24px 28px; font-size:1.3rem; font-weight:700;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .notif-detail-back {
+    background: rgba(255,255,255,.2); border:none; color:#fff;
+    border-radius:6px; padding:8px 16px; cursor:pointer;
+    font-size:.9rem; transition:background .2s;
+  }
+  .notif-detail-back:hover { background: rgba(255,255,255,.3); }
+  
+  .notif-detail-body {
+    padding:32px 40px;
+  }
+  .notif-detail-meta {
+    display:flex; gap:24px; margin-bottom:28px; padding-bottom:20px;
+    border-bottom:1px solid #e5e7eb;
+    font-size:.9rem; color:#6b7a8d;
+  }
+  .notif-detail-meta-item { display:flex; flex-direction:column; gap:4px; }
+  .notif-detail-meta-label { font-weight:700; color:#1f2937; }
+  
+  .notif-detail-dot {
+    width:12px; height:12px; border-radius:50%; background:#2563eb;
+    display:inline-block; margin-right:8px; flex-shrink:0; margin-top:3px;
+  }
+  .notif-detail-dot.read { background:transparent; border:2px solid #d1d5db; }
+  
+  .notif-detail-message-title { font-size:1.1rem; font-weight:700; color:#1f2937; margin-bottom:16px; }
+  .notif-detail-message {
+    color:#374151; font-size:1rem; line-height:1.6;
+    background:#f9fafb; padding:20px; border-radius:8px;
+    border-left:4px solid #2563eb; white-space:pre-wrap; word-wrap:break-word;
+  }
+  
+  .notif-detail-actions {
+    margin-top:28px; display:flex; gap:12px;
+    padding-top:20px; border-top:1px solid #e5e7eb;
+  }
+  .notif-detail-btn {
+    border:none; border-radius:6px; padding:10px 16px; cursor:pointer;
+    font-size:.95rem; font-weight:600; transition:all .2s;
+  }
+  .notif-detail-btn-back {
+    background:#2563eb; color:#fff;
+  }
+  .notif-detail-btn-back:hover { background:#1d4ed8; }
+  
+  .notif-detail-btn-delete {
+    background:#fee2e2; color:#c82333;
+  }
+  .notif-detail-btn-delete:hover { background:#fecaca; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-body">
+  <div class="notif-detail-container">
+    <div class="notif-detail-header">
+      <div>Détail de la Notification</div>
+      <button class="notif-detail-back" onclick="window.history.back()">← Retour</button>
+    </div>
+    
+    <div class="notif-detail-body">
+      <!-- Métadonnées -->
+      <div class="notif-detail-meta">
+        <div class="notif-detail-meta-item">
+          <span class="notif-detail-meta-label">Statut</span>
+          <span>{% if notif.is_read %}Lue{% else %}Non lue{% endif %}</span>
+        </div>
+        <div class="notif-detail-meta-item">
+          <span class="notif-detail-meta-label">Date & Heure</span>
+          <span>{{ notif.created_at[:16].replace('T', ' ') if notif.created_at else 'N/A' }}</span>
+        </div>
+      </div>
+      
+      <!-- Message -->
+      <div class="notif-detail-message-title">
+        <span class="notif-detail-dot{% if notif.is_read %} read{% endif %}"></span>
+        Message
+      </div>
+      <div class="notif-detail-message">{{ notif.message if notif.message else 'Aucun message disponible.' }}</div>
+      
+      <!-- Actions -->
+      <div class="notif-detail-actions">
+        <button class="notif-detail-btn notif-detail-btn-back" onclick="window.location.href='/user/notifications'">
+          ← Retour à la liste
+        </button>
+        <button class="notif-detail-btn notif-detail-btn-delete" onclick="deleteAndGoBack({{ notif.id }})">
+          Supprimer cette notification
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  async function deleteAndGoBack(notifId) {
+    if (!confirm('Supprimer cette notification ?')) return;
+    try {
+      const res = await fetch(`/api/notifications/${notifId}`, { method: 'DELETE' });
+      if (res.ok) {
+        window.location.href = '/user/notifications';
+      } else {
+        alert('Erreur lors de la suppression.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Erreur réseau.');
+    }
+  }
+
+  function updateBadgeValue(count) {
+    document.querySelectorAll('.notif-badge, [data-notif-badge]').forEach(el => {
+      el.textContent = count > 0 ? count : '';
+      if (el.classList && el.classList.contains('notif-badge')) {
+        el.classList.toggle('show', count > 0);
+      } else {
+        el.style.display = count > 0 ? '' : 'none';
+      }
+    });
+  }
+
+  async function refreshBadge() {
+    try {
+      const res = await fetch('/api/notifications/count');
+      const data = await res.json();
+      updateBadgeValue(data.notif_count);
+    } catch (_) {}
+  }
+
+  /* Polling : mise à jour du badge toutes les 5 secondes */
+  setInterval(refreshBadge, 5000);
+</script>
+{% endblock %}
