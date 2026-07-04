@@ -386,6 +386,7 @@
             <div class="row-name">{{ r.name or (r.prenom ~ ' ' ~ r.nom) }}</div>
             <div class="row-date">{{ 'Examen' if r.test_categorie == 'examen' else 'Exercice' }} — {{ r.test_titre or 'Sans titre' }}</div>
             <div class="row-date">{{ r.submitted_at[:16].replace('T', ' ') if r.submitted_at else '' }}</div>
+            <div class="row-date">Note : {{ ('%.2f' % r.note) if r.note is not none else 'N/A' }}</div>
             <a href="/admin/test/travaille_user?result_id={{ r.id }}" class="row-voir" onclick="event.stopPropagation()">Voire...</a>
             <button class="btn-info" title="Informations" onclick="event.stopPropagation(); openInfoModal({{ r.id }})">
               <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

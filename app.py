@@ -162,6 +162,7 @@ def init_db():
                 fichier_nom TEXT DEFAULT '',
                 fichier_url TEXT DEFAULT '',
                 contenu_texte TEXT DEFAULT '',
+                contenu_texte_correction TEXT DEFAULT '',
                 contenu_qcm TEXT DEFAULT '[]',
                 date_debut TEXT DEFAULT '',
                 heure_debut TEXT DEFAULT '',
@@ -180,6 +181,7 @@ def init_db():
             ('fichier_nom', "TEXT DEFAULT ''"),
             ('fichier_url', "TEXT DEFAULT ''"),
             ('contenu_texte', "TEXT DEFAULT ''"),
+            ('contenu_texte_correction', "TEXT DEFAULT ''"),
             ('contenu_qcm', "TEXT DEFAULT '[]'"),
             ('date_debut', "TEXT DEFAULT ''"),
             ('heure_debut', "TEXT DEFAULT ''"),
@@ -353,6 +355,7 @@ def serialize_test(row):
         'fichier_nom': row['fichier_nom'],
         'fichier_url': row['fichier_url'],
         'contenu_texte': row['contenu_texte'],
+        'contenu_texte_correction': row['contenu_texte_correction'] if 'contenu_texte_correction' in row.keys() else '',
         'contenu_qcm': row['contenu_qcm'],
         'date_debut': row['date_debut'],
         'heure_debut': row['heure_debut'],
@@ -360,6 +363,112 @@ def serialize_test(row):
         'heure_fin': row['heure_fin'],
         'created_at': row['created_at'],
     }
+
+
+def normalize_answer_text(value):
+    if not isinstance(value, str):
+        return ''
+    return ' '.join(value.strip().lower().split())
+
+
+def parse_display_answers(value):
+    if value is None:
+        return []
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return []
+        try:
+            return parse_display_answers(json.loads(text))
+        except Exception:
+            return [text]
+    if isinstance(value, list):
+        answers = []
+        for item in value:
+            if isinstance(item, dict):
+                if item.get('reponse') is not None:
+                    answers.append(str(item['reponse']))
+                elif item.get('texte') is not None:
+                    answers.append(str(item['texte']))
+            elif isinstance(item, str):
+                answers.append(item)
+        return answers
+    if isinstance(value, dict):
+        if value.get('reponse') is not None:
+            return [str(value['reponse'])]
+        if value.get('texte') is not None:
+            return [str(value['texte'])]
+    return [str(value)]
+
+
+def compute_test_result_note(test, user_responses):
+    if not test or not user_responses:
+        return None
+    test_data = dict(test) if hasattr(test, 'keys') else test
+    content_type = (test_data.get('content_type') or test_data['content_type']).strip().lower()
+    if content_type == 'qcm':
+        try:
+            questions = json.loads(test_data.get('contenu_qcm') or '[]')
+        except Exception:
+            return None
+        if not isinstance(questions, list) or not questions:
+            return None
+        correct_count = 0
+        total = 0
+        for index, question in enumerate(questions):
+            if not isinstance(question, dict):
+                continue
+            total += 1
+            correct_index = question.get('correct')
+            if correct_index is None:
+                continue
+            try:
+                correct_index = int(correct_index)
+            except (TypeError, ValueError):
+                continue
+            answers = question.get('reponses') or []
+            if not isinstance(answers, list) or correct_index < 0 or correct_index >= len(answers):
+                continue
+            correct_answer = normalize_answer_text(answers[correct_index])
+            if not correct_answer:
+                continue
+            user_answer = None
+            if index < len(user_responses) and isinstance(user_responses[index], dict):
+                response = user_responses[index]
+                user_answer = response.get('reponse') or response.get('texte')
+            # Accept both answer indices and the answer text directly.
+            if user_answer is not None:
+                if isinstance(user_answer, str) and user_answer.isdigit():
+                    try:
+                        sel_index = int(user_answer)
+                    except ValueError:
+                        sel_index = None
+                    if sel_index is not None and 0 <= sel_index < len(answers):
+                        user_answer = answers[sel_index]
+                elif isinstance(user_answer, (int, float)):
+                    sel_index = int(user_answer)
+                    if 0 <= sel_index < len(answers):
+                        user_answer = answers[sel_index]
+            if normalize_answer_text(user_answer) == correct_answer:
+                correct_count += 1
+        if total <= 0:
+            return None
+        return round((correct_count / total) * 20, 2)
+    if content_type == 'texte':
+        expected = normalize_answer_text(test_data.get('contenu_texte_correction') or '')
+        if not expected:
+            return None
+        user_answer = None
+        if isinstance(user_responses, list) and user_responses:
+            first = user_responses[0]
+            if isinstance(first, dict):
+                user_answer = first.get('reponse') or first.get('texte')
+            elif isinstance(first, str):
+                user_answer = first
+        if normalize_answer_text(user_answer) == expected or (expected and normalize_answer_text(user_answer) in expected) or (normalize_answer_text(user_answer) and expected in normalize_answer_text(user_answer)):
+            return 20.0
+        return 0.0
+    return None
 
 
 def save_uploaded_file(uploaded_file, upload_dir, allowed_set=None):
@@ -609,6 +718,7 @@ def api_create_test():
     fichier_nom = ''
     fichier_url = ''
     contenu_texte = ''
+    contenu_texte_correction = ''
     contenu_qcm = '[]'
 
     try:
@@ -620,6 +730,7 @@ def api_create_test():
                 )
         elif content_type == 'texte':
             contenu_texte = request.form.get('contenu_texte', '').strip()
+            contenu_texte_correction = request.form.get('contenu_texte_correction', '').strip()
         elif content_type == 'qcm':
             contenu_qcm = request.form.get('contenu_qcm', '[]')
     except ValueError as exc:
@@ -635,10 +746,10 @@ def api_create_test():
     with get_db() as db:
         cur = db.execute(
             '''INSERT INTO tests (categorie, content_type, titre, fichier_nom, fichier_url,
-                contenu_texte, contenu_qcm, date_debut, heure_debut, date_fin, heure_fin, created_by)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                contenu_texte, contenu_texte_correction, contenu_qcm, date_debut, heure_debut, date_fin, heure_fin, created_by)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
             (categorie, content_type, titre, fichier_nom, fichier_url,
-             contenu_texte, contenu_qcm, date_debut, heure_debut, date_fin, heure_fin,
+             contenu_texte, contenu_texte_correction, contenu_qcm, date_debut, heure_debut, date_fin, heure_fin,
              session['user_id'])
         )
         new_id = cur.lastrowid
@@ -682,6 +793,7 @@ def api_update_test(test_id):
         fichier_nom = existing['fichier_nom'] or ''
         fichier_url = existing['fichier_url'] or ''
         contenu_texte = existing['contenu_texte'] or ''
+        contenu_texte_correction = existing.get('contenu_texte_correction', '') or '' if isinstance(existing, dict) else existing['contenu_texte_correction'] or ''
         contenu_qcm = existing['contenu_qcm'] or '[]'
 
         try:
@@ -701,9 +813,11 @@ def api_update_test(test_id):
                         remove_file(os.path.join(upload_dir_for_categorie(existing['categorie']), existing['fichier_nom']))
                     fichier_nom = ''
                 contenu_texte = ''
+                contenu_texte_correction = ''
                 contenu_qcm = '[]'
             elif content_type == 'texte':
                 contenu_texte = request.form.get('contenu_texte', '').strip()
+                contenu_texte_correction = request.form.get('contenu_texte_correction', '').strip()
                 fichier_nom = ''
                 fichier_url = ''
                 contenu_qcm = '[]'
@@ -712,6 +826,7 @@ def api_update_test(test_id):
                 fichier_nom = ''
                 fichier_url = ''
                 contenu_texte = ''
+                contenu_texte_correction = ''
         except ValueError as exc:
             return jsonify({'error': str(exc)}), 400
 
@@ -724,10 +839,10 @@ def api_update_test(test_id):
 
         db.execute(
             '''UPDATE tests SET categorie=?, content_type=?, titre=?, fichier_nom=?, fichier_url=?,
-               contenu_texte=?, contenu_qcm=?, date_debut=?, heure_debut=?, date_fin=?, heure_fin=?
+               contenu_texte=?, contenu_texte_correction=?, contenu_qcm=?, date_debut=?, heure_debut=?, date_fin=?, heure_fin=?
                WHERE id=?''',
             (categorie, content_type, titre, fichier_nom, fichier_url,
-             contenu_texte, contenu_qcm, date_debut, heure_debut, date_fin, heure_fin, test_id)
+             contenu_texte, contenu_texte_correction, contenu_qcm, date_debut, heure_debut, date_fin, heure_fin, test_id)
         )
         db.commit()
         test = db.execute('SELECT * FROM tests WHERE id = ?', (test_id,)).fetchone()
@@ -781,7 +896,6 @@ def api_bulk_delete_tests():
 def api_submit_test_resultat(test_id):
     """Soumission de la reponse d'un utilisateur (QCM -> JSON, fichier -> upload).
     Notifie les administrateurs avec le nom de l'utilisateur et la date/heure d'envoi."""
-    import json as _json
     with get_db() as db:
         test = db.execute('SELECT * FROM tests WHERE id = ?', (test_id,)).fetchone()
         if not test:
@@ -803,16 +917,50 @@ def api_submit_test_resultat(test_id):
             data = request.get_json(silent=True) or {}
             texte_reponse = data.get('texte_reponse', '')
             if texte_reponse is not None and str(texte_reponse).strip():
-                reponses_json = _json.dumps([{'type': 'texte', 'reponse': str(texte_reponse).strip()}])
+                reponses_json = json.dumps([{'type': 'texte', 'reponse': str(texte_reponse).strip()}])
             else:
                 reponses = data.get('reponses', [])
                 if not reponses:
                     return jsonify({'error': 'Aucune réponse à envoyer.'}), 400
-                reponses_json = _json.dumps(reponses)
+                reponses_json = json.dumps(reponses)
+
+        note = None
+        if fichier_reponse == '':
+            try:
+                user_responses = json.loads(reponses_json)
+            except Exception:
+                user_responses = []
+            test_data = dict(test) if hasattr(test, 'keys') else test
+            if (test_data.get('content_type') or test_data['content_type']).strip().lower() == 'qcm' and isinstance(user_responses, list):
+                try:
+                    questions = json.loads(test_data.get('contenu_qcm') or '[]')
+                except Exception:
+                    questions = []
+                for idx, response in enumerate(user_responses):
+                    if not isinstance(response, dict):
+                        continue
+                    answer = response.get('reponse')
+                    if answer is None:
+                        continue
+                    selected_index = None
+                    if isinstance(answer, str) and answer.isdigit():
+                        try:
+                            selected_index = int(answer)
+                        except ValueError:
+                            selected_index = None
+                    elif isinstance(answer, (int, float)):
+                        selected_index = int(answer)
+                    if selected_index is not None and idx < len(questions):
+                        question = questions[idx]
+                        options = question.get('reponses') if isinstance(question.get('reponses'), list) else []
+                        if 0 <= selected_index < len(options):
+                            response['reponse'] = options[selected_index]
+                reponses_json = json.dumps(user_responses)
+            note = compute_test_result_note(test, user_responses)
 
         cur = db.execute(
-            'INSERT INTO test_resultats (test_id, user_id, reponses, fichier_reponse) VALUES (?, ?, ?, ?)',
-            (test_id, session['user_id'], reponses_json, fichier_reponse)
+            'INSERT INTO test_resultats (test_id, user_id, reponses, fichier_reponse, note) VALUES (?, ?, ?, ?, ?)',
+            (test_id, session['user_id'], reponses_json, fichier_reponse, note)
         )
         result_id = cur.lastrowid
 
@@ -1132,7 +1280,7 @@ def admin_test_resultat():
             "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
         ).fetchone()[0]
         query = '''
-            SELECT r.id, r.test_id, r.user_id, r.submitted_at,
+            SELECT r.id, r.test_id, r.user_id, r.submitted_at, r.note,
                    t.titre AS test_titre, t.categorie AS test_categorie, t.content_type,
                    u.nom, u.prenom, u.name
             FROM test_resultats r
@@ -1164,6 +1312,7 @@ def admin_travaille_user():
         results = db.execute(base_query + ' ORDER BY r.submitted_at DESC').fetchall()
         selected_result = None
         selected_reponses = []
+        selected_text_answers = []
         if result_id:
             selected_result = db.execute(base_query + ' WHERE r.id = ? LIMIT 1', (result_id,)).fetchone()
             if selected_result and selected_result['reponses']:
@@ -1171,12 +1320,40 @@ def admin_travaille_user():
                     selected_reponses = json.loads(selected_result['reponses'])
                 except ValueError:
                     selected_reponses = []
+                if selected_result['test_content_type'] == 'qcm' and isinstance(selected_reponses, list):
+                    try:
+                        qcm_questions = json.loads(selected_result['test_contenu_qcm'] or '[]')
+                    except Exception:
+                        qcm_questions = []
+                    for idx, response in enumerate(selected_reponses):
+                        if not isinstance(response, dict):
+                            continue
+                        answer = response.get('reponse')
+                        if answer is None:
+                            continue
+                        if isinstance(answer, str) and answer.isdigit():
+                            try:
+                                selected_index = int(answer)
+                            except ValueError:
+                                selected_index = None
+                        elif isinstance(answer, (int, float)):
+                            selected_index = int(answer)
+                        else:
+                            selected_index = None
+                        if selected_index is not None and idx < len(qcm_questions):
+                            question = qcm_questions[idx]
+                            options = question.get('reponses') if isinstance(question.get('reponses'), list) else []
+                            if 0 <= selected_index < len(options):
+                                response['reponse'] = options[selected_index]
+                if selected_result['test_content_type'] == 'texte':
+                    selected_text_answers = parse_display_answers(selected_result['reponses'])
     return render_template(
         'admin/travaille_user.html',
         notif_count=notif_count,
         results=results,
         selected_result=selected_result,
-        selected_reponses=selected_reponses
+        selected_reponses=selected_reponses,
+        selected_text_answers=selected_text_answers
     )
 @app.route('/api/test_resultats/<int:result_id>/user_info')
 @login_required
@@ -1477,7 +1654,6 @@ def api_commentaires():
         db.commit()
     return jsonify({'ok': True})
 
-
 @app.route('/api/commentaires/<int:comment_id>', methods=['DELETE'])
 @login_required
 @admin_required
@@ -1490,7 +1666,6 @@ def api_delete_comment(comment_id):
         db.execute('DELETE FROM commentaires WHERE id=?', (comment_id,))
         db.commit()
     return jsonify({'ok': True})
-
 
 @app.route('/api/commentaires/<int:comment_id>/reponse', methods=['POST'])
 @login_required

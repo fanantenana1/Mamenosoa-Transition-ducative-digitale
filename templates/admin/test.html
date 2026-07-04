@@ -315,6 +315,30 @@
     background: #d8d6d9;
   }
 
+  .qcm-help-label {
+    display: none;
+    width: 100%;
+    border-left: 4px solid #1976d2b0;
+    border-radius: 8px;
+    padding: 1px;
+    font-size: 12px;
+    color: #0a0c0f;
+    font-weight: 600;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .qcm-help-label.visible {
+    display: flex;
+  }
+
+  .qcm-help-label svg {
+    width: 15px;
+    height: 15px;
+    fill: #1976d2;
+    flex-shrink: 0;
+  }
+
   .datetime-row {
     display: flex;
     gap: 22px;
@@ -577,6 +601,29 @@
     color: #9a9aa3;
   }
 
+  .surface-correction-textarea {
+    width: 100%;
+    min-height: 120px;
+    border: 1.5px solid #d8d3d6;
+    border-radius: 8px;
+    background: #fff;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 1rem;
+    color: #111;
+    padding: 12px;
+  }
+
+  .surface-correction-textarea:focus {
+    outline: none;
+    border-color: #4a72b0;
+    box-shadow: 0 0 0 3px rgba(74, 114, 176, 0.18);
+  }
+
+  .surface-correction-textarea::placeholder {
+    color: #9a9aa3;
+  }
+
   .file-zone {
     display: flex;
     flex-direction: column;
@@ -630,6 +677,38 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 12px;
+  }
+
+  .answer-correct {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1.5px solid #d8d3d6;
+    margin-right: 8px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .answer-correct input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .answer-correct span {
+    display: block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: transparent;
+    transition: background .2s;
+  }
+
+  .answer-correct input:checked+span {
+    background: #1a6bff;
   }
 
   .qcm-block-title {
@@ -1124,11 +1203,13 @@
     gap: 24px;
     margin-top: 25px;
   }
+
   /* ══ GROUP EXTERNE : ligne principale Selectionner | Importer | Historique ══ */
   .group_externe {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;  /* aligner par le haut pour que la toolbar descende sous le select */
+    align-items: flex-start;
+    /* aligner par le haut pour que la toolbar descende sous le select */
     gap: 14px;
   }
 
@@ -1154,7 +1235,6 @@
     margin-top: 0;
     align-self: flex-start;
   }
-  
 </style>
 {% endblock %}
 
@@ -1241,6 +1321,14 @@
               <input type="time" id="end-time">
             </div>
           </div>
+        </div>
+        <!-- Aide QCM (affichée en bas du groupe) -->
+        <div class="qcm-help-label" id="qcm-help-label">
+          <span>Cocher la réponse correcte en bleu</span>
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+            <circle cx="12" cy="12" r="10" fill="#1976d2" /><text x="12" y="14" text-anchor="middle" font-size="12"
+              font-weight="bold" fill="white" font-family="Arial"></text>
+          </svg>
         </div>
       </div>
       <!-- Surface -->
@@ -1338,7 +1426,15 @@
 
   function renderTexte(test) {
     const texte = test && test.contenu_texte ? test.contenu_texte.replace(/<\/textarea>/gi, '') : '';
-    surface.innerHTML = `<textarea class="surface-textarea" placeholder="Saisire les context d'examen ....">${texte}</textarea>`;
+    const correction = test && test.contenu_texte_correction ? test.contenu_texte_correction.replace(/<\/textarea>/gi, '') : '';
+    surface.innerHTML = `
+      <div class="texte-editor">
+        <label>Texte / consigne</label>
+        <textarea class="surface-textarea" placeholder="Saisire les context d'examen ....">${texte}</textarea>
+        <label>Réponse attendue / correction</label>
+        <textarea class="surface-correction-textarea" placeholder="Saisir la réponse attendue">${correction}</textarea>
+      </div>
+    `;
   }
 
   function renderQcm(test) {
@@ -1364,6 +1460,7 @@
     if (!zone) return;
     const num = String(qcmCount).padStart(2, '0');
     const question = existing && existing.question ? existing.question : '';
+    const correctIndex = existing && existing.correct != null ? Number(existing.correct) : 0;
     const reponses = existing && Array.isArray(existing.reponses) && existing.reponses.length
       ? existing.reponses
       : ['', '', ''];
@@ -1381,7 +1478,17 @@
       </div>
       <label>Réponses</label>
       <div class="answers-list">
-        ${reponses.map((r, i) => `<div class="answer-row"><span class="answer-marker">${String(i + 1).padStart(2, '0')}</span><input type="text" placeholder="Réponse ${i + 1}" value="${(r || '').replace(/"/g, '&quot;')}"><button type="button" class="btn-remove-answer" onclick="this.closest('.answer-row').remove()" aria-label="Supprimer cette réponse">&times;</button></div>`).join('')}
+        ${reponses.map((r, i) => `
+          <div class="answer-row">
+            <label class="answer-correct">
+              <input type="radio" name="correct-answer-${num}" value="${i}" ${i === correctIndex ? 'checked' : ''}>
+              <span></span>
+            </label>
+            <span class="answer-marker">${String(i + 1).padStart(2, '0')}</span>
+            <input type="text" placeholder="Réponse ${i + 1}" value="${(r || '').replace(/"/g, '&quot;')}">
+            <button type="button" class="btn-remove-answer" onclick="this.closest('.answer-row').remove()" aria-label="Supprimer cette réponse">&times;</button>
+          </div>
+        `).join('')}
       </div>
       <button type="button" class="btn-add-answer" onclick="addAnswerRow(this)">
         <span class="plus-circle">+</span> Ajouter une réponse
@@ -1396,10 +1503,15 @@
     const list = block.querySelector('.answers-list');
     const count = list.querySelectorAll('.answer-row').length + 1;
     const num = String(count).padStart(2, '0');
+    const questionNum = block.querySelector('.qcm-block-title')?.textContent?.replace(/\D/g, '') || '0';
 
     const row = document.createElement('div');
     row.className = 'answer-row';
     row.innerHTML = `
+      <label class="answer-correct">
+        <input type="radio" name="correct-answer-${questionNum}" value="${count - 1}">
+        <span></span>
+      </label>
       <span class="answer-marker">${num}</span>
       <input type="text" placeholder="Réponse ${count}">
       <button type="button" class="btn-remove-answer" onclick="this.closest('.answer-row').remove()" aria-label="Supprimer cette réponse">&times;</button>
@@ -1409,11 +1521,13 @@
 
   function onContentChange(prefillTest) {
     const choix = contentSelect.value;
+    const qcmHelpLabel = document.getElementById('qcm-help-label');
 
     if (choix === '') {
       // rien de selectionné -> pas de date/temps, pas d'import
       importBtn.classList.add('hidden');
       datetimeRow.classList.add('hidden');
+      if (qcmHelpLabel) qcmHelpLabel.classList.remove('visible');
       renderDefault();
       return;
     }
@@ -1424,6 +1538,13 @@
     const savedContainer = document.getElementById('saved-tests-container');
     if (savedContainer) savedContainer.classList.add('hidden');
     hideToolbar();
+    if (qcmHelpLabel) {
+      if (choix === 'qcm') {
+        qcmHelpLabel.classList.add('visible');
+      } else {
+        qcmHelpLabel.classList.remove('visible');
+      }
+    }
 
     if (choix === 'fichier') {
       importBtn.classList.remove('hidden');
@@ -1770,14 +1891,19 @@
   function collectQcmPayload() {
     const blocks = document.querySelectorAll('#qcm-zone .qcm-block');
     const questions = [];
-    blocks.forEach((block) => {
+    blocks.forEach((block, index) => {
       const questionInput = block.querySelector('.qfield input[type="text"]');
       const question = questionInput ? questionInput.value.trim() : '';
-      const reponses = Array.from(block.querySelectorAll('.answer-row input[type="text"]'))
+      const answerRows = Array.from(block.querySelectorAll('.answer-row'));
+      const reponses = answerRows
+        .map((row) => row.querySelector('input[type="text"]'))
+        .filter(Boolean)
         .map((inp) => inp.value.trim())
         .filter((val) => val !== '');
+      const correctInput = block.querySelector('.answer-row input[type="radio"]:checked');
+      const correct = correctInput ? parseInt(correctInput.value, 10) : null;
       if (question || reponses.length) {
-        questions.push({ question, reponses });
+        questions.push({ question, reponses, correct });
       }
     });
     return questions;
@@ -1819,16 +1945,24 @@
       // en édition sans nouveau fichier/URL : le backend conserve l'ancien fichier
     } else if (contentType === 'texte') {
       const textarea = surface.querySelector('.surface-textarea');
+      const correctionTextarea = surface.querySelector('.surface-correction-textarea');
       const texte = textarea ? textarea.value.trim() : '';
+      const correction = correctionTextarea ? correctionTextarea.value.trim() : '';
       if (!texte) {
         showSendFeedback('Veuillez saisir un texte.', true);
         return;
       }
       formData.append('contenu_texte', texte);
+      formData.append('contenu_texte_correction', correction);
     } else if (contentType === 'qcm') {
       const questions = collectQcmPayload();
       if (!questions.length) {
         showSendFeedback('Veuillez ajouter au moins une question.', true);
+        return;
+      }
+      const missingCorrect = questions.some((q) => q.correct === null || Number.isNaN(q.correct));
+      if (missingCorrect) {
+        showSendFeedback('Veuillez indiquer la réponse correcte pour chaque question QCM.', true);
         return;
       }
       formData.append('contenu_qcm', JSON.stringify(questions));

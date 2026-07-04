@@ -495,6 +495,23 @@
             background: #1d4ed8;
         }
 
+        .qcm-submit-btn {
+            align-self: flex-start;
+            border: none;
+            border-radius: 999px;
+            background: #2563eb;
+            color: #fff;
+            padding: 7px 12px;
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .qcm-submit-btn:hover {
+            background: #1d4ed8;
+        }
+
         .test-item-content.is-collapsed {
             display: none;
         }
@@ -727,8 +744,13 @@
                             </div>
                         {% elif t.content_type == 'texte' %}
                             <p style="margin:0; color:#334155;">{{ t.contenu_texte }}</p>
+                            <div class="test-text-response-wrap">
+                                <textarea class="test-text-response-field" id="text-response-{{ t.id }}" placeholder="Saisissez votre réponse ici..."></textarea>
+                                <button type="button" class="test-text-response-submit" data-test-id="{{ t.id }}">Envoyer réponse</button>
+                            </div>
                         {% elif t.content_type == 'qcm' %}
                             <div class="qcm-display" data-test-id="{{ t.id }}" data-qcm='{{ t.contenu_qcm }}'></div>
+                            <button type="button" class="qcm-submit-btn" data-test-id="{{ t.id }}">Envoyer réponse</button>
                         {% endif %}
                     </div>
                 </div>
@@ -955,6 +977,71 @@
 
                     return false;
                 }
+
+                document.querySelectorAll('.test-text-response-submit').forEach((btn) => {
+                    btn.addEventListener('click', async () => {
+                        const testId = btn.dataset.testId;
+                        const textarea = document.getElementById('text-response-' + testId);
+                        const value = textarea ? textarea.value.trim() : '';
+                        if (!value) {
+                            showToast('Veuillez saisir votre réponse avant l’envoi.');
+                            if (textarea) textarea.focus();
+                            return;
+                        }
+                        try {
+                            const res = await fetch('/api/tests/' + testId + '/resultats', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ texte_reponse: value })
+                            });
+                            const data = await res.json().catch(() => ({}));
+                            if (!res.ok) {
+                                showToast(data.error || 'Échec de l’envoi du texte.');
+                                return;
+                            }
+                            if (textarea) {
+                                textarea.value = '';
+                            }
+                            showToast('Réponse envoyée à l’administrateur.');
+                        } catch (e) {
+                            showToast('Erreur réseau lors de l’envoi du texte.');
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.qcm-submit-btn').forEach((btn) => {
+                    btn.addEventListener('click', async () => {
+                        const testId = btn.dataset.testId;
+                        const zone = document.querySelector('.qcm-display[data-test-id="' + testId + '"]');
+                        if (!zone) return;
+                        let questions = [];
+                        try { questions = JSON.parse(zone.getAttribute('data-qcm') || '[]'); } catch (e) { questions = []; }
+                        const reponses = questions.map((q, qi) => {
+                            const checked = zone.querySelector('input[name="qcm-' + testId + '-' + qi + '"]:checked');
+                            return { question: q.question, reponse: checked ? checked.value : null };
+                        });
+                        const aUneReponse = reponses.some((r) => r.reponse);
+                        if (!aUneReponse) {
+                            showToast('Veuillez sélectionner au moins une réponse.');
+                            return;
+                        }
+                        try {
+                            const res = await fetch('/api/tests/' + testId + '/resultats', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ reponses })
+                            });
+                            const data = await res.json().catch(() => ({}));
+                            if (!res.ok) {
+                                showToast(data.error || 'Échec de l’envoi du QCM.');
+                                return;
+                            }
+                            showToast('Réponses QCM envoyées.');
+                        } catch (e) {
+                            showToast('Erreur réseau lors de l’envoi du QCM.');
+                        }
+                    });
+                });
 
                 document.querySelectorAll('.test-toggle-btn').forEach((btn) => {
                     btn.addEventListener('click', () => {

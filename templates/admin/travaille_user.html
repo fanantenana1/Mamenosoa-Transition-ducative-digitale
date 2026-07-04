@@ -115,6 +115,28 @@
     color: #334155; font-size: 0.97rem; line-height: 1.7;
     border: 1px solid #e2e8f0; white-space: pre-wrap;
   }
+  .text-response-block {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 14px 16px; margin-top: 8px;
+  }
+  .text-response-title {
+    font-size: 0.8rem; font-weight: 700; color: #4a72b0;
+    text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px;
+  }
+  .text-response-answer {
+    color: #334155; font-size: 0.97rem; line-height: 1.7;
+    white-space: pre-wrap; padding-left: 2px;
+  }
+  .text-correction-block {
+    margin-top: 12px; background: #eef7ff; border-left: 3px solid #4a72b0;
+    border-radius: 8px; padding: 10px 12px;
+  }
+  .text-correction-title {
+    font-size: 0.8rem; font-weight: 700; color: #1d4ed8; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px;
+  }
+  .text-correction-answer {
+    color: #1e3a8a; font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap;
+  }
 
   /* Fichier */
   .file-display {
@@ -175,7 +197,7 @@
     </div>
     <input type="number" class="input-note" id="note-input"
            min="0" max="20" step="0.5" placeholder="Note /20"
-           value="{{ selected_result.note if selected_result and selected_result.note else '' }}">
+           value="{{ selected_result.note if selected_result and selected_result.note is not none else '' }}">
   </div>
 
   <div class="work-card">
@@ -191,6 +213,7 @@
               {{ selected_result.test_content_type|upper }}
             </span>
             <span>Envoyé le {{ selected_result.submitted_at[:16].replace('T',' ') if selected_result.submitted_at else 'N/A' }}</span>
+            <span>Score automatique : {{ ('%.2f' % selected_result.note) if selected_result.note is not none else 'N/A' }}</span>
           </div>
         </div>
       </div>
@@ -219,13 +242,26 @@
 
         {% elif selected_result.test_content_type == 'texte' %}
           {# ── TEXTE libre soumis ── #}
-          {% if selected_result.reponses and selected_result.reponses != '[]' %}
-            {# Les réponses texte sont stockées sous forme JSON [{"texte": "..."}] ou juste la string #}
+          {% if selected_text_answers %}
+            <div class="text-response-block">
+              <div class="text-response-title">Réponse soumise</div>
+              {% for answer in selected_text_answers %}
+                <div class="text-response-answer">{{ answer }}</div>
+              {% endfor %}
+            </div>
+          {% elif selected_result.reponses and selected_result.reponses != '[]' %}
             <div class="text-display">{{ selected_result.reponses }}</div>
           {% elif selected_result.test_contenu_texte %}
             <div class="text-display">{{ selected_result.test_contenu_texte }}</div>
           {% else %}
             <div class="empty-state">Aucun texte soumis.</div>
+          {% endif %}
+
+          {% if selected_result.test_contenu_texte_correction %}
+            <div class="text-correction-block">
+              <div class="text-correction-title">Correction attendue</div>
+              <div class="text-correction-answer">{{ selected_result.test_contenu_texte_correction }}</div>
+            </div>
           {% endif %}
 
         {% elif selected_result.test_content_type == 'fichier' %}
@@ -254,7 +290,7 @@
         <label style="font-weight:600; color:#1a1a2e;">Attribuer une note :</label>
         <input type="number" id="note-bar-input" class="input-note"
                min="0" max="20" step="0.5" placeholder="Note /20"
-               value="{{ selected_result.note if selected_result.note else '' }}">
+               value="{{ selected_result.note if selected_result.note is not none else '' }}">
         <button class="btn-note" onclick="saveNote({{ selected_result.id }})">
           Enregistrer la note
         </button>
