@@ -12,6 +12,7 @@ import os
 import sqlite3
 import time
 import json
+import uuid
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, static_folder='static', template_folder='templates')
@@ -58,6 +59,7 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nom TEXT DEFAULT '',
                 prenom TEXT DEFAULT '',
+                username TEXT DEFAULT '',
                 name TEXT NOT NULL,
                 email TEXT NOT NULL UNIQUE,
                 password_hash TEXT NOT NULL,
@@ -80,6 +82,7 @@ def init_db():
         for col, col_def in [
             ('nom', "TEXT DEFAULT ''"),
             ('prenom', "TEXT DEFAULT ''"),
+            ('username', "TEXT DEFAULT ''"),
             ('statut', "TEXT NOT NULL DEFAULT 'En attente'"),
             ('sexe', "TEXT DEFAULT ''"),
             ('adresse', "TEXT DEFAULT ''"),
@@ -239,6 +242,32 @@ def init_db():
             )
         db.execute("UPDATE users SET statut='Approuvé' WHERE email=? AND (statut IS NULL OR statut='')", ('admin@digiscool.mg',))
         db.execute("UPDATE users SET statut='En attente' WHERE statut IS NULL",)
+
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS conferences (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                created_by INTEGER NOT NULL,
+                titre TEXT NOT NULL,
+                room_name TEXT NOT NULL UNIQUE,
+                target_type TEXT NOT NULL DEFAULT 'all',
+                status TEXT NOT NULL DEFAULT 'active',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(created_by) REFERENCES users(id)
+            )
+        ''')
+        db.execute('''
+            CREATE TABLE IF NOT EXISTS conference_participants (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                conference_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                role TEXT NOT NULL DEFAULT 'user',
+                status TEXT NOT NULL DEFAULT 'pending',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(conference_id) REFERENCES conferences(id),
+                FOREIGN KEY(user_id) REFERENCES users(id),
+                UNIQUE(conference_id, user_id)
+            )
+        ''')
         db.commit()
 
 
@@ -863,6 +892,147 @@ def dashboard_admin():
     return render_template('admin/dashboard.html', admin_name=session.get('name'), users=users, cours=cours, notif_count=notif_count)
 
 
+@app.route('/admin/conference')
+@login_required
+@admin_required
+def admin_conference():
+    with get_db() as db:
+        notif_count = db.execute(
+            "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
+        ).fetchone()[0]
+        users = db.execute("SELECT id, name, nom, prenom FROM users WHERE role!='admin' ORDER BY name").fetchall()
+        conferences = db.execute(
+            'SELECT * FROM conferences WHERE created_by=? ORDER BY created_at DESC',
+            (session['user_id'],)
+        ).fetchall()
+
+        conferences_payload = []
+        for conference in conferences:
+            participants = db.execute(
+                '''SELECT cp.*, u.name AS user_name
+                   FROM conference_participants cp
+                   JOIN users u ON u.id = cp.user_id
+                   WHERE cp.conference_id=?
+                   ORDER BY cp.created_at DESC''',
+                (conference['id'],)
+            ).fetchall()
+            conferences_payload.append({
+                'id': conference['id'],
+                'titre': conference['titre'],
+                'room_name': conference['room_name'],
+                'target_type': conference['target_type'],
+                'status': conference['status'],
+                'created_at': conference['created_at'],
+                'participants': [dict(p) for p in participants],
+            })
+
+    return render_template(
+        'admin/conference.html',
+        notif_count=notif_count,
+        users=users,
+        conferences=conferences_payload,
+        active_page='conference',
+    )
+
+
+@app.route('/api/conferences', methods=['POST'])
+@login_required
+@admin_required
+def api_create_conference():
+    data = request.get_json(silent=True) or {}
+    title = (data.get('titre') or '').strip()
+    target_type = data.get('target_type', 'all')
+    selected_ids = data.get('selected_user_ids', []) or []
+
+    if not title:
+        return jsonify({'error': 'Le titre de la conférence est requis.'}), 400
+    if target_type not in ('all', 'selected'):
+        target_type = 'all'
+
+    room_name = f"digiscool-{uuid.uuid4().hex[:8]}"
+    with get_db() as db:
+        cur = db.execute(
+            'INSERT INTO conferences (created_by, titre, room_name, target_type, status) VALUES (?, ?, ?, ?, ?)',
+            (session['user_id'], title, room_name, target_type, 'active')
+        )
+        conference_id = cur.lastrowid
+
+        if target_type == 'selected':
+            selected_ids = [int(uid) for uid in selected_ids if str(uid).isdigit()]
+            for user_id in selected_ids:
+                db.execute(
+                    'INSERT INTO conference_participants (conference_id, user_id, role, status) VALUES (?, ?, ?, ?)',
+                    (conference_id, user_id, 'user', 'pending')
+                )
+        else:
+            users = db.execute("SELECT id FROM users WHERE role!='admin'").fetchall()
+            for user_row in users:
+                db.execute(
+                    'INSERT INTO conference_participants (conference_id, user_id, role, status) VALUES (?, ?, ?, ?)',
+                    (conference_id, user_row['id'], 'user', 'pending')
+                )
+        db.commit()
+        conference = db.execute('SELECT * FROM conferences WHERE id=?', (conference_id,)).fetchone()
+    return jsonify({
+        'id': conference['id'],
+        'titre': conference['titre'],
+        'room_name': conference['room_name'],
+        'target_type': conference['target_type'],
+        'status': conference['status'],
+        'created_at': conference['created_at'],
+    })
+
+
+@app.route('/api/conferences/<int:conference_id>/respond', methods=['POST'])
+@login_required
+@admin_required
+def api_conference_respond(conference_id):
+    data = request.get_json(silent=True) or {}
+    user_id = data.get('user_id')
+    action = data.get('action', 'approve')
+    if action not in ('approve', 'reject'):
+        return jsonify({'error': 'Action invalide.'}), 400
+
+    with get_db() as db:
+        participant = db.execute(
+            'SELECT * FROM conference_participants WHERE conference_id=? AND user_id=?',
+            (conference_id, user_id)
+        ).fetchone()
+        if not participant:
+            return jsonify({'error': 'Demande introuvable.'}), 404
+
+        new_status = 'approved' if action == 'approve' else 'rejected'
+        db.execute('UPDATE conference_participants SET status=? WHERE id=?', (new_status, participant['id']))
+
+        conference = db.execute('SELECT titre FROM conferences WHERE id=?', (conference_id,)).fetchone()
+        target_message = f"Votre demande pour la conférence \"{conference['titre']}\" a été {'acceptée' if action == 'approve' else 'refusée'}"
+        db.execute(
+            'INSERT INTO notifications (user_id, message, target_url) VALUES (?, ?, ?)',
+            (participant['user_id'], target_message, '/user/conference')
+        )
+        db.commit()
+    return jsonify({'ok': True, 'status': new_status})
+
+
+@app.route('/api/conferences/<int:conference_id>/request', methods=['POST'])
+@login_required
+def api_request_conference(conference_id):
+    with get_db() as db:
+        participant = db.execute(
+            'SELECT * FROM conference_participants WHERE conference_id=? AND user_id=?',
+            (conference_id, session['user_id'])
+        ).fetchone()
+        if not participant:
+            return jsonify({'error': 'Cette conférence n’est pas disponible pour vous.'}), 404
+
+        db.execute(
+            'UPDATE conference_participants SET status=? WHERE id=?',
+            ('requested', participant['id'])
+        )
+        db.commit()
+    return jsonify({'ok': True, 'status': 'requested'})
+
+
 @app.route('/dashboard/user')
 @login_required
 def dashboard_user():
@@ -870,6 +1040,36 @@ def dashboard_user():
         cours = db.execute('SELECT * FROM cours ORDER BY created_at DESC').fetchall()
         notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)).fetchone()[0]
     return render_template('user/dashboard.html', user_name=session.get('name'), cours=cours, notif_count=notif_count)
+
+
+@app.route('/user/conference')
+@login_required
+def user_conference():
+    with get_db() as db:
+        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)).fetchone()[0]
+        conferences = db.execute('SELECT * FROM conferences WHERE status="active" ORDER BY created_at DESC').fetchall()
+
+        conferences_payload = []
+        for conference in conferences:
+            participant = db.execute(
+                'SELECT status FROM conference_participants WHERE conference_id=? AND user_id=?',
+                (conference['id'], session['user_id'])
+            ).fetchone()
+            conferences_payload.append({
+                'id': conference['id'],
+                'titre': conference['titre'],
+                'room_name': conference['room_name'],
+                'created_at': conference['created_at'],
+                'status': participant['status'] if participant else 'none',
+            })
+
+    return render_template(
+        'user/conference.html',
+        user_name=session.get('name'),
+        notif_count=notif_count,
+        conferences=conferences_payload,
+        active_page='conference',
+    )
 
 
 @app.route('/user/dashboard')
@@ -1357,6 +1557,49 @@ def api_register():
         )
         db.commit()
     return jsonify({'ok': True, 'message': 'Compte créé. Votre profil est en attente de validation par l’administrateur.'})
+
+
+@app.route('/api/users', methods=['POST'])
+@login_required
+@admin_required
+def api_create_user():
+    data = request.get_json(silent=True) or {}
+    nom = data.get('nom', '').strip()
+    prenom = data.get('prenom', '').strip()
+    username = data.get('username', '').strip()
+    email = data.get('email', '').strip().lower()
+    password = data.get('password', '')
+    dob = data.get('dob', '').strip()
+    sexe = data.get('sexe', '').strip()
+    profession = data.get('profession', '').strip()
+    classe = data.get('classe', '').strip()
+    filiere = data.get('filiere', '').strip()
+    etablissement = data.get('etablissement', '').strip()
+    lien_etablissement = data.get('lien_etablissement', '').strip()
+    adresse = data.get('adresse', '').strip()
+    phone = data.get('phone', '').strip()
+    role = data.get('role', '').strip() or 'Utilisateur'
+    statut = data.get('statut', '').strip() or 'En attente'
+
+    if not nom or not prenom or not username or not email or not password:
+        return jsonify({'error': 'Veuillez remplir les champs obligatoires.'}), 400
+    if role not in ('Admin', 'Utilisateur', 'Collecteur', 'Opérateur'):
+        return jsonify({'error': 'Rôle invalide.'}), 400
+    if statut not in ('Approuvé', 'En attente', 'Rejeté'):
+        return jsonify({'error': 'Statut invalide.'}), 400
+    if get_user_by_email(email):
+        return jsonify({'error': 'Email déjà utilisé.'}), 409
+
+    full_name = f"{prenom} {nom}".strip()
+    with get_db() as db:
+        cursor = db.execute(
+            'INSERT INTO users(nom,prenom,username,name,email,password_hash,role,statut,dob,sexe,profession,classe,filiere,etablissement,lien_etablissement,adresse,phone) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            (nom, prenom, username, full_name, email, generate_password_hash(password), role, statut, dob, sexe, profession, classe, filiere, etablissement, lien_etablissement, adresse, phone)
+        )
+        db.commit()
+        user_id = cursor.lastrowid
+
+    return jsonify({'ok': True, 'message': 'Utilisateur créé avec succès.', 'user_id': user_id})
 
 
 @app.route('/logout')

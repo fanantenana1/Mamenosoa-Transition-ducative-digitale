@@ -1,0 +1,50 @@
+{% extends "user/dashboard.html" %}
+{% set active_page = 'conference' %}
+
+{% block title %}Digiscool - Conférences{% endblock %}
+
+{% block extra_head %}
+<style>
+.container{padding:20px}
+.conf-card{border:1px solid #e6eefc;padding:12px;border-radius:8px;margin-bottom:10px}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h3>Conférences disponibles</h3>
+  {% for c in conferences %}
+  <div class="conf-card" id="conf-card-{{ c.id }}">
+    <strong>{{ c.titre }}</strong> — <small>{{ c.created_at }}</small>
+    <div style="margin-top:8px">
+      {% if c.status == 'approved' %}
+        <div style="margin-top:8px">
+          <button class="btn btn-sm btn-outline-primary" onclick="joinRoom('{{ c.room_name }}', {{ c.id }})">Rejoindre (embed)</button>
+          <a class="btn btn-sm btn-outline-secondary" target="_blank" href="https://meet.jit.si/{{ c.room_name }}">Ouvrir dans un nouvel onglet</a>
+        </div>
+      {% elif c.status=='requested' %}
+        <button class="btn btn-sm btn-secondary" disabled>En attente</button>
+      {% else %}
+        <button class="btn btn-sm btn-primary" id="req-btn-{{ c.id }}" onclick="requestJoin({{ c.id }})">Demander à rejoindre</button>
+      {% endif %}
+    </div>
+    <div id="embed-{{ c.id }}" style="margin-top:12px"></div>
+  </div>
+  {% endfor %}
+</div>
+<script>
+async function requestJoin(id){
+  const res = await fetch('/api/conferences/' + id + '/request', {method:'POST'})
+  const d = await res.json();
+  if(res.ok){
+    const btn = document.getElementById('req-btn-' + id);
+    if(btn){ btn.innerText = 'En attente'; btn.disabled = true }
+  } else alert(d.error || 'Erreur')
+}
+
+function joinRoom(room, id){
+  const container = document.getElementById('embed-' + id);
+  container.innerHTML = '<iframe src="https://meet.jit.si/' + room + '" style="width:100%;height:480px;border:0;border-radius:8px" allow="camera; microphone; fullscreen; display-capture"></iframe>'
+}
+</script>
+{% endblock %}

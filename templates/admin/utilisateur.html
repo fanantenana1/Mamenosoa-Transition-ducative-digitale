@@ -1234,9 +1234,9 @@ async function saveUser() {
   if (!role)       { toast('Veuillez sélectionner un rôle.','err'); return; }
   if (!profession) { toast('Veuillez sélectionner une profession.','err'); return; }
 
+  const pw  = document.getElementById('um-password').value;
+  const pw2 = document.getElementById('um-password2').value;
   if (!editingId) {
-    const pw  = document.getElementById('um-password').value;
-    const pw2 = document.getElementById('um-password2').value;
     if (!pw)        { toast('Le mot de passe est obligatoire.','err'); return; }
     if (pw !== pw2) { toast('Les mots de passe ne correspondent pas.','err'); return; }
     if (pw.length < 6){ toast('Le mot de passe doit comporter au moins 6 caractères.','err'); return; }
@@ -1249,25 +1249,57 @@ async function saveUser() {
   document.getElementById('save-spinner').style.display = 'inline-block';
   document.getElementById('save-label').textContent = 'Enregistrement…';
 
-  await new Promise(r => setTimeout(r, 600));
+  try {
+    const payload = {
+      nom, prenom, username, email, password: pw,
+      dob, sexe, profession, classe: document.getElementById('um-niveau').value || '',
+      filiere: document.getElementById('um-filiere').value.trim(),
+      etablissement: document.getElementById('um-etablissement').value.trim(),
+      lien_etablissement: document.getElementById('um-lien-etab').value.trim(),
+      adresse, phone, role, statut
+    };
 
-  if (editingId) {
-    const idx = allUsers.findIndex(u => u.id === editingId);
-    if (idx !== -1) {
-      allUsers[idx] = { ...allUsers[idx], nom: nomComplet, prenom, username, email, phone,
-        role, statut, dob, sexe, adresse, profession,
-        avatar: avatarDataUrl || allUsers[idx].avatar };
+    const response = await fetch('/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      toast(data.error || 'Erreur lors de la création de l\'utilisateur.','err');
+      return;
     }
-    toast('✏️ Utilisateur mis à jour !','ok');
-  } else {
-    allUsers.push({ id: nextId++, nom: nomComplet, prenom, username, email, phone,
-      role, statut, dob, sexe, adresse, profession,
-      avatar: avatarDataUrl || '' });
+
+    const newUser = {
+      id: data.user_id,
+      nom: nomComplet,
+      prenom,
+      username,
+      email,
+      phone,
+      role,
+      statut,
+      dob,
+      sexe,
+      adresse,
+      profession,
+      classe: payload.classe,
+      filiere: payload.filiere,
+      etablissement: payload.etablissement,
+      lien_etablissement: payload.lien_etablissement,
+      avatar: avatarDataUrl || ''
+    };
+    allUsers.unshift(newUser);
+    nextId = Math.max(nextId, data.user_id + 1);
     toast('✅ Utilisateur créé !','ok');
+  } catch (err) {
+    toast('Erreur réseau. Veuillez réessayer.','err');
+    console.error(err);
+  } finally {
+    document.getElementById('save-spinner').style.display = 'none';
+    document.getElementById('save-label').textContent = 'Enregistrer';
   }
 
-  document.getElementById('save-spinner').style.display = 'none';
-  document.getElementById('save-label').textContent = 'Enregistrer';
   closeUserModal();
   renderTable();
 }
