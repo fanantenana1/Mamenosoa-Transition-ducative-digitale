@@ -1,0 +1,853 @@
+{% extends "admin/dashboard.html" %}
+{% set active_page = 'conference' %}
+
+{% block title %}Digiscool - Conférences{% endblock %}
+
+{% block extra_head %}
+<style>
+  body {
+    background: #BED6F3;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  /* ════════════════════ PAGE BODY ════════════════════ */
+  .page-body {
+    background-image: url('/static/components/Rectangle 18.png');
+    background-size: 100% 100%;
+    flex: 1;
+    padding: 32px 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    margin-top: 25px;
+    min-height: calc(100vh - 157px);
+  }
+
+  /* ════════════════════ SUB BAR (Conférences en direct) ════════════════════ */
+  .sub-bar {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+    max-width: 1100px;
+    height: auto;
+    min-height: 45px;
+    background-image: url('/static/components/Rectangle 24.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border-radius: 0 0 10px 10px;
+    margin-top: -49px;
+    /* Superposition voulue sur le fond */
+    gap: 10px;
+    padding: 0px 29px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+  }
+
+  .sub-bar h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #0c1a30;
+    font-weight: 600;
+    background: #fefeff;
+    padding: 4px 16px;
+    border-bottom: 1px solid #b0c4de;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+  }
+
+  .btn-mesconf {
+    background: #0000ff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 2px 9px;
+    cursor: pointer;
+    transition: background .15s;
+    white-space: nowrap;
+  }
+
+  .btn-mesconf:hover {
+    background: #0000cc;
+  }
+
+  .btn-hamburger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0c1a30;
+    padding: 4px;
+  }
+
+  .btn-hamburger svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    fill: none;
+  }
+
+  /* ════════════════════ MAIN LAYOUT ════════════════════ */
+  .conf-layout {
+    width: 100%;
+    display: flex;
+    gap: 16px;
+    margin-top: -12px;
+    align-items: flex-start;
+    box-sizing: border-box;
+  }
+
+  /* Bouton Intégré dans l'en-tête du volet */
+  .sidebar-toggle-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    transition: background-color 0.2s, transform 0.3s ease;
+    padding: 0;
+  }
+
+  .sidebar-toggle-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .sidebar-toggle-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar-toggle-btn.collapsed svg {
+    transform: rotate(180deg);
+  }
+
+  /* ════════════════════ LEFT SIDEBAR ════════════════════ */
+  .table-card {
+    width: 320px;
+    flex-shrink: 0;
+    background-image: url('/static/components/Rectangle 29.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border-radius: 12px;
+    border: 2px solid #1a6bff;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.2s ease,
+      border-width 0.3s ease;
+    opacity: 1;
+    padding-bottom: 0px;
+    box-sizing: border-box;
+  }
+
+  .table-card.collapsed {
+    width: 44px;
+  }
+
+  .table-card.collapsed .table-rows,
+  .table-card.collapsed .table-header-row span {
+    display: none;
+  }
+
+  .table-header-row {
+    background: #0e2a52;
+    color: white;
+    padding: 12px 14px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 24px;
+  }
+
+  .table-rows {
+    height: 474px;
+    overflow-y: auto;
+    background: #ffffff;
+  }
+
+  .result-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e6eefc;
+  }
+
+  .result-row:last-child {
+    border-bottom: none;
+  }
+
+  .row-name-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .row-name {
+    font-weight: bold;
+    font-size: 0.85rem;
+    color: #1a1a2e;
+  }
+
+  .row-date {
+    font-size: 0.75rem;
+    color: #6b7a8d;
+  }
+
+  /* ════════════════════ VIDEO PANEL ════════════════════ */
+  .video-panel {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .video-wrapper {
+    width: 100%;
+    height: 500px;
+    background: #ececec;
+    border: 3px solid #c8d7f2;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 94%;
+  }
+
+  .video-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .video-placeholder-icon {
+    position: absolute;
+    cursor: pointer;
+  }
+
+  .video-placeholder-icon svg {
+    width: 70px;
+    height: 70px;
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 1.5;
+  }
+
+  /* ════════════════════ MENU CONTEXTUEL (POPOVERS) ════════════════════ */
+  .conference-menu-popover {
+    display: none;
+    position: absolute;
+    top: 45px;
+    right: 0;
+    width: 280px;
+    background: #d3d3d3;
+    border: 1px solid #999;
+    border-radius: 4px;
+    padding: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    box-sizing: border-box;
+  }
+
+  .conference-menu-popover.active {
+    display: block;
+  }
+
+  .menu-badge {
+    background: #3a82bc;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 4px 4px 0 0;
+    display: inline-block;
+  }
+
+  .menu-inner-box {
+    background: #d3d3d3;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .menu-inner-box select,
+  .menu-inner-box input[type="text"] {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+  }
+
+  .btn-creer-lancer {
+    background: #0000ff;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .select-users-box {
+    background: #fff;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    max-height: 120px;
+    overflow-y: auto;
+    padding: 6px;
+  }
+
+  .user-checkbox-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    padding: 2px 0;
+  }
+
+  /* ════════════════════ DROPDOWN MES CONFERENCES ════════════════════ */
+  .mesconf-popover {
+    display: none;
+    position: absolute;
+    top: 45px;
+    right: 0;
+    width: 350px;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    z-index: 99;
+    max-height: 450px;
+    overflow-y: auto;
+    padding: 14px;
+    box-sizing: border-box;
+  }
+
+  .mesconf-popover.active {
+    display: block;
+  }
+
+  .mesconf-bulk-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 12px;
+  }
+
+  .mesconf-item {
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .mesconf-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .mesconf-main-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .mesconf-title {
+    font-weight: bold;
+    color: #0c1a30;
+    font-size: 0.9rem;
+  }
+
+  .mesconf-date {
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  .mesconf-participants {
+    margin-top: 4px;
+    background: #f8fafc;
+    padding: 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+
+  .part-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+  }
+
+  .status-pill {
+    font-weight: bold;
+    font-size: 0.75rem;
+  }
+
+  .status-pill.pending {
+    color: #b45309;
+  }
+
+  .status-pill.approved {
+    color: #15803d;
+  }
+
+  .status-pill.requested {
+    color: #2563eb;
+  }
+
+  .status-pill.rejected {
+    color: #b91c1c;
+  }
+
+  .btn-delete-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ef4444;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+  }
+
+  .btn-delete-icon:hover {
+    background: #fee2e2;
+  }
+
+  .btn-delete-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: #64748b;
+    padding: 20px;
+    font-size: 0.85rem;
+  }
+
+  /* ════════════════════ RESPONSIVE DESIGN MEDIA QUERIES ════════════════════ */
+  @media (max-width: 820px) {
+    .sub-bar {
+      flex-direction: column;
+      height: auto;
+      align-items: stretch;
+      padding: 16px;
+      margin-top: 0;
+      background-size: cover;
+    }
+
+    .sub-bar h2 {
+      text-align: center;
+    }
+
+    .topbar-actions {
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .conf-layout {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .table-card {
+      width: 100% !important;
+    }
+
+    .table-card.collapsed {
+      height: 52px;
+      overflow: hidden;
+    }
+
+    .mesconf-popover {
+      width: 300px;
+      right: -50px;
+    }
+
+    .conference-menu-popover {
+      width: 280px;
+      right: -10px;
+    }
+
+    .video-wrapper {
+      height: 350px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .mesconf-popover {
+      width: 280px;
+      right: -40px;
+    }
+
+    .video-wrapper {
+      height: 260px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-body">
+
+  <div class="sub-bar">
+    <h2>Conférences en direct</h2>
+
+    <div class="topbar-actions">
+      <button type="button" class="btn-mesconf" onclick="toggleMesConf(event)">Mes conférences</button>
+
+      <button type="button" class="btn-hamburger" onclick="toggleMenu(event)" title="Nouvelle conférence">
+        <svg viewBox="0 0 24 24">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+
+      <div class="conference-menu-popover" id="menuPopover">
+        <div class="menu-badge">Nouveau</div>
+        <div class="menu-inner-box">
+          <select id="target_type" onchange="onTargetTypeChange()">
+            <option value="all">Tous les utilisateurs</option>
+            <option value="selected">Utilisateurs sélectionnés</option>
+          </select>
+
+          <div class="select-users-box" id="select_users_container" style="display: none;">
+            <h6>Choisir les utilisateurs</h6>
+            {% for u in users %}
+            <label class="user-checkbox-row"><span>{{ u['name'] }}</span><input type="checkbox" value="{{ u['id'] }}"
+                class="user-cb"></label>
+            {% else %}
+            <div class="empty-state" style="padding: 8px;">Aucun utilisateur disponible.</div>
+            {% endfor %}
+          </div>
+
+          <input id="conf_title" type="text" placeholder="Titre de la conférence">
+          <button type="button" class="btn-creer-lancer" onclick="executeCreateConf()">Créer & Lancer</button>
+        </div>
+      </div>
+
+      <div class="mesconf-popover" id="mesConfPopover">
+        <div class="mesconf-bulk-action">
+          <label
+            style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px; font-weight: 600; color: #475569;">
+            <input type="checkbox" id="selectAllConfs" onchange="toggleSelectAllConfs(this)"> Tout sélectionner
+          </label>
+          <button type="button" class="btn-delete-icon" title="Supprimer la sélection" onclick="deleteSelectedConfs()">
+            <svg viewBox="0 0 24 24">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14H6L5 6" />
+              <path d="M10 11v6" />
+              <path d="M14 11v6" />
+            </svg>
+          </button>
+        </div>
+
+        <div id="mesconfs-list-container">
+          {% for c in conferences %}
+          <div class="mesconf-item" data-id="{{ c.id }}">
+            <input type="checkbox" class="conf-item-cb" data-id="{{ c.id }}" onchange="checkSelectAllState()">
+            <div class="mesconf-main-content">
+              <div class="mesconf-title">{{ c.titre }}</div>
+              <div class="mesconf-date">{{ c.created_at }}</div>
+              <div class="mesconf-participants">
+                {% for p in c.participants %}
+                <div class="part-row"><span>{{ p.user_name }}</span><span class="status-pill {{ p.status }}">— {{
+                    p.status }}</span></div>
+                {% else %}
+                <div class="part-row"><span>Aucun participant</span></div>
+                {% endfor %}
+              </div>
+              <div style="margin-top: 6px;">
+                <button type="button" class="btn btn-sm btn-primary" style="font-size:0.75rem; padding: 2px 8px;"
+                  onclick="startStream('{{ c.room_name }}')">Ouvrir</button>
+              </div>
+            </div>
+            <button type="button" class="btn-delete-icon" title="Supprimer"
+              onclick="deleteSingleConf({{ c.id }}, this)">
+              <svg viewBox="0 0 24 24">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14H6L5 6" />
+                <path d="M10 11v6" />
+                <path d="M14 11v6" />
+              </svg>
+            </button>
+          </div>
+          {% else %}
+          <div class="empty-state">Aucune conférence pour le moment.</div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="conf-layout">
+
+    <div class="table-card" id="sidebarCard">
+      <div class="table-header-row">
+        <span>Demander à rejoindre</span>
+
+        <button type="button" class="sidebar-toggle-btn" id="sidebarToggle" aria-label="Ouvrir/Fermer la barre latérale"
+          onclick="toggleHorizontalSidebar()">
+          <svg viewBox="0 0 24 24">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+      </div>
+      <div class="table-rows">
+        {% for r in join_requests %}
+        <div class="result-row" id="joinreq-{{ r.conference_id }}-{{ r.user_id }}">
+          <div class="row-name-wrap">
+            <div class="row-name">{{ r.user_name }}</div>
+            <div class="row-date">{{ r.conference_titre }} · {{ r.created_at }}</div>
+          </div>
+          <div class="row-actions">
+            <button type="button" class="btn btn-sm btn-success btn-small" title="Accepter"
+              onclick="respond({{ r.conference_id }}, {{ r.user_id }}, 'approve')">✓</button>
+            <button type="button" class="btn btn-sm btn-danger btn-small" title="Refuser"
+              onclick="respond({{ r.conference_id }}, {{ r.user_id }}, 'reject')">✕</button>
+          </div>
+        </div>
+        {% else %}
+        <div class="empty-state">Aucune demande d'accès en attente.</div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="video-panel">
+      <div class="video-wrapper" id="videoWrapper">
+        <iframe id="jitsi_iframe" src="" allow="camera; microphone; fullscreen; display-capture"
+          style="display:none;"></iframe>
+        <div class="video-placeholder-icon" id="videoPlaceholder"
+          onclick="alert('Veuillez sélectionner ou lancer une conférence depuis le menu.')">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="5 3 19 12 5 21 5 3" fill="none" stroke="#ffffff" stroke-width="1.5" />
+            <path d="M14 12l-5-3v6z" fill="#ffffff" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function toggleHorizontalSidebar() {
+    const sidebar = document.getElementById('sidebarCard');
+    const btn = document.getElementById('sidebarToggle');
+
+    sidebar.classList.toggle('collapsed');
+    btn.classList.toggle('collapsed');
+  }
+
+  function toggleMenu(e) {
+    e.stopPropagation();
+    document.getElementById('mesConfPopover').classList.remove('active');
+    document.getElementById('menuPopover').classList.toggle('active');
+  }
+
+  function toggleMesConf(e) {
+    e.stopPropagation();
+    document.getElementById('menuPopover').classList.remove('active');
+    document.getElementById('mesConfPopover').classList.toggle('active');
+  }
+
+  function onTargetTypeChange() {
+    const type = document.getElementById('target_type').value;
+    document.getElementById('select_users_container').style.display = type === 'selected' ? 'block' : 'none';
+  }
+
+  function startStream(room) {
+    const iframe = document.getElementById('jitsi_iframe');
+    const placeholder = document.getElementById('videoPlaceholder');
+    iframe.src = 'https://meet.jit.si/' + room;
+    iframe.style.display = 'block';
+    placeholder.style.display = 'none';
+    document.getElementById('mesConfPopover').classList.remove('active');
+  }
+
+  function toggleSelectAllConfs(masterCheckbox) {
+    const checkboxes = document.querySelectorAll('.conf-item-cb');
+    checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+  }
+
+  function checkSelectAllState() {
+    const total = document.querySelectorAll('.conf-item-cb').length;
+    const checked = document.querySelectorAll('.conf-item-cb:checked').length;
+    const master = document.getElementById('selectAllConfs');
+    if (total === 0) {
+      master.checked = false;
+    } else {
+      master.checked = (total === checked);
+    }
+  }
+
+  function removeConfItemsFromDom(ids) {
+    const container = document.getElementById('mesconfs-list-container');
+    ids.forEach(id => {
+      const item = container.querySelector('.mesconf-item[data-id="' + id + '"]');
+      if (item) item.remove();
+    });
+    if (container.querySelectorAll('.mesconf-item').length === 0) {
+      container.innerHTML = '<div class="empty-state">Aucune conférence pour le moment.</div>';
+    }
+    checkSelectAllState();
+  }
+
+  function deleteSingleConf(confId, button) {
+    if (!confirm("Supprimer cette conférence de la liste ?")) return;
+    fetch('/api/conferences/' + confId, { method: 'DELETE' })
+      .then(res => res.json().catch(() => ({})).then(data => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (ok) {
+          removeConfItemsFromDom([confId]);
+        } else {
+          alert((data && data.error) || 'Erreur lors de la suppression.');
+        }
+      })
+      .catch(() => alert('Erreur réseau lors de la suppression.'));
+  }
+
+  function deleteSelectedConfs() {
+    const checkedItems = document.querySelectorAll('.conf-item-cb:checked');
+    if (checkedItems.length === 0) {
+      alert("Veuillez sélectionner au moins une conférence à supprimer.");
+      return;
+    }
+
+    const ids = Array.from(checkedItems).map(cb => parseInt(cb.getAttribute('data-id'), 10));
+
+    if (!confirm(`Supprimer les ${ids.length} conférence(s) sélectionnée(s) ?`)) return;
+
+    fetch('/api/conferences/bulk_delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: ids })
+    })
+      .then(res => res.json().catch(() => ({})).then(data => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (ok) {
+          const deletedIds = (data && data.deleted && data.deleted.length) ? data.deleted : ids;
+          removeConfItemsFromDom(deletedIds);
+        } else {
+          alert((data && data.error) || 'Erreur lors de la suppression.');
+        }
+      })
+      .catch(() => alert('Erreur réseau lors de la suppression.'));
+  }
+
+  async function executeCreateConf() {
+    const title = document.getElementById('conf_title').value.trim();
+    const targetType = document.getElementById('target_type').value;
+    const selectedIds = Array.from(
+      document.querySelectorAll('#select_users_container input[type=checkbox]:checked')
+    ).map(cb => cb.value);
+
+    if (!title) {
+      alert('Veuillez entrer un titre pour la conférence.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/conferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          titre: title,
+          target_type: targetType,
+          selected_user_ids: selectedIds
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        // On mémorise la salle à lancer automatiquement après le rechargement
+        // (le rechargement est nécessaire pour que la liste "Mes conférences"
+        // et la liste "Demander à rejoindre" affichent les nouvelles données côté serveur).
+        sessionStorage.setItem('digiscool_autostart_room', data.room_name);
+        window.location.reload();
+      } else {
+        alert(data.error || 'Erreur lors de la création de la conférence.');
+      }
+    } catch (err) {
+      alert('Erreur réseau lors de la création de la conférence.');
+    }
+  }
+
+  async function respond(confId, userId, action) {
+    try {
+      const res = await fetch('/api/conferences/' + confId + '/respond', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, action: action })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        window.location.reload();
+      } else {
+        alert(data.error || 'Erreur.');
+      }
+    } catch (err) {
+      alert('Erreur réseau.');
+    }
+  }
+
+  document.addEventListener('click', function (event) {
+    if (!document.getElementById('menuPopover').contains(event.target)) {
+      document.getElementById('menuPopover').classList.remove('active');
+    }
+    if (!document.getElementById('mesConfPopover').contains(event.target)) {
+      document.getElementById('mesConfPopover').classList.remove('active');
+    }
+  });
+
+  // Lance automatiquement dans "videoWrapper" la conférence qui vient d'être créée,
+  // juste après le rechargement de page déclenché par executeCreateConf().
+  document.addEventListener('DOMContentLoaded', function () {
+    const autoRoom = sessionStorage.getItem('digiscool_autostart_room');
+    if (autoRoom) {
+      sessionStorage.removeItem('digiscool_autostart_room');
+      startStream(autoRoom);
+    }
+  });
+</script>
+{% endblock %}

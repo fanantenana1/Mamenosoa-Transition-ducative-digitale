@@ -8,6 +8,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
+from contextlib import contextmanager
 import os
 import sqlite3
 import time
@@ -46,10 +47,28 @@ def upload_dir_for_categorie(categorie):
     return UPLOAD_TESTS_EXAMEN if categorie == 'examen' else UPLOAD_TESTS_EXERCICE
 
 
+@contextmanager
 def get_db():
+    """Fournit une connexion SQLite et la referme TOUJOURS à la sortie du bloc `with`.
+
+    Avant, cette fonction retournait simplement `sqlite3.connect(...)` : utilisée avec
+    `with get_db() as db:`, la connexion n'était jamais fermée (le `with` d'un objet
+    Connection ne fait que valider/annuler la transaction, pas fermer la connexion).
+    Les connexions s'accumulaient donc au fil des requêtes, ce qui pouvait provoquer des
+    erreurs intermittentes "database is locked" côté SQLite — typiquement responsables
+    d'échecs silencieux sur les suppressions (le fetch() échoue, l'erreur est avalée
+    côté JS, et l'utilisateur a l'impression que "rien ne se passe").
+    """
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
-    return conn
+    try:
+        yield conn
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 
 def init_db():
@@ -492,7 +511,6 @@ def remove_file(path):
             os.remove(path)
     except OSError:
         pass
-
 
 @app.route('/api/cours', methods=['GET'])
 @login_required
@@ -1014,7 +1032,6 @@ def uploaded_exercice(filename):
 def index():
     return render_template('index.html')
 
-
 @app.route('/education')
 def education_redirect():
     return redirect(url_for('dashboard'))
@@ -1074,11 +1091,24 @@ def admin_conference():
                 'participants': [dict(p) for p in participants],
             })
 
+        join_requests = db.execute(
+            '''SELECT cp.id AS participant_id, cp.conference_id, cp.user_id, cp.created_at,
+                      u.name AS user_name, c.titre AS conference_titre
+               FROM conference_participants cp
+               JOIN conferences c ON c.id = cp.conference_id
+               JOIN users u ON u.id = cp.user_id
+               WHERE c.created_by=? AND cp.status='requested'
+               ORDER BY cp.created_at DESC''',
+            (session['user_id'],)
+        ).fetchall()
+        join_requests = [dict(r) for r in join_requests]
+
     return render_template(
-        'admin/conference.html',
+        'admin/video_conference.html',
         notif_count=notif_count,
         users=users,
         conferences=conferences_payload,
+        join_requests=join_requests,
         active_page='conference',
     )
 
@@ -1160,6 +1190,59 @@ def api_conference_respond(conference_id):
         )
         db.commit()
     return jsonify({'ok': True, 'status': new_status})
+
+
+@app.route('/api/conferences/<int:conference_id>', methods=['DELETE'])
+@login_required
+@admin_required
+def api_delete_conference(conference_id):
+    with get_db() as db:
+        conference = db.execute(
+            'SELECT * FROM conferences WHERE id=? AND created_by=?',
+            (conference_id, session['user_id'])
+        ).fetchone()
+        if not conference:
+            return jsonify({'error': 'Conférence introuvable.'}), 404
+
+        db.execute('DELETE FROM conference_participants WHERE conference_id=?', (conference_id,))
+        db.execute('DELETE FROM conferences WHERE id=?', (conference_id,))
+        db.commit()
+    return jsonify({'ok': True})
+
+
+@app.route('/api/conferences/bulk_delete', methods=['POST'])
+@login_required
+@admin_required
+def api_bulk_delete_conferences():
+    data = request.get_json(silent=True) or {}
+    raw_ids = data.get('ids', []) or []
+    ids = []
+    for raw_id in raw_ids:
+        try:
+            ids.append(int(raw_id))
+        except (TypeError, ValueError):
+            continue
+
+    if not ids:
+        return jsonify({'error': 'Aucune conférence sélectionnée.'}), 400
+
+    with get_db() as db:
+        placeholders = ','.join('?' for _ in ids)
+        owned = db.execute(
+            f'SELECT id FROM conferences WHERE id IN ({placeholders}) AND created_by=?',
+            (*ids, session['user_id'])
+        ).fetchall()
+        owned_ids = [row['id'] for row in owned]
+
+        if not owned_ids:
+            return jsonify({'error': 'Aucune conférence valide à supprimer.'}), 404
+
+        placeholders_owned = ','.join('?' for _ in owned_ids)
+        db.execute(f'DELETE FROM conference_participants WHERE conference_id IN ({placeholders_owned})', owned_ids)
+        db.execute(f'DELETE FROM conferences WHERE id IN ({placeholders_owned})', owned_ids)
+        db.commit()
+
+    return jsonify({'ok': True, 'deleted': owned_ids})
 
 
 @app.route('/api/conferences/<int:conference_id>/request', methods=['POST'])

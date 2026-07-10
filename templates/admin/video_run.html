@@ -7,119 +7,57 @@
   :root{
     --navy:rgb(4,6,60); --blue:#2563eb; --green:#16a34a;
     --red:#dc2626; --teal:#0d9488; --text:#1a1a2e; --muted:#64748b;
-    --accent:#1a6bff;
   }
 
-  body {
-    background: #BED6F3;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ══════════════════════════════ PAGE BODY (cadre de fond) ══════════════════════════════ */
+  /* ══════════════════════════════ PAGE BODY (video) ══════════════════════════════ */
   .page-body{
-    background-image: url('/static/components/Rectangle 18.png');
-    background-size: 100% 100%;
-    flex: 1;
-    padding: 32px 40px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 24px;
-    margin-top: 25px;
-    min-height: calc(100vh - 157px);
+    max-width:1300px;
+    margin:0 auto;
+    padding:24px 24px 60px;
+    position:relative;
+    z-index:2;
   }
 
-  /* ══════════════════════════════ SEARCH ROW (retour + titre vidéo + actions) ══════════════════════════════ */
-  .search-wrap {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 50%;
-    max-width: 1100px;
-    height: auto;
-    min-height: 45px;
-    background-image: url('/static/components/Rectangle 24.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    border-radius: 0 0 10px 10px;
-    margin-top: -49px; /* Superposition voulue sur le fond */
-    gap: 10px;
-    padding: 0px 29px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    box-sizing: border-box;
+  /* ── Retour ── */
+  .back-link{
+    display:inline-flex;align-items:center;gap:8px;
+    color:var(--text);text-decoration:none;font-weight:700;font-size:1.05rem;
+    margin-bottom:18px;
   }
+  .back-link:hover{opacity:.7}
+  .back-link svg{width:20px;height:20px;stroke:var(--text);stroke-width:2.4;fill:none}
 
-  /* ── Barre retour ── */
-  .retour-bar {
-    background: #fefeff;
-    padding: 4px 9px;
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #b0c4de;
-    border-radius: 5px;
-    flex-shrink: 0;
+  /* ── HEADER ── */
+  .video-header{
+    display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:16px;margin-bottom:18px;
   }
-  .btn-retour {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #1a1a2e;
-    padding: 0;
-  }
-  .btn-retour:hover { color: var(--accent); }
-  .btn-retour svg {
-    width: 20px; height: 20px;
-    stroke: currentColor; fill: none; stroke-width: 2.5;
-  }
-
-  /* ── Titre vidéo (VIDEO : Chimie Chimie) ── */
-  .video-title{
-    display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;
-    flex: 1;
-    justify-content:center;
-  }
-  .vh-label{font-size:1.35rem;font-weight:800;color:var(--text);letter-spacing:.5px}
-  .vh-sep{font-size:1.35rem;font-weight:800;color:var(--text)}
-  .vh-name{font-size:1.35rem;font-weight:800;color:var(--text);text-transform:uppercase}
-  .vh-sub{font-size:.95rem;color:#333;margin-left:14px;font-weight:500}
+  .video-title{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px}
+  .vh-label{font-size:1.7rem;font-weight:800;color:var(--text);letter-spacing:.5px}
+  .vh-sep{font-size:1.7rem;font-weight:800;color:var(--text)}
+  .vh-name{font-size:1.7rem;font-weight:800;color:var(--text);text-transform:uppercase}
+  .vh-sub{font-size:1.1rem;color:#333;margin-left:18px;font-weight:500}
   .vh-sub::before{content:"• ";color:var(--text);font-weight:800}
 
-  /* ── Actions vidéo (modifier / supprimer) ── 
   .video-actions{display:flex;align-items:center;gap:14px;flex-shrink:0}
-  */
   .icon-btn{
     display:flex;align-items:center;justify-content:center;
-    width:40px;height:40px;border-radius:10px;
+    width:46px;height:46px;border-radius:10px;
     text-decoration:none;cursor:pointer;background:none;border:none;
     transition:opacity .15s;
   }
+  .icon-btn.edit{border:2px solid var(--teal);color:var(--teal)}
+  .icon-btn.edit svg{width:20px;height:20px}
   .icon-btn.del{color:var(--red)}
-  .icon-btn.del svg{width:24px;height:24px}
+  .icon-btn.del svg{width:28px;height:28px}
   .icon-btn:hover{opacity:.7}
-
-  .action-icon{
-    display:flex;align-items:center;justify-content:center;
-    background:none;border:none;cursor:pointer;
-    padding:.3rem;border-radius:6px;
-    text-decoration:none;transition:background .15s;
-  }
-  .action-icon:hover{background:#f1f5f9}
-  .action-icon.edit{color:var(--blue)}
-  .action-icon.del{color:var(--red)}
 
   /* ── VIDEO CARD ── */
   .video-card{
-    width:100%;max-width:1100px;background:#fff;border-radius:18px;overflow:hidden;
+    width:100%;background:#fff;border-radius:18px;overflow:hidden;
     box-shadow:0 10px 35px rgba(0,0,0,.15);
   }
-  .video-frame-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;height: 420px;}
+  .video-frame-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#000}
   .video-frame-wrap video,
   .video-frame-wrap iframe{
     width:100%;height:100%;display:block;border:none;background:#000;
@@ -130,7 +68,7 @@
   }
 
   /* ── CUSTOM CONTROLS ── */
-  .video-controls{padding:11px 22px 18px;background:#fff}
+  .video-controls{padding:14px 22px 18px;background:#fff}
   .seek-bar{
     position:relative;width:100%;height:6px;border-radius:4px;
     background:#e2e8f0;cursor:pointer;margin-bottom:16px;
@@ -166,7 +104,7 @@
   }
 
   /* ── Secondary progress bar ── */
-  .lecture-progress-wrap{margin-top:1px;width:100%;max-width:1100px}
+  .lecture-progress-wrap{margin-top:24px}
   .lecture-progress{
     width:100%;height:10px;border-radius:6px;background:#c7cedd;overflow:hidden;
   }
@@ -190,10 +128,8 @@
     padding:.55rem 1.3rem;cursor:pointer;font-family:inherit;color:var(--muted)}
 
   @media (max-width:768px){
-    .search-wrap{flex-direction:column;align-items:stretch;margin-top:-24px}
-    .video-title{justify-content:flex-start}
-    .vh-label,.vh-sep,.vh-name{font-size:1.15rem}
-    .vh-sub{margin-left:0;display:block;font-size:.9rem}
+    .vh-label,.vh-sep,.vh-name{font-size:1.3rem}
+    .vh-sub{margin-left:0;display:block;font-size:1rem}
     .video-title{flex-direction:column;align-items:flex-start;gap:2px}
     .controls-row{gap:8px}
     .time-display{font-size:.8rem;padding:8px 12px}
@@ -202,32 +138,28 @@
 {% endblock %}
 
 {% block content %}
-<!-- PAGE BODY -->
 <div class="page-body">
 
-  <!-- Search row : retour + titre vidéo + actions -->
-  <div class="search-wrap">
+  <a href="/admin/education" class="back-link">
+    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Retour
+  </a>
 
-    <div class="retour-bar">
-      <button class="btn-retour" onclick="history.back()">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        Retour
-      </button>
-    </div>
-
+  <div class="video-header">
     <div class="video-title">
       <span class="vh-label">VIDEO</span>
       <span class="vh-sep">:</span>
       <span class="vh-name">{{ cours.titre }}</span>
       <span class="vh-sub">{{ cours.matiere }}</span>
     </div>
-
     <div class="video-actions">
-      <!--
-      <button class="action-icon edit" title="Modifier"
-              onclick="window.location.href='/admin/education?edit={{ cours.id }}'">
-        <img src="/static/image/ico_modifier.png" alt="Modifier" width="25" height="25">
-      </button>
+      <a href="/admin/education?edit={{ cours.id }}" class="icon-btn edit" title="Modifier le cours">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"/>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+        </svg>
+      </a>
       <button type="button" class="icon-btn del" title="Supprimer le cours" onclick="openDelConfirm()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round">
@@ -238,10 +170,8 @@
           <path d="M14 11v6"/>
         </svg>
       </button>
-    -->
     </div>
-
-  </div> <!-- fin .search-wrap -->
+  </div>
 
   <div class="video-card">
     <div class="video-frame-wrap">
