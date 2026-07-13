@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from functools import wraps
 from contextlib import contextmanager
+from datetime import datetime, date
 import os
 import sqlite3
 import time
@@ -45,6 +46,18 @@ os.makedirs(UPLOAD_REPONSES, exist_ok=True)
 def upload_dir_for_categorie(categorie):
     """Retourne le dossier d'upload selon la categorie (exercice/examen)."""
     return UPLOAD_TESTS_EXAMEN if categorie == 'examen' else UPLOAD_TESTS_EXERCICE
+
+
+def calculate_age(dob):
+    """Calcule l'âge à partir d'une date de naissance au format YYYY-MM-DD."""
+    if not dob:
+        return ''
+    try:
+        dob_date = datetime.strptime(dob, '%Y-%m-%d').date()
+    except ValueError:
+        return ''
+    today = date.today()
+    return str(today.year - dob_date.year - ((today.month, today.day) < (dob_date.month, dob_date.day)))
 
 
 @contextmanager
@@ -1065,7 +1078,9 @@ def admin_conference():
         notif_count = db.execute(
             "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
         ).fetchone()[0]
-        users = db.execute("SELECT id, name, nom, prenom FROM users WHERE role!='admin' ORDER BY name").fetchall()
+        users = db.execute(
+            "SELECT id, name, nom, prenom, statut FROM users WHERE role!='admin' AND COALESCE(statut, 'Approuvé') NOT IN ('Rejeté', 'En attente') ORDER BY name"
+        ).fetchall()
         conferences = db.execute(
             'SELECT * FROM conferences WHERE created_by=? ORDER BY created_at DESC',
             (session['user_id'],)
@@ -1264,13 +1279,134 @@ def api_request_conference(conference_id):
     return jsonify({'ok': True, 'status': 'requested'})
 
 
+@app.route('/api/conferences/state')
+@login_required
+def api_conferences_state():
+    if session.get('role') == 'admin':
+        with get_db() as db:
+            notif_count = db.execute(
+                "SELECT COUNT(*) FROM notifications WHERE user_id IN (SELECT id FROM users WHERE role='admin') AND is_read=0"
+            ).fetchone()[0]
+            conferences = db.execute(
+                'SELECT * FROM conferences WHERE created_by=? ORDER BY created_at DESC',
+                (session['user_id'],)
+            ).fetchall()
+
+            conferences_payload = []
+            for conference in conferences:
+                participants = db.execute(
+                    '''SELECT cp.*, u.name AS user_name
+                       FROM conference_participants cp
+                       JOIN users u ON u.id = cp.user_id
+                       WHERE cp.conference_id=?
+                       ORDER BY cp.created_at DESC''',
+                    (conference['id'],)
+                ).fetchall()
+                conferences_payload.append({
+                    'id': conference['id'],
+                    'titre': conference['titre'],
+                    'room_name': conference['room_name'],
+                    'target_type': conference['target_type'],
+                    'status': conference['status'],
+                    'created_at': conference['created_at'],
+                    'participants': [dict(p) for p in participants],
+                })
+
+            join_requests = db.execute(
+                '''SELECT cp.id AS participant_id, cp.conference_id, cp.user_id, cp.created_at,
+                          u.name AS user_name, c.titre AS conference_titre
+                   FROM conference_participants cp
+                   JOIN conferences c ON c.id = cp.conference_id
+                   JOIN users u ON u.id = cp.user_id
+                   WHERE c.created_by=? AND cp.status='requested'
+                   ORDER BY cp.created_at DESC''',
+                (session['user_id'],)
+            ).fetchall()
+            join_requests = [dict(r) for r in join_requests]
+
+        return jsonify({
+            'role': 'admin',
+            'notif_count': notif_count,
+            'conferences': conferences_payload,
+            'join_requests': join_requests,
+        })
+
+    with get_db() as db:
+        notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)).fetchone()[0]
+        conferences = db.execute('SELECT * FROM conferences WHERE status="active" ORDER BY created_at DESC').fetchall()
+
+        conferences_payload = []
+        for conference in conferences:
+            participant = db.execute(
+                'SELECT status FROM conference_participants WHERE conference_id=? AND user_id=?',
+                (conference['id'], session['user_id'])
+            ).fetchone()
+            conferences_payload.append({
+                'id': conference['id'],
+                'titre': conference['titre'],
+                'room_name': conference['room_name'],
+                'created_at': conference['created_at'],
+                'status': participant['status'] if participant else 'none',
+            })
+
+    return jsonify({
+        'role': 'user',
+        'notif_count': notif_count,
+        'conferences': conferences_payload,
+    })
+
+
 @app.route('/dashboard/user')
 @login_required
 def dashboard_user():
     with get_db() as db:
         cours = db.execute('SELECT * FROM cours ORDER BY created_at DESC').fetchall()
         notif_count = db.execute('SELECT COUNT(*) FROM notifications WHERE user_id=? AND is_read=0', (session['user_id'],)).fetchone()[0]
-    return render_template('user/dashboard.html', user_name=session.get('name'), cours=cours, notif_count=notif_count)
+        user_profile = db.execute(
+            'SELECT id, nom, prenom, name, email, sexe, dob, classe, filiere, etablissement, adresse, phone, profession, matricule FROM users WHERE id=?',
+            (session['user_id'],)
+        ).fetchone()
+
+    if user_profile:
+        profile = dict(user_profile)
+        profile['age'] = calculate_age(profile.get('dob'))
+    else:
+        profile = {}
+
+    return render_template(
+        'user/dashboard.html',
+        user_name=session.get('name'),
+        cours=cours,
+        notif_count=notif_count,
+        user_profile=profile,
+    )
+
+
+@app.route('/user/profile/password', methods=['POST'])
+@login_required
+def update_user_password():
+    current_password = request.form.get('current_password', '').strip()
+    new_password = request.form.get('new_password', '').strip()
+    confirm_password = request.form.get('confirm_password', '').strip()
+
+    if not current_password or not new_password or not confirm_password:
+        return jsonify({'ok': False, 'message': 'Tous les champs sont requis.'}), 400
+    if new_password != confirm_password:
+        return jsonify({'ok': False, 'message': 'La confirmation du mot de passe ne correspond pas.'}), 400
+    if len(new_password) < 6:
+        return jsonify({'ok': False, 'message': 'Le nouveau mot de passe doit contenir au moins 6 caractères.'}), 400
+
+    with get_db() as db:
+        user = db.execute('SELECT password_hash FROM users WHERE id=?', (session['user_id'],)).fetchone()
+        if not user or not check_password_hash(user['password_hash'], current_password):
+            return jsonify({'ok': False, 'message': 'Le mot de passe actuel est incorrect.'}), 400
+
+        db.execute(
+            'UPDATE users SET password_hash=? WHERE id=?',
+            (generate_password_hash(new_password), session['user_id'])
+        )
+
+    return jsonify({'ok': True, 'message': 'Mot de passe mis à jour avec succès.'})
 
 
 @app.route('/user/conference')
@@ -1521,6 +1657,27 @@ def api_update_user_statut(user_id):
         db.execute('UPDATE users SET statut=? WHERE id=?', (statut, user_id))
         db.commit()
     return jsonify({'ok': True, 'statut': statut})
+
+@app.route('/api/users/<int:user_id>', methods=['DELETE'])
+@login_required
+@admin_required
+def api_delete_user(user_id):
+    with get_db() as db:
+        user = db.execute('SELECT id, role FROM users WHERE id=?', (user_id,)).fetchone()
+        if not user:
+            return jsonify({'error': 'Utilisateur introuvable.'}), 404
+
+        if user['role'] == 'admin' and user_id == session.get('user_id'):
+            return jsonify({'error': 'Vous ne pouvez pas supprimer votre propre compte administrateur.'}), 400
+
+        db.execute('DELETE FROM notifications WHERE user_id=?', (user_id,))
+        db.execute('DELETE FROM commentaires WHERE user_id=?', (user_id,))
+        db.execute('DELETE FROM test_resultats WHERE user_id=?', (user_id,))
+        db.execute('DELETE FROM conference_participants WHERE user_id=?', (user_id,))
+        db.execute('DELETE FROM users WHERE id=?', (user_id,))
+        db.commit()
+
+    return jsonify({'ok': True, 'message': 'Utilisateur supprimé.'})
 
 @app.route('/user/education')
 @login_required

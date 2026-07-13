@@ -1317,11 +1317,27 @@ function closeDelConfirm() {
 }
 async function doDelete() {
   if (!deletingId) return;
-  await new Promise(r => setTimeout(r, 400));
-  allUsers = allUsers.filter(u => u.id !== deletingId);
-  renderTable();
-  closeDelConfirm();
-  toast('🗑️ Utilisateur supprimé.','ok');
+  try {
+    const response = await fetch(`/api/users/${deletingId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      toast(data.error || 'Erreur lors de la suppression.', 'err');
+      closeDelConfirm();
+      return;
+    }
+
+    allUsers = allUsers.filter(u => u.id !== deletingId);
+    renderTable();
+    closeDelConfirm();
+    toast('🗑️ Utilisateur supprimé.', 'ok');
+    window.location.reload();
+  } catch (err) {
+    toast('Erreur réseau. Veuillez réessayer.', 'err');
+    console.error(err);
+  }
 }
 
 /* ═══════════════════════════════════════════════

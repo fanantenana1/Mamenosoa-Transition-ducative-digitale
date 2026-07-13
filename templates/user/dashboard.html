@@ -7,6 +7,7 @@
   <title>{% block title %}Dashboard Admin – Digiscool{% endblock %}</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -180,6 +181,249 @@
       white-space: nowrap
     }
 
+    .user-settings-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+
+    .user-settings-btn:hover,
+    .user-settings-btn:focus {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 280px;
+      max-width: 320px;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 22px 50px rgba(15, 23, 42, 0.18);
+      transform: translateY(12px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+      z-index: 250;
+    }
+
+    .profile-dropdown.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .profile-dropdown-inner {
+      padding: 18px;
+    }
+
+    .profile-dropdown-header {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #111827;
+    }
+
+    .profile-info {
+      display: grid;
+      gap: 6px;
+      padding: 14px 0;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 12px;
+    }
+
+    .profile-info strong {
+      font-size: 1rem;
+      color: #111827;
+    }
+
+    .profile-info small {
+      color: #6b7280;
+    }
+
+    .profile-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: #4b5563;
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+
+    .profile-meta span {
+      background: #f8fafc;
+      border-radius: 999px;
+      padding: 6px 10px;
+    }
+
+    .profile-actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .profile-actions .dropdown-link,
+    .profile-actions button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: transparent;
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: #111827;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .2s;
+      text-decoration: none;
+    }
+
+    .profile-actions .dropdown-link:hover,
+    .profile-actions button:hover {
+      background: #f3f4f6;
+    }
+
+    .menu-panel {
+      display: none;
+      margin-top: 8px;
+      padding: 12px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+      border: 1px solid #dbe7ff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .menu-panel.active {
+      display: block;
+    }
+
+    .menu-panel-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1d4ed8;
+      margin-bottom: 10px;
+    }
+
+    .menu-panel .form-group {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .menu-panel label {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .menu-panel input,
+    .menu-panel select {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.92rem;
+      color: #111827;
+      background: #fff;
+    }
+
+    .menu-panel .actions-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .menu-panel .btn-save {
+      border: none;
+      border-radius: 10px;
+      padding: 8px 12px;
+      background: #2563eb;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .option-group {
+      display: grid;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+
+    .option-group label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .language-select {
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.95rem;
+      color: #111827;
+      background: #fff;
+    }
+
+    .profile-password-form {
+      display: none;
+      padding: 10px 0 0;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 10px;
+      gap: 10px;
+      display: grid;
+    }
+
+    .profile-password-form.expanded {
+      display: grid;
+    }
+
+    .profile-password-form input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      color: #111827;
+      background: #fff;
+    }
+
+    .profile-password-form button {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .profile-dropdown-arrow {
+      position: absolute;
+      top: -8px;
+      right: 16px;
+      width: 16px;
+      height: 16px;
+      background: #ffffff;
+      transform: rotate(45deg);
+      border-radius: 4px;
+      box-shadow: -4px -4px 10px rgba(15, 23, 42, 0.05);
+    }
+
     .notif-link {
       position: relative;
       display: flex;
@@ -228,6 +472,15 @@
       overflow: hidden
     }
 
+    .hero-section {
+      position: relative;
+      padding: 3.5rem 4rem 1.5rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
     .hero-section h1 {
       font-size: 2.5rem;
       font-weight: 400;
@@ -246,6 +499,107 @@
       max-width: 520px;
       line-height: 1.5;
       opacity: .85
+    }
+
+    .welcome-panel {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 45%, #38bdf8 100%);
+      border-radius: 24px;
+      padding: 24px 28px;
+      color: #fff;
+      box-shadow: 0 16px 40px rgba(37, 99, 235, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .welcome-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .welcome-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .welcome-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 700px;
+    }
+
+    .welcome-highlight {
+      min-width: 220px;
+      padding: 16px 18px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .summary-card {
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .summary-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      font-size: 18px;
+      color: #2563eb;
+      background: #dbeafe;
+    }
+
+    .summary-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin-bottom: 8px;
+    }
+
+    .summary-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 6px;
+      color: #475569;
+      font-size: 13px;
+    }
+
+    .summary-list li::before {
+      content: "•";
+      color: #2563eb;
+      font-weight: 700;
+      display: inline-block;
+      width: 10px;
     }
 
     .dot-cluster {
@@ -455,6 +809,47 @@
         <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
       </a>
       <a href="{{ url_for('logout') }}" class="nav-btn-primary">Déconnecté</a>
+      <div class="profile-menu-wrapper" style="position:relative; margin-left:0.65rem;">
+        <button id="profile-menu-button" type="button" class="user-settings-btn" aria-haspopup="true" aria-expanded="false" title="Options de profil">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <div id="user-profile-menu" class="profile-dropdown" role="menu" aria-label="Profil utilisateur">
+          <div class="profile-dropdown-arrow"></div>
+          <div class="profile-dropdown-inner">
+            <div class="profile-dropdown-header">Options</div>
+            <div class="profile-actions">
+              <button id="account-option-btn" type="button">Compte</button>
+              <div id="account-panel" class="menu-panel">
+                <div class="menu-panel-title">Gestion du compte</div>
+                <div class="form-group">
+                  <label for="account-photo">Photo de profil</label>
+                  <input id="account-photo" type="file" accept="image/*">
+                </div>
+                <div class="form-group">
+                  <label for="account-password">Mot de passe</label>
+                  <input id="account-password" type="password" placeholder="Nouveau mot de passe">
+                </div>
+                <div class="form-group">
+                  <label for="account-password-confirm">Confirmer le mot de passe</label>
+                  <input id="account-password-confirm" type="password" placeholder="Confirmer">
+                </div>
+                <div class="actions-row">
+                  <button type="button" class="btn-save">Enregistrer</button>
+                </div>
+              </div>
+              <div class="option-group">
+                <label for="language-select">Paramètre Language</label>
+                <select id="language-select" class="language-select">
+                  <option value="fr">Français</option>
+                  <option value="mg">Malagasy</option>
+                </select>
+              </div>
+              <button type="button">Aide</button>
+              <a href="{{ url_for('logout') }}" class="dropdown-link">Quitter</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </nav>
 
@@ -482,8 +877,48 @@
           <circle cx="50" cy="70" r="5" />
         </svg>
       </div>
-      <h1>Dashboard <strong>Admin Digischool</strong></h1>
-      <p>Visualisez les statistiques globales<br>et configurez la plateforme éducative.</p>
+
+      <div class="welcome-panel">
+        <div>
+          <div class="welcome-badge"><i class="fa-solid fa-user-graduate"></i> Espace apprenant</div>
+          <h1>Bonjour, <strong>{{ user_name|default('apprenant') }}</strong></h1>
+          <p>Accédez aux cours, aux tests, aux notifications et aux conférences pour suivre votre progression au quotidien.</p>
+        </div>
+        <div class="welcome-highlight">
+          <strong>Résumé rapide</strong><br>
+          Apprentissage • Évaluation • Suivi • Communication
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="summary-icon"><i class="fa-solid fa-book-open"></i></div>
+          <div class="summary-title">À propos de l’application</div>
+          <ul class="summary-list">
+            <li>Plateforme éducative simple et moderne</li>
+            <li>Contenus mis à disposition en ligne</li>
+            <li>Suivi des activités et notifications</li>
+          </ul>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon"><i class="fa-solid fa-file-lines"></i></div>
+          <div class="summary-title">Ce que vous pouvez faire</div>
+          <ul class="summary-list">
+            <li>Consulter les cours et vidéos</li>
+            <li>Répondre aux évaluations</li>
+            <li>Participer aux conférences</li>
+          </ul>
+        </div>
+        <div class="summary-card">
+          <div class="summary-icon"><i class="fa-solid fa-bolt"></i></div>
+          <div class="summary-title">Accès rapide</div>
+          <ul class="summary-list">
+            <li>Ouvrez votre parcours</li>
+            <li>Vérifiez vos notifications</li>
+            <li>Restez informé en continu</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <section class="cards-section">
@@ -602,6 +1037,48 @@
         if (!document.hidden) refreshNotifBadge();
       });
       setInterval(refreshNotifBadge, 3000);
+
+      const profileButton = document.getElementById('profile-menu-button');
+      const profileMenu = document.getElementById('user-profile-menu');
+      const accountOptionBtn = document.getElementById('account-option-btn');
+      const accountPanel = document.getElementById('account-panel');
+
+      if (profileButton && profileMenu) {
+        const openProfileMenu = () => {
+          profileMenu.classList.add('open');
+          profileButton.setAttribute('aria-expanded', 'true');
+        };
+
+        const closeProfileMenu = () => {
+          profileMenu.classList.remove('open');
+          profileButton.setAttribute('aria-expanded', 'false');
+          if (accountPanel) {
+            accountPanel.classList.remove('active');
+          }
+        };
+
+        profileButton.addEventListener('click', (event) => {
+          event.stopPropagation();
+          profileMenu.classList.toggle('open');
+          profileButton.setAttribute('aria-expanded', String(profileMenu.classList.contains('open')));
+        });
+
+        profileButton.addEventListener('mouseenter', openProfileMenu);
+        profileMenu.addEventListener('mouseenter', openProfileMenu);
+        profileMenu.addEventListener('mouseleave', closeProfileMenu);
+
+        document.addEventListener('click', (event) => {
+          if (!profileMenu.contains(event.target) && event.target !== profileButton) {
+            closeProfileMenu();
+          }
+        });
+      }
+
+      if (accountOptionBtn && accountPanel) {
+        accountOptionBtn.addEventListener('click', () => {
+          accountPanel.classList.toggle('active');
+        });
+      }
     });
   </script>
 

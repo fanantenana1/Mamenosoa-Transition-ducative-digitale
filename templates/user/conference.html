@@ -281,6 +281,61 @@
 </div>
 
 <script>
+let userConferenceRefreshTimer = null;
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderUserConferenceState(data) {
+  const container = document.querySelector('.table-rows');
+  if (!container) return;
+
+  if (!data.conferences || data.conferences.length === 0) {
+    container.innerHTML = '<div class="empty-state">Aucune conférence pour le moment.</div>';
+    return;
+  }
+
+  container.innerHTML = data.conferences.map((c) => {
+    let actionHtml = '';
+    if (c.status === 'approved') {
+      actionHtml = `
+        <button type="button" class="btn btn-sm btn-outline-primary" onclick="joinRoom('${escapeHtml(c.room_name)}', ${c.id})">Rejoindre (embed)</button>
+        <a class="btn btn-sm btn-outline-secondary" target="_blank" href="https://meet.jit.si/${escapeHtml(c.room_name)}">Ouvrir dans un nouvel onglet</a>
+      `;
+    } else if (c.status === 'requested') {
+      actionHtml = '<button type="button" class="btn btn-sm btn-secondary" disabled>En attente</button>';
+    } else {
+      actionHtml = `<button type="button" class="btn btn-sm btn-primary" id="req-btn-${c.id}" onclick="requestJoin(${c.id})">Demander à rejoindre</button>`;
+    }
+
+    return `
+      <div class="conf-row" id="conf-card-${c.id}">
+        <div class="conf-row-name">${escapeHtml(c.titre)}</div>
+        <div class="conf-row-date">${escapeHtml(c.created_at)}</div>
+        <div class="conf-row-actions">${actionHtml}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function refreshConferenceState() {
+  try {
+    const res = await fetch('/api/conferences/state', { cache: 'no-store' });
+    const data = await res.json();
+    if (res.ok) {
+      renderUserConferenceState(data);
+    }
+  } catch (err) {
+    console.error('Erreur de rafraîchissement des conférences', err);
+  }
+}
+
 function toggleHorizontalSidebar() {
   const sidebar = document.getElementById('sidebarCard');
   const btn = document.getElementById('sidebarToggle');
@@ -293,8 +348,7 @@ async function requestJoin(id){
   const res = await fetch('/api/conferences/' + id + '/request', {method:'POST'})
   const d = await res.json();
   if(res.ok){
-    const btn = document.getElementById('req-btn-' + id);
-    if(btn){ btn.innerText = 'En attente'; btn.disabled = true }
+    await refreshConferenceState();
   } else alert(d.error || 'Erreur')
 }
 
@@ -305,5 +359,15 @@ function joinRoom(room, id){
   iframe.style.display = 'block';
   placeholder.style.display = 'none';
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  refreshConferenceState();
+  if (userConferenceRefreshTimer) clearInterval(userConferenceRefreshTimer);
+  userConferenceRefreshTimer = setInterval(refreshConferenceState, 4000);
+  window.addEventListener('focus', refreshConferenceState);
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) refreshConferenceState();
+  });
+});
 </script>
 {% endblock %}

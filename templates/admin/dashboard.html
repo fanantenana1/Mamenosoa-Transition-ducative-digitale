@@ -224,6 +224,112 @@
       display: inline-block;
     }
 
+    .admin-settings-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+
+    .admin-settings-btn:hover,
+    .admin-settings-btn:focus {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .admin-profile-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 260px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+      transform: translateY(10px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+      z-index: 250;
+    }
+
+    .admin-profile-dropdown.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .admin-profile-dropdown-inner {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .admin-option-group {
+      display: grid;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+
+    .admin-option-group label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .admin-option-group select {
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.92rem;
+      color: #111827;
+      background: #fff;
+    }
+
+    .admin-profile-dropdown .dropdown-link,
+    .admin-profile-dropdown button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: transparent;
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: #111827;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s;
+    }
+
+    .admin-profile-dropdown .dropdown-link:hover,
+    .admin-profile-dropdown button:hover {
+      background: #f3f4f6;
+    }
+
+    .admin-profile-dropdown-arrow {
+      position: absolute;
+      top: -8px;
+      right: 16px;
+      width: 16px;
+      height: 16px;
+      background: #ffffff;
+      transform: rotate(45deg);
+      border-radius: 4px;
+      box-shadow: -4px -4px 10px rgba(15, 23, 42, 0.05);
+    }
+
     /* ────────── PAGE (contenu par défaut du dashboard) ────────── */
     .ds-page {
       padding: 36px 32px 160px;
@@ -315,6 +421,109 @@
       font-size: 13px;
       color: #4b6789;
       margin-top: 3px;
+    }
+
+    .welcome-panel {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 45%, #38bdf8 100%);
+      border-radius: 24px;
+      padding: 24px 28px;
+      color: #fff;
+      box-shadow: 0 16px 40px rgba(37, 99, 235, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .welcome-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .welcome-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .welcome-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 700px;
+    }
+
+    .welcome-highlight {
+      min-width: 220px;
+      padding: 16px 18px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+
+    .summary-card {
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .summary-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      font-size: 18px;
+      color: #2563eb;
+      background: #dbeafe;
+    }
+
+    .summary-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e3a5f;
+      margin-bottom: 8px;
+    }
+
+    .summary-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 6px;
+      color: #475569;
+      font-size: 13px;
+    }
+
+    .summary-list li::before {
+      content: "•";
+      color: #2563eb;
+      font-weight: 700;
+      display: inline-block;
+      width: 10px;
     }
 
     /* ── Card grid ── */
@@ -501,6 +710,25 @@
         <span class="notif-badge{% if notif_count > 0 %} show{% endif %}">{{ notif_count }}</span>
       </a>
       <a href="/logout" class="nav-btn nav-btn-accent">Déconnexion</a>
+      <div style="position:relative; margin-left:0.35rem;">
+        <button id="admin-settings-btn" type="button" class="admin-settings-btn" aria-haspopup="true" aria-expanded="false" title="Options">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <div id="admin-profile-dropdown" class="admin-profile-dropdown" role="menu" aria-label="Options admin">
+          <div class="admin-profile-dropdown-arrow"></div>
+          <div class="admin-profile-dropdown-inner">
+            <div class="admin-option-group">
+              <label for="admin-language-select">Langue</label>
+              <select id="admin-language-select">
+                <option value="fr">Français</option>
+                <option value="mg">Malagasy</option>
+              </select>
+            </div>
+            <button type="button">Aide</button>
+            <a href="/logout" class="dropdown-link">Quitter</a>
+          </div>
+        </div>
+      </div>
     </div>
   </nav>
 
@@ -550,6 +778,48 @@
       <div>
         <div class="section-title">Tableau de bord</div>
         <div class="section-sub">Vue d'ensemble de la plateforme Digiscool</div>
+      </div>
+    </div>
+
+    <div class="welcome-panel">
+      <div>
+        <div class="welcome-badge"><i class="bi bi-stars"></i> Espace administration</div>
+        <h2 class="welcome-title">Bienvenue dans l’univers Digiscool</h2>
+        <p class="welcome-text">Cette application accompagne l’apprentissage, la communication et le suivi des apprenants grâce à des contenus éducatifs, des évaluations et une gestion centralisée.</p>
+      </div>
+      <div class="welcome-highlight">
+        <strong>Résumé rapide</strong><br>
+        Formation • Évaluation • Suivi • Notifications
+      </div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-icon"><i class="bi bi-info-circle-fill"></i></div>
+        <div class="summary-title">À propos de l’application</div>
+        <ul class="summary-list">
+          <li>Plateforme éducative moderne et simple</li>
+          <li>Accessible aux admins et aux utilisateurs</li>
+          <li>Organisation centralisée du contenu</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon"><i class="bi bi-gear-fill"></i></div>
+        <div class="summary-title">Fonctionnalités clés</div>
+        <ul class="summary-list">
+          <li>Gestion des cours et vidéos</li>
+          <li>Évaluations et résultats</li>
+          <li>Notifications et conférences</li>
+        </ul>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon"><i class="bi bi-lightning-fill"></i></div>
+        <div class="summary-title">Accès rapide</div>
+        <ul class="summary-list">
+          <li>Gérez les utilisateurs</li>
+          <li>Publiez des contenus</li>
+          <li>Suivez les performances</li>
+        </ul>
       </div>
     </div>
 
@@ -778,6 +1048,36 @@
         if (!document.hidden) refreshNotifBadge();
       });
       setInterval(refreshNotifBadge, 3000);
+
+      const adminSettingsBtn = document.getElementById('admin-settings-btn');
+      const adminProfileDropdown = document.getElementById('admin-profile-dropdown');
+
+      if (adminSettingsBtn && adminProfileDropdown) {
+        const openMenu = () => {
+          adminProfileDropdown.classList.add('open');
+          adminSettingsBtn.setAttribute('aria-expanded', 'true');
+        };
+        const closeMenu = () => {
+          adminProfileDropdown.classList.remove('open');
+          adminSettingsBtn.setAttribute('aria-expanded', 'false');
+        };
+
+        adminSettingsBtn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          adminProfileDropdown.classList.toggle('open');
+          adminSettingsBtn.setAttribute('aria-expanded', String(adminProfileDropdown.classList.contains('open')));
+        });
+
+        adminSettingsBtn.addEventListener('mouseenter', openMenu);
+        adminProfileDropdown.addEventListener('mouseenter', openMenu);
+        adminProfileDropdown.addEventListener('mouseleave', closeMenu);
+
+        document.addEventListener('click', (event) => {
+          if (!adminProfileDropdown.contains(event.target) && event.target !== adminSettingsBtn) {
+            closeMenu();
+          }
+        });
+      }
     });
   </script>
   {% endblock %}

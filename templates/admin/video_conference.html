@@ -511,7 +511,7 @@
           </svg>
         </button>
       </div>
-      <div class="table-rows">
+      <div class="table-rows" id="join-requests-list">
         {% for r in join_requests %}
         <div class="result-row" id="joinreq-{{ r.conference_id }}-{{ r.user_id }}">
           <div class="row-name-wrap">
@@ -542,6 +542,83 @@
 </div>
 
 <script>
+let conferenceRefreshTimer = null;
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function renderAdminConferenceState(data) {
+  const joinRequestsContainer = document.getElementById('join-requests-list');
+  if (joinRequestsContainer) {
+    if (!data.join_requests || data.join_requests.length === 0) {
+      joinRequestsContainer.innerHTML = '<div class="empty-state">Aucune demande d\'accès en attente.</div>';
+    } else {
+      joinRequestsContainer.innerHTML = data.join_requests.map((r) => `
+        <div class="result-row" id="joinreq-${r.conference_id}-${r.user_id}">
+          <div class="row-name-wrap">
+            <div class="row-name">${escapeHtml(r.user_name)}</div>
+            <div class="row-date">${escapeHtml(r.conference_titre)} · ${escapeHtml(r.created_at)}</div>
+          </div>
+          <div class="row-actions">
+            <button type="button" class="btn btn-sm btn-success btn-small" title="Accepter" onclick="respond(${r.conference_id}, ${r.user_id}, 'approve')">✓</button>
+            <button type="button" class="btn btn-sm btn-danger btn-small" title="Refuser" onclick="respond(${r.conference_id}, ${r.user_id}, 'reject')">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  const mesConfsContainer = document.getElementById('mesconfs-list-container');
+  if (mesConfsContainer) {
+    if (!data.conferences || data.conferences.length === 0) {
+      mesConfsContainer.innerHTML = '<div class="empty-state">Aucune conférence pour le moment.</div>';
+    } else {
+      mesConfsContainer.innerHTML = data.conferences.map((c) => {
+        const participantsHtml = (c.participants || []).map((p) => `
+          <div class="part-row"><span>${escapeHtml(p.user_name || p.user_id)}</span><span class="status-pill ${escapeHtml(p.status)}">— ${escapeHtml(p.status)}</span></div>
+        `).join('');
+        return `
+          <div class="mesconf-item" data-id="${c.id}">
+            <input type="checkbox" class="conf-item-cb" data-id="${c.id}" onchange="checkSelectAllState()">
+            <div class="mesconf-main-content">
+              <div class="mesconf-title">${escapeHtml(c.titre)}</div>
+              <div class="mesconf-date">${escapeHtml(c.created_at)}</div>
+              <div class="mesconf-participants">
+                ${participantsHtml || '<div class="part-row"><span>Aucun participant</span></div>'}
+              </div>
+              <div style="margin-top: 6px;">
+                <button type="button" class="btn btn-sm btn-primary" style="font-size:0.75rem; padding: 2px 8px;" onclick="startStream('${escapeHtml(c.room_name)}')">Ouvrir</button>
+              </div>
+            </div>
+            <button type="button" class="btn-delete-icon" title="Supprimer" onclick="deleteSingleConf(${c.id}, this)">
+              <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+  checkSelectAllState();
+}
+
+async function refreshConferenceState() {
+  try {
+    const res = await fetch('/api/conferences/state', { cache: 'no-store' });
+    const data = await res.json();
+    if (res.ok) {
+      renderAdminConferenceState(data);
+    }
+  } catch (err) {
+    console.error('Erreur de rafraîchissement des conférences', err);
+  }
+}
+
 function toggleHorizontalSidebar() {
   const sidebar = document.getElementById('sidebarCard');
   const btn = document.getElementById('sidebarToggle');
@@ -690,11 +767,13 @@ async function executeCreateConf() {
     });
     const data = await res.json();
     if (res.ok) {
-      // On mémorise la salle à lancer automatiquement après le rechargement
-      // (le rechargement est nécessaire pour que la liste "Mes conférences"
-      // et la liste "Demander à rejoindre" affichent les nouvelles données côté serveur).
-      sessionStorage.setItem('digiscool_autostart_room', data.room_name);
-      window.location.reload();
+      document.getElementById('conf_title').value = '';
+      document.getElementById('target_type').value = 'all';
+      onTargetTypeChange();
+      document.querySelectorAll('#select_users_container input[type=checkbox]').forEach(cb => cb.checked = false);
+      document.getElementById('menuPopover').classList.remove('active');
+      startStream(data.room_name);
+      await refreshConferenceState();
     } else {
       alert(data.error || 'Erreur lors de la création de la conférence.');
     }
@@ -712,7 +791,7 @@ async function respond(confId, userId, action) {
     });
     const data = await res.json();
     if (res.ok) {
-      window.location.reload();
+      await refreshConferenceState();
     } else {
       alert(data.error || 'Erreur.');
     }
@@ -730,14 +809,14 @@ document.addEventListener('click', function(event) {
   }
 });
 
-// Lance automatiquement dans "videoWrapper" la conférence qui vient d'être créée,
-// juste après le rechargement de page déclenché par executeCreateConf().
 document.addEventListener('DOMContentLoaded', function() {
-  const autoRoom = sessionStorage.getItem('digiscool_autostart_room');
-  if (autoRoom) {
-    sessionStorage.removeItem('digiscool_autostart_room');
-    startStream(autoRoom);
-  }
+  refreshConferenceState();
+  if (conferenceRefreshTimer) clearInterval(conferenceRefreshTimer);
+  conferenceRefreshTimer = setInterval(refreshConferenceState, 4000);
+  window.addEventListener('focus', refreshConferenceState);
+  document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) refreshConferenceState();
+  });
 });
 </script>
 {% endblock %}
