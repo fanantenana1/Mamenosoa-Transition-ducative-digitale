@@ -1,0 +1,167 @@
+DIGISCOOL - DESCRIPTION DE L'APPLICATION
+
+1. FONCTIONNALITES PRINCIPALES
+
+Cette application est une plateforme web éducative développée avec Flask. Elle permet de gérer l'apprentissage, les évaluations, les communications et la collaboration entre un administrateur et des utilisateurs.
+
+Fonctionnalités principales :
+- Inscription et connexion des utilisateurs
+- Gestion des rôles : administrateur et utilisateur
+- Publication de contenus éducatifs : vidéos, cours, documents, exercices, examens
+- Visualisation des contenus par les apprenants
+- Ajout de commentaires sur les vidéos et les cours
+- Création et gestion des tests et examens
+- Soumission des réponses par les utilisateurs
+- Attribution de notes et consultation des résultats
+- Système de notifications en temps réel
+- Gestion de conférences vidéo ou de sessions de communication
+- Administration des profils utilisateurs, de leur statut et de leurs accès
+- Correction automatique des réponses ou aide à la réponse pour faciliter l’apprentissage
+- Correction des exercices et examens avec suivi des performances
+- Intégration de l’intelligence artificielle pour améliorer l’accompagnement pédagogique
+
+2. DEMARCHE DE L'APPLICATION
+
+La démarche de cette application suit un parcours simple et structuré :
+1. L'utilisateur se connecte ou s'inscrit.
+2. Selon son rôle, il accède à un espace adapté.
+3. L'administrateur publie ou organise les contenus éducatifs.
+4. L'utilisateur consulte les cours, regarde les vidéos, lit les documents et passe des tests.
+5. Les réponses soumises sont analysées, corrigées et suivies.
+6. L’application propose une aide à la réponse et un accompagnement intelligent pour améliorer l’apprentissage.
+7. Les interactions comme les commentaires, les résultats et les notifications permettent de maintenir une communication continue.
+8. L'application favorise ainsi un environnement d'apprentissage interactif, intelligent et organisé.
+
+3. BUT DE CHAQUE PAGE
+
+Page d'accueil (index.html)
+- Servir de point d'entrée à l'application.
+- Permettre à l'utilisateur de se connecter ou de créer un compte.
+- Présenter l'identité générale de la plateforme.
+
+Tableau de bord administrateur (admin/dashboard.html)
+- Donner à l'administrateur une vue globale de l'activité.
+- Permettre de superviser les utilisateurs, les contenus et les notifications.
+
+Page d'éducation administrateur (admin/education.html)
+- Permettre à l'admin de gérer les cours, vidéos, documents et exercices.
+- Faciliter l'organisation des contenus pédagogiques.
+
+Page de vidéo administrateur (video.html)
+- Afficher un contenu vidéo de manière claire pour la consultation ou la gestion.
+
+Page de tests administrateur (admin/test.html)
+- Permettre à l'admin de créer, organiser et gérer les tests.
+
+Page de résultats (admin/resultat.html)
+- Afficher les résultats soumis par les utilisateurs.
+- Aider l'administrateur à suivre les performances.
+
+Page de travail utilisateur (admin/travaille_user.html)
+- Permettre à l'admin d'examiner les réponses et les travaux des utilisateurs.
+- Faciliter l'évaluation des devoirs et examens.
+
+Page des utilisateurs (admin/utilisateur.html)
+- Gérer les comptes utilisateurs.
+- Approuver, rejeter ou modifier le statut des apprenants.
+
+Page des notifications administrateur (admin/notifications.html)
+- Centraliser les alertes et informations importantes destinées à l'admin.
+
+Tableau de bord utilisateur (user/dashboard.html)
+- Donner à l'utilisateur une vue personnelle de son espace.
+- Afficher ses contenus accessibles et ses informations de compte.
+
+Page d'éducation utilisateur (user/education_user.html)
+- Permettre à l'utilisateur de parcourir les ressources éducatives disponibles.
+
+Page de lecture vidéo (user/affichage_video.html)
+- Permettre à l'utilisateur de regarder les vidéos pédagogiques.
+
+Page de commentaires (user/commentaire_user.html)
+- Permettre aux apprenants de commenter des contenus et d'échanger.
+
+Page de tests utilisateur (user/test_user.html)
+- Permettre à l'utilisateur de consulter et de passer les tests proposés.
+
+Page de notifications utilisateur (user/notifications.html)
+- Informer l'utilisateur des nouvelles activités, résultats ou messages.
+
+Page de détail d'une notification (user/notification_detail.html)
+- Afficher le contenu complet d'une notification pour une meilleure compréhension.
+
+Page de conférence (user/conference.html et admin/video_conference.html)
+- Faciliter la communication entre les utilisateurs et l'administrateur.
+- Permettre la mise en place de sessions de vidéoconférence ou de réunion.
+
+4. OUTILS ET TECHNOLOGIES UTILISES
+
+Les principaux outils et technologies utilisés pour développer cette application sont :
+- Python
+- Flask
+- SQLite
+- HTML, CSS, JavaScript
+- Jinja2 pour les templates
+- Werkzeug pour la sécurité et la gestion des fichiers
+- GitHub pour le stockage du code source
+- Visual Studio Code comme environnement de développement
+
+5. LANCEMENT DE L'APPLICATION
+
+Pour lancer l'application, il faut suivre les étapes suivantes :
+1. Ouvrir le projet dans l'environnement de développement.
+2. Activer l'environnement virtuel.
+3. Installer les dépendances avec la commande : pip install -r requirements.txt
+4. Lancer l'application avec la commande : python app.py
+5. Ouvrir l'adresse locale : http://localhost:5000
+
+6. GRAND BUT MAJEUR
+
+Le grand objectif majeur de cette application est de créer une plateforme éducative moderne, simple et complète, capable de réunir dans un seul espace :
+- la diffusion du savoir,
+- l'évaluation des apprenants,
+- la communication,
+- l'administration des utilisateurs,
+- la correction et l'accompagnement intelligent,
+- et la collaboration pédagogique.
+
+L'objectif est de faciliter l'apprentissage à distance tout en offrant un outil de suivi efficace pour les enseignants ou administrateurs.
+
+7. DIFFERENCE PAR RAPPORT AUX AUTRES APPLICATIONS
+
+Cette application se distingue par sa vision globale et intégrée. Contrairement à beaucoup d'autres plateformes qui se concentrent seulement sur un seul aspect comme les cours, les tests ou la messagerie, cette application combine plusieurs fonctions dans une seule solution.
+
+Ses principales différences sont :
+- Elle regroupe l'éducation, les évaluations, les notifications et la communication dans une seule plateforme.
+- Elle offre un espace séparé pour l'administrateur et l'utilisateur.
+- Elle permet une gestion complète des contenus pédagogiques et des apprenants.
+- Elle favorise un apprentissage interactif grâce aux commentaires, tests et notifications.
+- Elle intègre la correction automatique et l’aide à la réponse pour améliorer l’expérience éducative.
+- Elle s’appuie sur l’intelligence artificielle pour proposer un accompagnement plus intelligent et personnalisé.
+- Elle est pensée pour être à la fois simple d'utilisation, pratique et adaptée à un environnement éducatif moderne.
+
+8. EXEMPLES DE THEMES DE MEMOIRE DE MASTER
+
+Voici quelques exemples de thèmes de mémoire pouvant être associés à cette application :
+- Conception et développement d’une plateforme éducative intelligente basée sur l’intelligence artificielle.
+- Mise en place d’un système de correction automatique des examens et exercices en ligne.
+- Optimisation de l’apprentissage à distance grâce à une plateforme web collaborative.
+- Développement d’un système d’aide à la réponse pour améliorer la performance des étudiants.
+- Impact de l’intelligence artificielle sur l’enseignement à distance et l’évaluation des apprenants.
+
+9. PLAN EQUIVALENT D'UN MEMOIRE
+
+Proposition de plan de mémoire :
+1. Introduction générale
+2. Présentation du contexte et problématique
+3. Objectifs de la recherche
+4. Revue de la littérature
+5. Présentation de l’application Digiscool
+6. Méthodologie de développement
+7. Architecture et fonctionnement du système
+8. Résultats et analyses
+9. Discussion et interprétation
+10. Conclusion générale
+11. Bibliographie et annexes
+
+En résumé, cette application n'est pas seulement un outil de cours, mais une véritable plateforme éducative collaborative, intelligente et administrative.
