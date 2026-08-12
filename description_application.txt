@@ -139,6 +139,16 @@ Ses principales différences sont :
 - Elle intègre la correction automatique et l’aide à la réponse pour améliorer l’expérience éducative.
 - Elle s’appuie sur l’intelligence artificielle pour proposer un accompagnement plus intelligent et personnalisé.
 - Elle est pensée pour être à la fois simple d'utilisation, pratique et adaptée à un environnement éducatif moderne.
+############################################## 
+==>> Cela signifie que, d’après le résumé, l’application a pour ambition de remplacer/compléter l’enseignement traditionnel par une plate‑forme numérique moderne et centrée sur l’apprenant — interactive, automatisée et personnalisée.
+
+But concret : offrir un environnement web unique pour diffuser cours, vidéos, documents et tests.
+Personnalisation : accompagnement intelligent avec IA (aide à la réponse, recommandations, remédiation).
+Évaluation automatisée : création, correction et suivi des tests/examens, notes et rapports de performance.
+Interaction et collaboration : commentaires, conférences vidéo et notifications en temps réel pour maintenir l’engagement.
+Administration et suivi : espaces dédiés admin/utilisateur, tableaux de bord et gestion des accès.
+Valeur ajoutée : accessibilité, gain de temps pour les enseignants, apprentissage adaptatif et pilotage pédagogique via données.
+##############################################
 
 8. EXEMPLES DE THEMES DE MEMOIRE DE MASTER
 
